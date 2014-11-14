@@ -14,7 +14,11 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 
 
-
+/**
+ * @author     Ottar og Þorsteinn. Edit by Hlynur
+ * @version     1.0a                 Alpha
+ * @since       2014-10-10        
+ */
 public class BlokkGame implements ApplicationListener {
 
    private SpriteBatch batch;
@@ -41,6 +45,10 @@ public class BlokkGame implements ApplicationListener {
 	 private Texture black;
 	 private int steps;
 
+   /**
+   * Starts the gameloop by opening components from badlogic pack and sets the orthogonal projection of the camera.
+   *
+   */	 
    @Override
    public void create() {
       camera = new OrthographicCamera();
@@ -66,6 +74,10 @@ public class BlokkGame implements ApplicationListener {
 	  _b = 0;//0.2f;
    }
    
+   /**
+   * Clears the window and draws all entities. Sends coordinates to methods to find out where player *is touching
+   *
+   */
    @Override
    public void render() {
       Gdx.gl.glClearColor(_r, _g, _b, 1);
@@ -99,10 +111,15 @@ public class BlokkGame implements ApplicationListener {
       }
    }
 
+   /**
+    * Creates an endless moving background for all states except Playstate
+    *
+    */
    public void spawnBackground()
    {
 	 if (TimeUtils.nanoTime() - lastDropTime > 900000000 && !gsm.introStart) spawnMovable();
 	 		for (int i = 0; i < steps; i++) computeSubStep(dy/steps);
+
 	 if(gsm.introStart)
 	 {
 		 if(_r > 0) _r -= 0.6*dy;
@@ -118,12 +135,23 @@ public class BlokkGame implements ApplicationListener {
 	      }
    }
    
+   /**
+    * Gives a created cube it’s texture depend on his boolean tree structure
+    *
+    * @param typeOne file Boolean which decides if it is a movable cube or black block
+    * @param typeTwo boolean that decides what kind of color the cube is
+    * @return            returns Texture corresponding to it’s boolean structure
+    */
 	private Texture createType(Boolean typeOne, boolean typeTwo) 
 	{
 			if (typeOne == null) return black;
 			return (typeOne ? (typeTwo ? square : circle) : (typeTwo ? triangle : ex));
 	}
 	
+	/**
+	*Breaks the entities update into smaller steps so it wont render out of bounds.
+	* @param dy is the delta time of each frame rendered
+	*/ 
 	public void computeSubStep(float dt) {
 		for(Movable[] rows : Movables) {
 	    	  for (Movable m1 : rows) {
@@ -133,6 +161,12 @@ public class BlokkGame implements ApplicationListener {
 	    	  }
 	      }
 	  }
+	
+	/**
+	* Creates a new cube on a timed interval. It’s type is randomed. This method is a temporaty solution for spawning cubes in debugging mode
+	*
+	* @return            a new cube of some sort is created and placed in the grid
+	*/
 	private void spawnMovable() {
 		  
 		  Movable movable;
