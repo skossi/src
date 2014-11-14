@@ -1,5 +1,6 @@
 package states;
 import managers.GameStateManager;
+import managers.RectangleManager;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //Class by Óttar Guðmundsson
@@ -14,10 +15,10 @@ public abstract class Gamestate {
 	protected Gamestate(GameStateManager gsm)
 	{
 		this.gsm = gsm;
-		init();
+		
 	}
 	//The initation of each state machine. Each state holds it owns initiation parameters to create needed entites
-	public abstract void init();
+	public abstract void init(RectangleManager RectMana);
 	//update each state with parameter float dt which is passed from the main game screen
 	public abstract void update(float dt);
 	//render each state with parameter Spritebatch b which is created and passed from the main game screen

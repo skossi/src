@@ -1,21 +1,21 @@
 package states;
 
 import managers.GameStateManager;
+import managers.RectangleManager;
 
 import com.badlogic.gdx.Gdx;
-//import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+//import com.badlogic.gdx.audio.Sound;
 //Class by Óttar Guðmundsson
 //Written 30.10.2014
 //Creates a new state when score is viewed
 public class Scorestate extends Gamestate {
 
-	   private Rectangle Back;
-	   private Rectangle ScoreLogo;
-	   private Texture BackTex;
-	   private Texture ScoreLogoTex;
+	   private RectTex Back;
+	   private RectTex Score;
+	   private RectangleManager RectMana;
 	   
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -24,8 +24,9 @@ public class Scorestate extends Gamestate {
 		super(gsm);
 	}
 	//See abstrakt class Gamestate init();
-	public void init()
+	public void init(RectangleManager RectMan)
 	{
+		RectMana = RectMan;
 		/*
 		 * DÆMI UM VISTUN Á GILDUM - þurfum að skoða shared preferences
 		Preferences prefs = Gdx.app.getPreferences("My Preferences");
@@ -37,23 +38,8 @@ public class Scorestate extends Gamestate {
 		
 		prefs.flush(); // kalla á þegar við ætlum að update-a
 		*/
-		
-		  
-		  ScoreLogoTex = new Texture(Gdx.files.internal("logo_score.png"));
-		  
-		  ScoreLogo = new Rectangle();
-		  ScoreLogo.width = ScoreLogoTex.getWidth();
-		  ScoreLogo.height = ScoreLogoTex.getHeight();
-		  ScoreLogo.x = 480 /2 - ScoreLogo.width / 2; 
-		  ScoreLogo.y = 700;
-	      
-		  BackTex = new Texture(Gdx.files.internal("back.png"));
-		  
-	      Back = new Rectangle();
-	      Back.width = BackTex.getWidth();
-	      Back.height = BackTex.getHeight();
-	      Back.x = 480 * 0.75f - Back.width / 2; 
-	      Back.y = 20;
+		Score = RectMana.Score;
+		Back = RectMana.Back;
 	      
 	}
 	//See abstrakt class Gamestate update(float dt);
@@ -64,8 +50,8 @@ public class Scorestate extends Gamestate {
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		batch.draw(BackTex, Back.x, Back.y);
-		batch.draw(ScoreLogoTex, ScoreLogo.x, ScoreLogo.y);
+		batch.draw(Back.tex, Back.x, Back.y);
+		batch.draw(Score.tex, Score.x, Score.y);
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
@@ -75,7 +61,7 @@ public class Scorestate extends Gamestate {
 	}
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position
-	public boolean buttonClick(Rectangle rekt, float x, float y) {
+	public boolean buttonClick(RectTex rekt, float x, float y) {
 		if (x < (rekt.x + rekt.width) && x > rekt.x && y > rekt.y && y < (rekt.y + rekt.height)) return true;
 		return false;
 	}

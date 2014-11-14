@@ -1,15 +1,13 @@
 package states;
 
-import com.blokk.game.Movable;
+import managers.GameStateManager;
+import managers.RectangleManager;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.TimeUtils;
-
-import managers.GameStateManager;
+import com.blokk.game.Movable;
 //Class by Óttar Guðmundsson
 //Written 30.10.2014
 //Creates a new state when user is playing
@@ -31,6 +29,8 @@ public class Playstate extends Gamestate{
 	   private Texture selected;
 	   private boolean isSelected;
 	   private int steps;
+	   //private RectangleAdd RectangleManager;
+	   private RectangleManager RectMana;
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
 	public Playstate(GameStateManager gsm)
@@ -38,8 +38,9 @@ public class Playstate extends Gamestate{
 		super(gsm);
 	}
 	//See abstrakt class Gamestate init();
-	public void init()
+	public void init(RectangleManager RectMan)
 	{
+		RectMana = RectMan;
 	      size = 64;
 	      steps = size; //pixel perfect updating
 	      columns = 7;

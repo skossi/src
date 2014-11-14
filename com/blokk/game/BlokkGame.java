@@ -1,9 +1,11 @@
 package com.blokk.game;
 
 import managers.GameStateManager;
+import managers.RectangleManager;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,13 +16,17 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 
 public class BlokkGame implements ApplicationListener {
-	
 
    private SpriteBatch batch;
    private OrthographicCamera camera;
    private float dy;
    
    private GameStateManager gsm;
+   private RectangleManager rsm;
+   
+   private float _r;
+   private float _b;
+   private float _g;
 
    //BACKGROUND
      private Movable[][] Movables;
@@ -40,7 +46,8 @@ public class BlokkGame implements ApplicationListener {
       camera = new OrthographicCamera();
       camera.setToOrtho(false, 480, 800);
       batch = new SpriteBatch();
-      gsm = new GameStateManager();
+      rsm = new RectangleManager();
+      gsm = new GameStateManager(rsm);
       
       size = 64;
       steps = size; //pixel perfect updating
@@ -53,11 +60,15 @@ public class BlokkGame implements ApplicationListener {
 	  ex = new Texture(Gdx.files.internal("ex.png"));
 	  black = new Texture(Gdx.files.internal("black.png"));
 	  lastDropTime = TimeUtils.nanoTime();
+	  
+	  _r = 1f;//0.43f;
+	  _g = 178/255f;//0.5f;
+	  _b = 0;//0.2f;
    }
    
    @Override
    public void render() {
-      Gdx.gl.glClearColor(0.43f, 0.5f, 0.2f, 1);
+      Gdx.gl.glClearColor(_r, _g, _b, 1);
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
       
       dy = Gdx.graphics.getDeltaTime()/3;
@@ -92,13 +103,17 @@ public class BlokkGame implements ApplicationListener {
    {
 	 if (TimeUtils.nanoTime() - lastDropTime > 900000000 && !gsm.introStart) spawnMovable();
 	 		for (int i = 0; i < steps; i++) computeSubStep(dy/steps);
-	 	
+	 if(gsm.introStart)
+	 {
+		 if(_r > 0) _r -= 0.6*dy;
+		 if(_g > 0) _g -= 0.25*dy;
+		// if(_g > 0) _g -= 0.4*dy;
+	 }
 	   
 	   for(int i = 0; i < columns; i++) {
 	    	  for (int j = 0; j < rows; j++) {
 	    		  Movable m = Movables[i][j];
-	    		  if (m != null && !(m.speed == 0)) batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); // afhverju ekki m.type hér?
-	    		  else if (m != null && m.speed == 0) batch.draw(createType(m.typeOne,m.typeTwo), i*65, j*65);
+	    		  if (m != null) batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); // afhverju ekki m.type hér?
 	    	  }
 	      }
    }

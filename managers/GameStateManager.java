@@ -1,9 +1,8 @@
 package managers;
 
 import states.Gamestate;
-
-import states.Playstate;
 import states.Menustate;
+import states.Playstate;
 import states.Scorestate;
 import states.Tutorialstate;
 
@@ -21,10 +20,14 @@ public class GameStateManager{
 	
 	public boolean introStart;
 	public boolean introEnd;
+	//public RectangleAdd RectMan = new RectangleAdd();
+	private RectangleManager RectMana;
+	
 	
 	//initation of the gamestate manager. Called when a new manager is created and sets to starting state
-	public GameStateManager()
+	public GameStateManager(RectangleManager rsm)
 	{
+		RectMana = rsm;
 		setState(MENU);
 	}
 	//Takes in parameter static final int state which stands for each 
@@ -35,6 +38,8 @@ public class GameStateManager{
 		if(state == PLAY) gameState = new Playstate(this);
 		if(state == SCORE) gameState = new Scorestate(this);
 		if(state == TUTORIAL) gameState = new Tutorialstate(this);
+		
+		gameState.init(RectMana);
 	}
 	//update each state with parameter float dt which is passed from the main game screen
 	public void update(float dt)
