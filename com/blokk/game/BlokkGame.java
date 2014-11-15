@@ -1,6 +1,7 @@
 package com.blokk.game;
 
 import managers.GameStateManager;
+import managers.MyInputProcessor;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -69,7 +70,7 @@ public class BlokkGame implements ApplicationListener {
    */
    @Override
    public void render() {
-      Gdx.gl.glClearColor(0.43f, 0.5f, 0.2f, 1);
+      Gdx.gl.glClearColor(0.2f, 0.3f, 0.1f, 1);
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
       
       dy = Gdx.graphics.getDeltaTime()/3;
@@ -83,6 +84,9 @@ public class BlokkGame implements ApplicationListener {
       if(!gsm.introEnd) spawnBackground();
       gsm.draw(batch);
       batch.end();
+      
+      MyInputProcessor inputProcessor = new MyInputProcessor();
+      Gdx.input.setInputProcessor(inputProcessor);
       
       if (Gdx.input.justTouched()) {
     	  
