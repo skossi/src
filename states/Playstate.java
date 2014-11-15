@@ -10,11 +10,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.blokk.game.Movable;
 import com.blokk.game.UI;
-<<<<<<< HEAD
-//Class by ï¿½ttar Guï¿½mundsson
-=======
+
 //Class by Óttar Guðmundsson
->>>>>>> 6a80216796d78dadc84f304508555697708ab07e
 //Written 30.10.2014
 //Creates a new state when user is playing
 public class Playstate extends Gamestate{
