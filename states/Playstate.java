@@ -2,12 +2,17 @@ package states;
 
 import managers.GameStateManager;
 
+import managers.RectangleManager;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.blokk.game.Movable;
 import com.blokk.game.UI;
+
 //Class by Óttar Guðmundsson
 //Written 30.10.2014
 //Creates a new state when user is playing
@@ -29,8 +34,11 @@ public class Playstate extends Gamestate{
 	   private Texture selected;
 	   private Texture ui_bg;
 	   private int steps;
-	   private UI UI;
+	   private RectangleManager RectMana;
 
+	   private Texture ui_bg;
+	   private UI UI;
+	   private BitmapFont font;
 	   // public static so we can access it from the input processor
 	   public static boolean isSelected;
 	//Constructor
@@ -40,8 +48,9 @@ public class Playstate extends Gamestate{
 		super(gsm);
 	}
 	//See abstrakt class Gamestate init();
-	public void init()
+	public void init(RectangleManager RectMan)
 	{
+		RectMana = RectMan;
 	      size = 64;
 	      steps = size; //pixel perfect updating
 	      columns = 7;
@@ -54,13 +63,14 @@ public class Playstate extends Gamestate{
 		  black = new Texture(Gdx.files.internal("black.png"));
 		  selected = new Texture(Gdx.files.internal("selected.png"));
 		  ui_bg = new Texture(Gdx.files.internal("ui_bg.png"));
-		  
-		  UI = new UI((size+1)*7, 0, 480-(size+1)*7, 800);
-	      //spawnMovable();
+		  UI = new UI(0, 0, 480, 64);
+		  font = new BitmapFont();
+	      font.setColor(Color.BLACK);
+	      font.setScale(2,2);
 		  prepareMatrix();
 	}
 	/**
-   * Creates a new cube on a timed interval. It’s type is randomed. This method is a temporary solution for spawning cubes in debugging mode
+   * Creates a new cube on a timed interval. Itï¿½s type is randomed. This method is a temporary solution for spawning cubes in debugging mode
    *
    * @return            a new cube of some sort is created and placed in the grid
    */
@@ -106,7 +116,7 @@ public class Playstate extends Gamestate{
 		   movable.type = createType(movable.typeOne, movable.typeTwo);
 		   
 	       movable.row = 0;
-	       movable.y = -(size+1);
+	       movable.y = 1;
 	       movable.speed = 0;
 	       movable.width = size;
 	       movable.height = size;
@@ -116,12 +126,17 @@ public class Playstate extends Gamestate{
 	   }
    }
    
+   public void handleOutOfBounds(Movable m1){
+	   if (m1.y > 800){
+		   Movables[m1.col][m1.row] = null;
+	   }
+   }
    /**
    * Gives a created cube its texture depend on his boolean tree structure    
    * 
    * @param typeOne file Boolean which decides if it is a movable cube or black block
    * @param typeTwo boolean that decides what kind of color the cube is
-   * @return            returns Texture corresponding to it’s boolean structure
+   * @return            returns Texture corresponding to itï¿½s boolean structure
    */   
 	private Texture createType(Boolean typeOne, boolean typeTwo) 
 	{
@@ -135,18 +150,20 @@ public class Playstate extends Gamestate{
 		if (TimeUtils.nanoTime() - lastDropTime > 900000000) spawnMovable();
 		for (int i = 0; i < steps; i++) computeSubStep(dt/steps);
 	}
-	//See abstrakt class Gamestate draw(SpriteBatch b);
+	//See abstract class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
 	      for(int i = 0; i < columns; i++) {
 	    	  for (int j = 0; j < rows; j++) {
 	    		  Movable m = Movables[i][j];
-	    		  if (m != null) batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); // afhverju ekki m.type hér?
+	    		  if (m != null) batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); // afhverju ekki m.type hï¿½r?
 	    		  //else if (m != null && m.speed == 0) batch.draw(createType(m.typeOne,m.typeTwo), i*65, j*65);
 	    	  }
 	      }
 	      if(isSelected)batch.draw(selected, selectedX-size/2, selectedY-size/2);
 	      batch.draw(ui_bg, UI.x, UI.y, UI.width, UI.height);
+		font.draw(batch, "1 2 3 4 5 6 7 8 9", 120, 50);
+
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
@@ -188,6 +205,7 @@ public class Playstate extends Gamestate{
 				  }
     		  }
         	  m1.update(dy);
+        	  handleOutOfBounds(m1);
     	  }
       }
 	}
@@ -298,7 +316,7 @@ public void shootRows(int index, int count, int row, boolean isBeingThrusted){
    }
 	   
   /**
-   *Finds out if the moved block was indeed the same color is the one moved in it’s direction
+   *Finds out if the moved block was indeed the same color is the one moved in itï¿½s direction
    * @param m1 A moved Movable block by the user
    * @param typeOne lets the method know what kind of cube it is.
    * @param typeOne lets the method know what kind of cube it is.
@@ -310,7 +328,7 @@ public void shootRows(int index, int count, int row, boolean isBeingThrusted){
    }
 	   
    /**
-   *Passes the x,y coordinates of the screen on to it’s chiled methods to find out if the player is  *indeed clicking at a cube.
+   *Passes the x,y coordinates of the screen on to itï¿½s chiled methods to find out if the player is  *indeed clicking at a cube.
    * @param x X-coordinates of the screen
    * @param y Y-coordinates of the screen
    */
