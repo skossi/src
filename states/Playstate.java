@@ -10,7 +10,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.blokk.game.Movable;
 import com.blokk.game.UI;
+<<<<<<< HEAD
 //Class by �ttar Gu�mundsson
+=======
+//Class by �ttar Gu�mundsson
+>>>>>>> 6a80216796d78dadc84f304508555697708ab07e
 //Written 30.10.2014
 //Creates a new state when user is playing
 public class Playstate extends Gamestate{
@@ -29,12 +33,13 @@ public class Playstate extends Gamestate{
 	   private Texture ex;
 	   private Texture black;
 	   private Texture selected;
-	   private boolean isSelected;
+	   private Texture ui_bg;
 	   private int steps;
 	   private Texture ui_bg;
 	   private UI UI;
 	   private BitmapFont font;
-	   
+	   // public static so we can access it from the input processor
+	   public static boolean isSelected;
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
 	public Playstate(GameStateManager gsm)
@@ -56,12 +61,10 @@ public class Playstate extends Gamestate{
 		  black = new Texture(Gdx.files.internal("black.png"));
 		  selected = new Texture(Gdx.files.internal("selected.png"));
 		  ui_bg = new Texture(Gdx.files.internal("ui_bg.png"));
-		  
 		  UI = new UI(0, 0, 480, 64);
 		  font = new BitmapFont();
 	      font.setColor(Color.BLACK);
 	      font.setScale(2,2);
-		  //spawnMovable();
 		  prepareMatrix();
 	}
 	/**
@@ -157,7 +160,7 @@ public class Playstate extends Gamestate{
 	      }
 	      if(isSelected)batch.draw(selected, selectedX-size/2, selectedY-size/2);
 	      batch.draw(ui_bg, UI.x, UI.y, UI.width, UI.height);
-		  font.draw(batch, "1 2 3 4 5 6 7 8 9", 120, 50);
+		font.draw(batch, "1 2 3 4 5 6 7 8 9", 120, 50);
 
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
@@ -171,13 +174,13 @@ public class Playstate extends Gamestate{
 		  
 		selectedX = column*65 + size/2;
 		selectedY = row*65 + size/2;
-		isSelected = true;      
+		
+		isSelected = true;
 	}
 	//See abstrakt class Gamestate isTouched(x,y);
 	public void isTouched(float x, float y)
 	{
-	      findMovable(x, y);
-	      isSelected = true;
+	      if (isSelected) findMovable(x, y);
 	}
 	 /**
    *Breaks the entities update into smaller steps so it wont render out of bounds.
@@ -293,6 +296,7 @@ public class Playstate extends Gamestate{
 
 public void shootRows(int index, int count, int row, boolean isBeingThrusted){
 	   System.out.println("Shooting!");
+	   isSelected = false;
 	   if(isBeingThrusted){
 		   //Vantar hér lógík til að skjóta platforminu alla leið upp
 	   }
