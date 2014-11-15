@@ -35,8 +35,6 @@ public class Playstate extends Gamestate{
 	   private Texture ui_bg;
 	   private int steps;
 	   private RectangleManager RectMana;
-
-	   private Texture ui_bg;
 	   private UI UI;
 	   private BitmapFont font;
 	   // public static so we can access it from the input processor
