@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.blokk.game.Movable;
 import com.blokk.game.UI;
 
-//Class by Óttar Guðmundsson
+//Class by ï¿½ttar Guï¿½mundsson
 //Written 30.10.2014
 //Creates a new state when user is playing
 public class Playstate extends Gamestate{
@@ -35,8 +35,6 @@ public class Playstate extends Gamestate{
 	   private Texture ui_bg;
 	   private int steps;
 	   private RectangleManager RectMana;
-
-	   private Texture ui_bg;
 	   private UI UI;
 	   private BitmapFont font;
 	   // public static so we can access it from the input processor
