@@ -2,6 +2,7 @@ package com.blokk.game;
 
 import managers.GameStateManager;
 import com.badlogic.gdx.audio.Music;
+import managers.MyInputProcessor;
 import managers.RectangleManager;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -99,6 +100,9 @@ public class BlokkGame implements ApplicationListener {
       if(!gsm.introEnd) spawnBackground();
       gsm.draw(batch);
       batch.end();
+      
+      MyInputProcessor inputProcessor = new MyInputProcessor();
+      Gdx.input.setInputProcessor(inputProcessor);
       
       if (Gdx.input.justTouched()) {
     	  
