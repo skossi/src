@@ -3,10 +3,8 @@ package states;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 //import com.badlogic.gdx.audio.Sound;
 //Class by Óttar Guðmundsson
 //Written 30.10.2014
@@ -16,6 +14,13 @@ public class Scorestate extends Gamestate {
 	   private RectTex Back;
 	   private RectTex Score;
 	   private RectangleManager RectMana;
+	   
+	   private int scoreOne;
+	   private int scoreTwo;
+	   private int scoreThr;
+	   
+	   private BitmapFont font;
+	   
 	   
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -27,19 +32,15 @@ public class Scorestate extends Gamestate {
 	public void init(RectangleManager RectMan)
 	{
 		RectMana = RectMan;
-		/*
-		 * DÆMI UM VISTUN Á GILDUM - þurfum að skoða shared preferences
-		Preferences prefs = Gdx.app.getPreferences("My Preferences");
-		
-		String name = prefs.getString("name", "No name stored");
 
-		prefs.putBoolean("soundOn", true);
-		prefs.putInteger("highscore", 10);
-		
-		prefs.flush(); // kalla á þegar við ætlum að update-a
-		*/
 		Score = RectMana.Score;
 		Back = RectMana.Back;
+		
+		font = RectMana.font;
+		
+		scoreOne = RectMana.one;
+		scoreTwo = RectMana.two;
+		scoreThr = RectMana.thr;
 	      
 	}
 	//See abstrakt class Gamestate update(float dt);
@@ -51,6 +52,9 @@ public class Scorestate extends Gamestate {
 	public void draw(SpriteBatch batch)
 	{
 		batch.draw(Back.tex, Back.x, Back.y);
+		font.draw(batch, "1st : " + scoreOne, 175, 500);
+		font.draw(batch, "2nd : " + scoreTwo, 175, 400);
+		font.draw(batch, "3rd : " + scoreThr, 175, 300);
 		batch.draw(Score.tex, Score.x, Score.y);
 	}
 	

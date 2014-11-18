@@ -2,11 +2,7 @@ package states;
 
 import managers.GameStateManager;
 import managers.RectangleManager;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 //import com.badlogic.gdx.audio.Sound;
 
 //Class by Óttar Guðmundsson
@@ -20,15 +16,10 @@ public class Menustate extends Gamestate {
 	 public RectTex Tutorial;
 	 
 	 private int downSpeed;
-	   
-	 private int width;
-	 private int height;
-	 private int numButtons;
-	 private int[] buttonPos;
-	 private RectTex[] buttons;
 	 public boolean intro;
 	// private RectangleAdd RectangleManager;
 	 private RectangleManager RectMana;
+	 private int speedAdd;
 	   
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -39,23 +30,32 @@ public class Menustate extends Gamestate {
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
-		downSpeed = 600;		
+		
+		gsm.introEnd = false;
+		intro = false;
+			
 		RectMana = RectMan;
+		RectMana.backgroundSpeed = 600;
+		downSpeed = RectMana.backgroundSpeed;	
 		Menu = RectMana.Menu;
 		Play = RectMana.EnterPlay;
 		Score = RectMana.EnterScore;
 		Tutorial = RectMana.EnterTut;
+		speedAdd = 1;
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
 		if(intro)
 		{
-			Menu.y += -downSpeed*dt;
-			Play.y += -downSpeed*dt;
-			Score.y += -downSpeed*dt;
-			Tutorial.y += -downSpeed*dt;
+			RectMana.backgroundSpeed +=speedAdd;
+			downSpeed = RectMana.backgroundSpeed;
+			Menu.y -= downSpeed*dt;
+			Play.y -= downSpeed*dt;
+			Score.y -= downSpeed*dt;
+			Tutorial.y -= downSpeed*dt;
 			if(Menu.y <= -(Menu.height + 64)) setGame();
+			speedAdd +=1;
 		}
 		
 	}
@@ -86,6 +86,7 @@ public class Menustate extends Gamestate {
 	{
 		gsm.setState(GameStateManager.PLAY);
 		gsm.introEnd = true;
+		gsm.introStart = false;
 	}
 	//See abstrakt class Gamestate isTouched(x,y);
 	public void isTouched(float x, float y)

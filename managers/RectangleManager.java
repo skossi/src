@@ -2,16 +2,24 @@ package managers;
 
 import states.RectTex;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Rectangle;
-
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+//Class by Óttar Guðmundsson
+//Written 14.11.2014
+//Creates Manager that was originally supposed to take care of all rectangles for the game.
+//Was changed to be also resource manager 18.11.2014
 public class RectangleManager {
+	
+	public boolean firstTime;
 	
 	//Menu
 	public RectTex Menu;
 	public RectTex EnterPlay;
 	public RectTex EnterScore;
 	public RectTex EnterTut;
+	public int backgroundSpeed;
 	
 	//Tutorial
 	public RectTex Tutorial;
@@ -24,15 +32,90 @@ public class RectangleManager {
 	//Score
 	public RectTex Score;
 	
-	//BackButton
+	//BackButton and GameOver
 	public RectTex Back;
+	public RectTex Over;
+	//preferences
+	private Preferences prefs;
+	//ScoreHolder
+	public int one, two, thr;
+	public boolean grats;
+	
+	//RGB values
+	public float _r;
+	public float _g;
+	public float _b;
+	
+	//Font writing
+	public BitmapFont font;
+	public String betterString;
 	
 	
 	public RectangleManager()
 	{
+		getScores();
 		createButtons();
+		
+		firstTime = prefs.getBoolean("First");
+		
+		_r = 1f;
+		_g = 178/255f;
+		_b = 0;
+		
+		font = new BitmapFont();
+	    font.setColor(Color.BLACK);
+	    font.setScale(2,2);
+	    
+	    betterString = "Congratulations, new score!";
+	}
+	public void firstDone()
+	{
+		firstTime = true;
+		prefs.putBoolean("First",true);
+		prefs.flush();
+		prefs = Gdx.app.getPreferences("My Preferences");
 	}
 	
+	private void getScores()
+	{
+		prefs = Gdx.app.getPreferences("My Preferences");
+		one = prefs.getInteger("One");
+		two = prefs.getInteger("Two");
+		thr = prefs.getInteger("Thr");
+	}
+	
+	public void checkScore(int newScore)
+	{
+		grats = true;
+		getScores();
+		if(newScore >= one)
+		{	
+			prefs.putInteger("One", newScore);
+			prefs.putInteger("Two", one);
+			prefs.putInteger("Thr", two);
+		}
+		else if(newScore >= two)
+		{
+			prefs.putInteger("Two", newScore);
+			prefs.putInteger("Thr", two);
+		}
+		else if(newScore >= thr)
+		{
+			prefs.putInteger("Thr", newScore);
+		}
+		else grats = false;
+		prefs.flush();
+		getScores();
+	}
+	
+	public void resetMenu()
+	{
+		Menu.y = 700;
+		EnterPlay.y = 450;
+		EnterScore.y = 300;
+		EnterTut.y = 150;
+	}
+
 	private void createButtons()
 	{
 		//variable float for temp x,y coordinates
@@ -129,8 +212,13 @@ public class RectangleManager {
 		height = ScoreLogoTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
 		yHolder = 700;
-		Score = new RectTex(xHolder, yHolder, width, height, ScoreLogoTex);
-		
+		Score = new RectTex(xHolder, yHolder, width, height, ScoreLogoTex);	
+		//Game Over Logo
+		Texture OverTex = new Texture(Gdx.files.internal("logo_over.png"));
+		width = OverTex.getWidth();
+		height = OverTex.getHeight();
+		xHolder = 480 /2 - width / 2; 
+		yHolder = 700;
+		Over = new RectTex(xHolder, yHolder, width, height, OverTex);	
 	}
-
 }

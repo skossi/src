@@ -33,10 +33,11 @@ public class Playstate extends Gamestate{
 	   private Texture black;
 	   private Texture selected;
 	   private Texture ui_bg;
+	   private String currScore;
+	   private int score;
 	   private int steps;
 	   private RectangleManager RectMana;
 
-	   private Texture ui_bg;
 	   private UI UI;
 	   private BitmapFont font;
 	   // public static so we can access it from the input processor
@@ -50,6 +51,7 @@ public class Playstate extends Gamestate{
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
+		
 		RectMana = RectMan;
 	      size = 64;
 	      steps = size; //pixel perfect updating
@@ -64,9 +66,9 @@ public class Playstate extends Gamestate{
 		  selected = new Texture(Gdx.files.internal("selected.png"));
 		  ui_bg = new Texture(Gdx.files.internal("ui_bg.png"));
 		  UI = new UI(0, 0, 480, 64);
-		  font = new BitmapFont();
-	      font.setColor(Color.BLACK);
-	      font.setScale(2,2);
+		  font = RectMana.font;
+	      score = 0;
+	      currScore = "0";
 		  prepareMatrix();
 	}
 	/**
@@ -129,7 +131,10 @@ public class Playstate extends Gamestate{
    public void handleOutOfBounds(Movable m1){
 	   if (m1.y > 800){
 		   Movables[m1.col][m1.row] = null;
+		   score += 10;
+		   currScore = Integer.toString(score);
 	   }
+	   
    }
    /**
    * Gives a created cube its texture depend on his boolean tree structure    
@@ -162,12 +167,12 @@ public class Playstate extends Gamestate{
 	      }
 	      if(isSelected)batch.draw(selected, selectedX-size/2, selectedY-size/2);
 	      batch.draw(ui_bg, UI.x, UI.y, UI.width, UI.height);
-		font.draw(batch, "1 2 3 4 5 6 7 8 9", 120, 50);
+	      font.draw(batch, "Score : " + currScore, 120, 50);
 
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
-	{
+	{	
 		selectedX = x;
 		selectedY =y;
 		  
@@ -178,12 +183,14 @@ public class Playstate extends Gamestate{
 		selectedY = row*65 + size/2;
 		
 		isSelected = true;
+		
 	}
 	//See abstrakt class Gamestate isTouched(x,y);
 	public void isTouched(float x, float y)
 	{
 	      if (isSelected) findMovable(x, y);
 	}
+	
 	 /**
    *Breaks the entities update into smaller steps so it wont render out of bounds.
    * @param dy is the delta time of each frame rendered
@@ -392,4 +399,11 @@ public void shootRows(int index, int count, int row, boolean isBeingThrusted){
 	{
 	
 	}
+	//Saves current score and sets the state to Lost. Called when game is lost
+	public void gameLost()
+	{
+		RectMana.checkScore(score);
+		gsm.setState(GameStateManager.LOST);
+		RectMana.resetMenu();
+	}	
 }

@@ -1,11 +1,11 @@
 package com.blokk.game;
 
 import managers.GameStateManager;
+import com.badlogic.gdx.audio.Music;
 import managers.RectangleManager;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -33,17 +33,18 @@ public class BlokkGame implements ApplicationListener {
    private float _g;
 
    //BACKGROUND
-     private Movable[][] Movables;
-	 private long lastDropTime;
-	 private int rows;
-	 private int columns;
-	 private int size;
-	 private Texture square;
-	 private Texture triangle;
-	 private Texture circle;
-	 private Texture ex;
-	 private Texture black;
-	 private int steps;
+   private Movable[][] Movables;
+   private long lastDropTime;
+   private int rows;
+   private int columns;
+   private int size;
+   private Texture square;
+   private Texture triangle;
+   private Texture circle;
+   private Texture ex;
+   private Texture black;
+   private int steps;
+   private Music mainTheme;
 
    /**
    * Starts the gameloop by opening components from badlogic pack and sets the orthogonal projection of the camera.
@@ -69,9 +70,12 @@ public class BlokkGame implements ApplicationListener {
 	  black = new Texture(Gdx.files.internal("black.png"));
 	  lastDropTime = TimeUtils.nanoTime();
 	  
-	  _r = 1f;//0.43f;
-	  _g = 178/255f;//0.5f;
-	  _b = 0;//0.2f;
+	  mainTheme = Gdx.audio.newMusic(Gdx.files.internal("mainTheme.mp3"));
+
+      // start the playback of the background music immediately
+      mainTheme.setLooping(true);
+      mainTheme.play();
+	  
    }
    
    /**
@@ -80,8 +84,9 @@ public class BlokkGame implements ApplicationListener {
    */
    @Override
    public void render() {
-      Gdx.gl.glClearColor(_r, _g, _b, 1);
+      Gdx.gl.glClearColor(rsm._r, rsm._g, 0, 1);
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
       
       dy = Gdx.graphics.getDeltaTime()/3;
       gsm.update(dy);
@@ -117,14 +122,14 @@ public class BlokkGame implements ApplicationListener {
     */
    public void spawnBackground()
    {
+	 
 	 if (TimeUtils.nanoTime() - lastDropTime > 900000000 && !gsm.introStart) spawnMovable();
 	 		for (int i = 0; i < steps; i++) computeSubStep(dy/steps);
 
 	 if(gsm.introStart)
 	 {
-		 if(_r > 0) _r -= 0.6*dy;
-		 if(_g > 0) _g -= 0.25*dy;
-		// if(_g > 0) _g -= 0.4*dy;
+		 if(rsm._r > 0) rsm._r -= 0.6*dy;
+		 if(rsm._g > 0) rsm._g -= 0.25*dy;
 	 }
 	   
 	   for(int i = 0; i < columns; i++) {
@@ -156,6 +161,7 @@ public class BlokkGame implements ApplicationListener {
 		for(Movable[] rows : Movables) {
 	    	  for (Movable m1 : rows) {
 	    		  if(m1 == null) continue;
+	    		  m1.speed = -rsm.backgroundSpeed;
 	        	  m1.update(dt);
 	        	  if(m1.y <= -size) m1 = null;//m1.y = 850;
 	    	  }

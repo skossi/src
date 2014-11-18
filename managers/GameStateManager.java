@@ -5,6 +5,7 @@ import states.Menustate;
 import states.Playstate;
 import states.Scorestate;
 import states.Tutorialstate;
+import states.Loststate;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //Class by Óttar Guðmundsson
@@ -17,6 +18,7 @@ public class GameStateManager{
 	public static final int PLAY = 1;
 	public static final int SCORE = 2;
 	public static final int TUTORIAL = 3;
+	public static final int LOST = 4;
 	
 	public boolean introStart;
 	public boolean introEnd;
@@ -28,7 +30,9 @@ public class GameStateManager{
 	public GameStateManager(RectangleManager rsm)
 	{
 		RectMana = rsm;
-		setState(MENU);
+		if(rsm.firstTime)setState(MENU);
+		else setState(TUTORIAL);
+		
 	}
 	//Takes in parameter static final int state which stands for each 
 	public void setState(int state)
@@ -38,6 +42,7 @@ public class GameStateManager{
 		if(state == PLAY) gameState = new Playstate(this);
 		if(state == SCORE) gameState = new Scorestate(this);
 		if(state == TUTORIAL) gameState = new Tutorialstate(this);
+		if(state == LOST) gameState = new Loststate(this);
 		
 		gameState.init(RectMana);
 	}
@@ -45,7 +50,6 @@ public class GameStateManager{
 	public void update(float dt)
 	{
 		gameState.update(dt);
-		
 	}
 
 	//render each state with parameter Spritebatch b which is created and passed from the main game screen

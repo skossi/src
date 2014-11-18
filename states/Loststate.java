@@ -2,27 +2,29 @@ package states;
 
 import managers.GameStateManager;
 import managers.RectangleManager;
-
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-//Class by Óttar Guðmundsson
-//Written 30.10.2014
-//Creates a new state when tutorial is viewed
-public class Tutorialstate extends Gamestate {
 
-	 private RectTex Back;
-	 private RectTex Tutorial;
-	 private RectTex Info;
-	 private RectTex ObjBar;
-	 private RectTex CtrBar;
-	 private RectTex ScrBar;
-	 private int infoDisp;
+//import com.badlogic.gdx.audio.Sound;
+//Class by Óttar Guðmundsson
+//Written 14.11.2014
+//Creates a new state when game is lost
+public class Loststate extends Gamestate{
+
+	private RectTex GameOver;
+	private RectTex Back;
+	private RectangleManager RectMana;
+	private boolean higher;
+	private int scoreOne;
+	private int scoreTwo;
+	private int scoreThr;
 	
-	 private Texture[] infoTex;
-	 private RectangleManager RectMana;
+	private BitmapFont font;
+	private String better;
+	
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
-	public Tutorialstate(GameStateManager gsm)
+	public Loststate(GameStateManager gsm)
 	{	
 		super(gsm);
 	}
@@ -30,42 +32,41 @@ public class Tutorialstate extends Gamestate {
 	public void init(RectangleManager RectMan)
 	{
 		RectMana = RectMan;
-		Tutorial = RectMana.Tutorial;
-		Info = RectMana.Info;
-		ObjBar = RectMana.ObjBar;
-		CtrBar = RectMana.CtrBar;
-		ScrBar = RectMana.ScrBar;
-		
-		infoTex = RectMana.infoTex;
-		infoDisp = 3;
-		
-		if(!RectMana.firstTime)RectMana.firstDone();
-		
+
+		GameOver = RectMana.Over;
 		Back = RectMana.Back;
+		
+		higher = RectMana.grats;
+		scoreOne = RectMana.one;
+		scoreTwo = RectMana.two;
+		scoreThr = RectMana.thr;
+		
+		font = RectMana.font;
+		better = RectMana.betterString;
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		
+		if(RectMana._r < 1) RectMana._r += dt;
+		if(RectMana._g < 0.7) RectMana._g += dt;
 	}
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		batch.draw(Back.tex,Back.x,Back.y);
-		batch.draw(Tutorial.tex, Tutorial.x, Tutorial.y);
-		batch.draw(ObjBar.tex, ObjBar.x, ObjBar.y);
-		batch.draw(CtrBar.tex, CtrBar.x, CtrBar.y);
-		batch.draw(ScrBar.tex, ScrBar.x, ScrBar.y);
-		batch.draw(infoTex[infoDisp], Info.x, Info.y);
+		batch.draw(GameOver.tex, GameOver.x, GameOver.y);
+		if(higher)font.draw(batch,better , 60, 625);
+		
+		font.draw(batch, "1st : " + scoreOne, 175, 500);
+		font.draw(batch, "2nd : " + scoreTwo, 175, 400);
+		font.draw(batch, "3rd : " + scoreThr, 175, 300);
+		
+		batch.draw(Back.tex, Back.x, Back.y);
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
 		if(buttonClick(Back,x,y)) gsm.setState(GameStateManager.MENU);
-		if(buttonClick(ObjBar,x,y)) infoDisp = 0;
-		if(buttonClick(CtrBar,x,y)) infoDisp = 1;
-		if(buttonClick(ScrBar,x,y)) infoDisp = 2;
 	}
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position
