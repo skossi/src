@@ -29,7 +29,7 @@ public class Movable {
 	* @param isMovable A boolean which decides if the block is movable by the user
 	*/
 	public Movable(boolean isMovable) {
-		col = randomizeSlot();
+//		col = randomizeSlot();
 		
 		if (isMovable) {
 			typeOne = randomizeType();
@@ -69,7 +69,7 @@ public class Movable {
  	*/
 	public void update(float dy) {	
 		
-		if(System.currentTimeMillis() - timeThrusted > 1000 && isBeingThrusted){
+		if(System.currentTimeMillis() - timeThrusted > 2000 && isBeingThrusted){
 			isBeingThrusted = false;
 			speed = -600;
 			//breytum týpum svo þetta fari ekki að haga sér illa

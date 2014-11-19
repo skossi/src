@@ -21,7 +21,7 @@ public class GameStateManager{
 	public static final int LOST = 4;
 	
 	public boolean introStart;
-	public boolean introEnd;
+	public boolean introEnd = true;
 	//public RectangleAdd RectMan = new RectangleAdd();
 	private RectangleManager RectMana;
 	

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.blokk.game.Movable;
 import com.blokk.game.UI;
@@ -36,13 +37,12 @@ public class Playstate extends Gamestate{
 	   private String currScore;
 	   private int score;
 	   private int steps;
-
 	   private Texture redline;
-	   private int steps;
 	   private RectangleManager RectMana;
 	   private UI UI;
 	   private BitmapFont font;
 	   private Movable selectedM;
+	   private long lastWave;
 	   // public static so we can access it from the input processor
 	   public static boolean isSelected;
 	//Constructor
@@ -69,7 +69,7 @@ public class Playstate extends Gamestate{
 		  selected = new Texture(Gdx.files.internal("selected.png"));
 		  ui_bg = new Texture(Gdx.files.internal("ui_bg.png"));
 		  redline = new Texture(Gdx.files.internal("redline.png"));
-		  
+		  lastWave = 0;
 		  UI = new UI(0, 0, 480, 64);
 		  font = RectMana.font;
 	      score = 0;
@@ -81,17 +81,12 @@ public class Playstate extends Gamestate{
    *
    * @return            a new cube of some sort is created and placed in the grid
    */
-   private void spawnMovable() {
+   private void spawnMovable(int col) {
 		  Movable movable;
-		  double randomize = Math.random();
-		  if (randomize < 1) {
-			  movable = new Movable(true);
-			  movable.type = createType(movable.typeOne, movable.typeTwo);
-		  }
-		  else {
-			  movable = new Movable(false);
-			  movable.type = createType(movable.typeOne, movable.typeTwo);
-		  }
+
+		  movable = new Movable(true);
+	      movable.col = col;
+		  movable.type = createType(movable.typeOne, movable.typeTwo);
 		  
 		  if (Movables[movable.col][rows-1] != null) return;
 		  
@@ -112,6 +107,12 @@ public class Playstate extends Gamestate{
 		  Movables[movable.col][available_row] = movable;
 	      lastDropTime = TimeUtils.nanoTime();
 	   }
+   
+   private void spawnWave() {
+	   for(int j = 0; j < columns; j++){
+		   spawnMovable(j);
+	   }
+   }
 	 /**
    * Prepares the Movables matrix by adding a row of immovable blocks below the screen for collision purposes    
    * 
@@ -157,7 +158,11 @@ public class Playstate extends Gamestate{
 	public void update(float dt)
 	{
 		if (isPaused) return;
-		if (TimeUtils.nanoTime() - lastDropTime > 900000000) spawnMovable();
+		if(System.currentTimeMillis() - lastWave > 15000){
+			lastWave = System.currentTimeMillis();
+			spawnWave();
+		} else if (TimeUtils.nanoTime() - lastDropTime > 900000000) spawnMovable(MathUtils.random(0, 6));
+		
 		for (int i = 0; i < steps; i++) computeSubStep(dt/steps);
 	}
 	//See abstract class Gamestate draw(SpriteBatch b);
@@ -167,7 +172,6 @@ public class Playstate extends Gamestate{
 	    	  for (int j = 0; j < rows; j++) {
 	    		  Movable m = Movables[i][j];
 	    		  if (m != null) batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); // afhverju ekki m.type h�r?
-	    		  //else if (m != null && m.speed == 0) batch.draw(createType(m.typeOne,m.typeTwo), i*65, j*65);
 	    	  }
 	      }
 	      if(isSelected)batch.draw(selected, selectedX-size/2, selectedY-size/2);
@@ -207,6 +211,7 @@ public class Playstate extends Gamestate{
 				  if (Movables[m1.col][m1.row-1] != null && m1 != Movables[m1.col][m1.row-1] && m1.intersects(Movables[m1.col][m1.row-1])) {
 					  Movable m2 = Movables[m1.col][m1.row-1];
 					  m1.speed = m2.speed;
+					  if(m1.row == 11) gameLost();
 					  if(m1.speed>0){
 	    				  m1.isBeingThrusted = true;
 	    				  m1.timeThrusted = m2.timeThrusted;
@@ -312,7 +317,7 @@ public class Playstate extends Gamestate{
 	   
 
 public void shootRows(int index, int count, int row, boolean isBeingThrusted){
-	   System.out.println("Shooting!");
+//	   System.out.println("Shooting!");
 	   isSelected = false;
 	   if(isBeingThrusted){
 		   //Vantar hér lógík til að skjóta platforminu alla leið upp
@@ -321,10 +326,10 @@ public void shootRows(int index, int count, int row, boolean isBeingThrusted){
 		   for (int i = row; i < rows; i++){
 			   if(Movables[j][i] != null) {
 				   if(Movables[j][i].speed < 0) continue;
-				   Movables[j][i].speed = 400;
+				   Movables[j][i].speed = 700;
 			       Movables[j][i].timeThrusted = System.currentTimeMillis();   
 			       Movables[j][i].isBeingThrusted = true;
-				   System.out.println("blokk: " + Movables[j][i].row + ", " + Movables[j][i].col + ", " + Movables[j][i].speed);   
+//				   System.out.println("blokk: " + Movables[j][i].row + ", " + Movables[j][i].col + ", " + Movables[j][i].speed);   
 			   }
 		   }
 	   }
@@ -460,10 +465,10 @@ public void shootRows(int index, int count, int row, boolean isBeingThrusted){
 	   Movable temp1 = new Movable(selectedM);
 	   Movable temp2 = new Movable(m2);
 	   
-	   System.out.println("SWAPMOVABLES");
+//	   System.out.println("SWAPMOVABLES");
 //	   System.out.println("m1.row: " + m1.row);
-	   System.out.println("row " + row);
-	   System.out.println("--------------");
+//	   System.out.println("row " + row);
+//	   System.out.println("--------------");
 	   
 	   Movables[col][row] = temp2;
 	   Movables[col][row+add] = temp1;

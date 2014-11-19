@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -181,6 +182,7 @@ public class BlokkGame implements ApplicationListener {
 		  
 		  Movable movable;
 		  movable = new Movable(true);
+		  movable.col = MathUtils.random(0, 6);
 		  movable.type = createType(movable.typeOne, movable.typeTwo);
 		  
 	      int available_row = 0;
