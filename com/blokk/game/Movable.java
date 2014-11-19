@@ -21,6 +21,7 @@ public class Movable {
 	public float height;
 	public boolean isMovable;
 	public long timeThrusted;
+	public long timeBlacked;
 	public boolean isBeingThrusted;
 	
 	/**	
@@ -57,6 +58,9 @@ public class Movable {
 		width = m.width;
 		height = m.height;
 		isMovable = m.isMovable;
+		timeThrusted = m.timeThrusted;
+		isBeingThrusted = m.isBeingThrusted;
+		timeBlacked = Long.MAX_VALUE;
 	}
 	
 	/**
@@ -70,10 +74,15 @@ public class Movable {
 			speed = -600;
 			//breytum týpum svo þetta fari ekki að haga sér illa
 			//semsagt skjótast upp aftur og aftur
-			typeOne = null;
 //			typeTwo = randomizeType();
 			
 		}
+		if(System.currentTimeMillis() - timeBlacked > 15000){
+			typeOne = randomizeType();
+			typeTwo = randomizeType();
+			timeBlacked = Long.MAX_VALUE;
+		}
+			
 		y += speed*dy;
 		
 		return;

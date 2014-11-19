@@ -33,10 +33,12 @@ public class Playstate extends Gamestate{
 	   private Texture black;
 	   private Texture selected;
 	   private Texture ui_bg;
+	   private Texture redline;
 	   private int steps;
 	   private RectangleManager RectMana;
 	   private UI UI;
 	   private BitmapFont font;
+	   private Movable selectedM;
 	   // public static so we can access it from the input processor
 	   public static boolean isSelected;
 	//Constructor
@@ -61,6 +63,8 @@ public class Playstate extends Gamestate{
 		  black = new Texture(Gdx.files.internal("black.png"));
 		  selected = new Texture(Gdx.files.internal("selected.png"));
 		  ui_bg = new Texture(Gdx.files.internal("ui_bg.png"));
+		  redline = new Texture(Gdx.files.internal("redline.png"));
+		  
 		  UI = new UI(0, 0, 480, 64);
 		  font = new BitmapFont();
 	      font.setColor(Color.BLACK);
@@ -160,22 +164,22 @@ public class Playstate extends Gamestate{
 	      }
 	      if(isSelected)batch.draw(selected, selectedX-size/2, selectedY-size/2);
 	      batch.draw(ui_bg, UI.x, UI.y, UI.width, UI.height);
-		font.draw(batch, "1 2 3 4 5 6 7 8 9", 120, 50);
+	      batch.draw(redline, 0, 720);
+	      font.draw(batch, "1 2 3 4 5 6 7 8 9", 120, 50);
 
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
-		selectedX = x;
-		selectedY =y;
-		  
-		int row = (int)(selectedY/size);
-		int column = (int)(selectedX/size);
+		int row = (int)(y/size);
+		int column = (int)(x/size);
 		  
 		selectedX = column*65 + size/2;
 		selectedY = row*65 + size/2;
 		
 		isSelected = true;
+	
+		selectedM = locateMovable(x, y);
 	}
 	//See abstrakt class Gamestate isTouched(x,y);
 	public void isTouched(float x, float y)
@@ -288,6 +292,11 @@ public class Playstate extends Gamestate{
 //		   for(int j = index; j < index+count; j++){
 //			   Movables[j][row].type = circle;
 //		   }
+		   for(int j = index; j < index+count; j++){
+				Movables[j][row].typeOne = null;
+				Movables[j][row].timeBlacked = System.currentTimeMillis();
+
+		   }
 		   shootRows(index, count, row, false);
 	   }
 	   return;
@@ -330,37 +339,104 @@ public void shootRows(int index, int count, int row, boolean isBeingThrusted){
    * @param x X-coordinates of the screen
    * @param y Y-coordinates of the screen
    */
+   public Movable locateMovable(float x, float y) {
+	   int col = (int)(x/size);
+	   
+	   Movable selected = null;
+
+	   if (col < 0 || col > columns-1) return selected;
+	   
+	   for (int i = 0; i < rows; i++) {
+		   if (Movables[col][i] == null || Movables[col][i].typeOne == null) continue;
+		   if (y > Movables[col][i].y && y < (Movables[col][i].y + size)) {
+			   return Movables[col][i];
+		   }
+	   }
+	   return selected;
+   }
+   
    public void findMovable(float x, float y) {
-	   int row = (int)(selectedY/size)+1;
 	   int col = (int)(selectedX/size);
+	   int row = (int)(selectedY/size);
 	   
 	   if (row < 0 || row > rows-1 || col < 0 || col > columns-1) return;
 	   
-	   if (Movables[col][row] != null && Movables[col][row].typeOne != null) {
-		   Movable selectedM = new Movable(Movables[col][row]);
+//	   for (int i = 0; i < rows; i++) {
+//		   if (Movables[col][i] == null || Movables[col][i].typeOne == null) continue;
+//		   if (y > Movables[col][i].y && y < (Movables[col][i].y + size)) {
+//			   selectedM = new Movable(Movables[col][i]);
+//			   row = selectedM.row;
+////			   System.out.println("row: " + selectedM.row);
+////			   System.out.println("-------------");
+//			   break;
+//		   }
+//	   }
+	  
+	   
+	   if(selectedM != null) {
 		   
-		   if (row < 11 && Movables[col][row+1] != null) {
+		   if (y > selectedY + size) {
+			   if (Movables[col][row+1] == null) return;
 			   Movable targetM = new Movable(Movables[col][row+1]);
-			   
-			   if (y > selectedY + size && targetM != null && targetM.typeOne != null && targetM.speed == 0) {
-				   selectedY += size;
-				   swapMovables(selectedM, targetM, selectedM.y, col, row, 1);
-				   handleMatches(Movables[col][row]);
-				   handleMatches(Movables[col][row+1]);
-			   }
+			   if (targetM.typeOne == null || targetM.speed != selectedM.speed) return;
+			   swapMovables(targetM, selectedM.y, col, row, 1);
+			   handleMatches(Movables[col][row]);
+			   handleMatches(Movables[col][row+1]);
+			   selectedY += size;
+			   return;
 		   }
 		   
-		   if (row > 0 && Movables[col][row-1] != null) {
+		   
+		   if (y < selectedY - size) {
+			   if (Movables[col][row-1] == null) return;
 			   Movable targetM = new Movable(Movables[col][row-1]);
-			   
-			   if (y < selectedY - size && targetM != null && targetM.typeOne != null && targetM.speed == 0) {
-				   selectedY -= size;
-				   swapMovables(selectedM, targetM, selectedM.y, col, row, -1);
-				   handleMatches(Movables[col][row]);
-				   handleMatches(Movables[col][row-1]);
-			   }
+			   if (targetM.typeOne == null || targetM.speed != selectedM.speed) return;
+			   swapMovables(targetM, selectedM.y, col, row, -1);
+			   handleMatches(Movables[col][row]);
+			   handleMatches(Movables[col][row-1]);
+			   selectedY -= size;
+			   return;
 		   }
+		   
 	   }
+	   
+//	   HLYNURSMIX
+//	   if (y < selectedY - size) {
+//		   Movable targetM = new Movable(Movables[col][row]);
+//		   
+//		   if (targetM.typeOne == null || targetM.speed != Movables[col][row+1].speed) return;
+//		   swapMovables(Movables[col][row], Movables[col][row+1], selectedM.y, col, row+1, -1);
+////		   handleMatches(Movables[col][row]);
+////		   handleMatches(Movables[col][row-1]);
+//		   selectedY -= size;
+//		   return;
+//	   }
+
+	   
+//	   if (selectedM != null) {
+//		   row = selectedM.row;
+//		   if (Movables[col][row+1] != null) {
+//			   Movable targetM = new Movable(Movables[col][row+1]);
+//			   
+//			   if (y > selectedY + size && targetM.typeOne != null && targetM.speed == selectedM.speed) {
+//				   swapMovables(selectedM, targetM, selectedM.y, selectedM.col, selectedM.row, 1);
+//				   handleMatches(Movables[col][row]);
+//				   handleMatches(Movables[col][row+1]);
+//				   selectedY += size;
+//			   }
+//		   }
+//		   
+//		   if (Movables[col][row-1] != null) {
+//			   Movable targetM = new Movable(Movables[col][row-1]);
+//			   
+//			   if (y < selectedY - size && targetM.typeOne != null && targetM.speed == selectedM.speed) {
+//				   swapMovables(selectedM, targetM, selectedM.y, selectedM.col, selectedM.row, -1);
+//				   handleMatches(Movables[col][row]);
+//				   handleMatches(Movables[col][row-1]);
+//				   selectedY -= size;
+//			   }
+//		   }
+//	   }
 	   
    }
 	   
@@ -372,9 +448,14 @@ public void shootRows(int index, int count, int row, boolean isBeingThrusted){
    * @param row the row of the moved cube
    * @param add integer that decides if we are swapping upwards or downwards
    */
-   public void swapMovables(Movable m1, Movable m2, float y, int col, int row, int add) {
-	   Movable temp1 = new Movable(m1);
+   public void swapMovables(Movable m2, float y, int col, int row, int add) {
+	   Movable temp1 = new Movable(selectedM);
 	   Movable temp2 = new Movable(m2);
+	   
+	   System.out.println("SWAPMOVABLES");
+//	   System.out.println("m1.row: " + m1.row);
+	   System.out.println("row " + row);
+	   System.out.println("--------------");
 	   
 	   Movables[col][row] = temp2;
 	   Movables[col][row+add] = temp1;
@@ -384,6 +465,8 @@ public void shootRows(int index, int count, int row, boolean isBeingThrusted){
 	   
 	   Movables[col][row].y = y;
 	   Movables[col][row+add].y = y+size*add;
+	   
+	   selectedM = Movables[col][row+add];
    }
 	 //See abstrakt class Gamestate dispose();
 	public void dispose()
