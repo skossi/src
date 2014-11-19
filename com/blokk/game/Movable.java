@@ -1,5 +1,7 @@
 package com.blokk.game;
 
+import states.Playstate;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 
@@ -77,7 +79,7 @@ public class Movable {
 //			typeTwo = randomizeType();
 			
 		}
-		if(System.currentTimeMillis() - timeBlacked > 15000){
+		if(System.currentTimeMillis() - timeBlacked > 15000*Playstate.difficulty){
 			typeOne = randomizeType();
 			typeTwo = randomizeType();
 			timeBlacked = Long.MAX_VALUE;

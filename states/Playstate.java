@@ -43,8 +43,9 @@ public class Playstate extends Gamestate{
 	   private BitmapFont font;
 	   private Movable selectedM;
 	   private long lastWave;
-	   // public static so we can access it from the input processor
+	   // public static for global access
 	   public static boolean isSelected;
+	   public static double difficulty;
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
 	public Playstate(GameStateManager gsm)
@@ -73,6 +74,7 @@ public class Playstate extends Gamestate{
 		  UI = new UI(0, 0, 480, 64);
 		  font = RectMana.font;
 	      score = 0;
+	      difficulty = 1.0;
 	      currScore = "0";
 		  prepareMatrix();
 	}
@@ -158,10 +160,12 @@ public class Playstate extends Gamestate{
 	public void update(float dt)
 	{
 		if (isPaused) return;
-		if(System.currentTimeMillis() - lastWave > 15000){
+		if(System.currentTimeMillis() - lastWave > 15000*difficulty){
 			lastWave = System.currentTimeMillis();
 			spawnWave();
-		} else if (TimeUtils.nanoTime() - lastDropTime > 900000000) spawnMovable(MathUtils.random(0, 6));
+			if(difficulty > 0.45) difficulty -= 0.03;
+			
+		} else if (TimeUtils.nanoTime() - lastDropTime > 900000000*difficulty) spawnMovable(MathUtils.random(0, 6));
 		
 		for (int i = 0; i < steps; i++) computeSubStep(dt/steps);
 	}
@@ -310,6 +314,7 @@ public class Playstate extends Gamestate{
 				Movables[j][row].timeBlacked = System.currentTimeMillis();
 
 		   }
+		   score += 2;
 		   shootRows(index, count, row, false);
 	   }
 	   return;
