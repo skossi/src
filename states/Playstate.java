@@ -46,6 +46,9 @@ public class Playstate extends Gamestate{
 	   // public static for global access
 	   public static boolean isSelected;
 	   public static double difficulty;
+	   
+	   private int[] warning;
+	   
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
 	public Playstate(GameStateManager gsm)
@@ -61,6 +64,7 @@ public class Playstate extends Gamestate{
 	      steps = size; //pixel perfect updating
 	      columns = 7;
 	      rows = 13;
+	      warning = new int[rows];
 	      Movables = new Movable[columns][rows];
 		  square = new Texture(Gdx.files.internal("square.png"));
 		  triangle = new Texture(Gdx.files.internal("triangle.png"));
@@ -108,12 +112,16 @@ public class Playstate extends Gamestate{
 	      movable.isBeingThrusted = false;
 		  Movables[movable.col][available_row] = movable;
 	      lastDropTime = TimeUtils.nanoTime();
+	      warning[movable.col] +=1;
+	      dangerColumn();
 	   }
    
    private void spawnWave() {
 	   for(int j = 0; j < columns; j++){
 		   spawnMovable(j);
+		   warning[j] +=1;
 	   }
+	   dangerColumn();
    }
 	 /**
    * Prepares the Movables matrix by adding a row of immovable blocks below the screen for collision purposes    
@@ -138,11 +146,27 @@ public class Playstate extends Gamestate{
    
    public void handleOutOfBounds(Movable m1){
 	   if (m1.y > 800){
+		   warning[m1.col] -= 1;
 		   Movables[m1.col][m1.row] = null;
-		   score += 10;
-		   currScore = Integer.toString(score);
+		   addScore(10);
+		   dangerColumn();
+	   }	   
+   }
+   //Colors the background red according to the highest column
+   private void dangerColumn()
+   {
+	   int i = whichColumn()-8;//threshold so the background wont turn red just yet
+	   if(i >= 0)RectMana._w = i/5f;
+	   else RectMana._w = 0;
+   }
+   //Returns how big the largest column is
+   private int whichColumn()
+   {
+	   int ret = -1;
+	   for(int i = 0; i < rows; i++){
+		   if(warning[i] > ret) ret = warning[i];
 	   }
-	   
+	   return ret;
    }
    /**
    * Gives a created cube its texture depend on his boolean tree structure    
@@ -314,15 +338,19 @@ public class Playstate extends Gamestate{
 				Movables[j][row].timeBlacked = System.currentTimeMillis();
 
 		   }
-		   score += 2;
+		   addScore(2);
 		   shootRows(index, count, row, false);
 	   }
 	   return;
    }
-	   
+   private void addScore(int add)
+   {
+	   score += add;
+	   currScore = Integer.toString(score);
+   }
 
-public void shootRows(int index, int count, int row, boolean isBeingThrusted){
-//	   System.out.println("Shooting!");
+   public void shootRows(int index, int count, int row, boolean isBeingThrusted){
+
 	   isSelected = false;
 	   if(isBeingThrusted){
 		   //Vantar hér lógík til að skjóta platforminu alla leið upp
@@ -333,8 +361,7 @@ public void shootRows(int index, int count, int row, boolean isBeingThrusted){
 				   if(Movables[j][i].speed < 0) continue;
 				   Movables[j][i].speed = 700;
 			       Movables[j][i].timeThrusted = System.currentTimeMillis();   
-			       Movables[j][i].isBeingThrusted = true;
-//				   System.out.println("blokk: " + Movables[j][i].row + ", " + Movables[j][i].col + ", " + Movables[j][i].speed);   
+			       Movables[j][i].isBeingThrusted = true; 
 			   }
 		   }
 	   }
@@ -470,11 +497,6 @@ public void shootRows(int index, int count, int row, boolean isBeingThrusted){
 	   Movable temp1 = new Movable(selectedM);
 	   Movable temp2 = new Movable(m2);
 	   
-//	   System.out.println("SWAPMOVABLES");
-//	   System.out.println("m1.row: " + m1.row);
-//	   System.out.println("row " + row);
-//	   System.out.println("--------------");
-	   
 	   Movables[col][row] = temp2;
 	   Movables[col][row+add] = temp1;
 	   
@@ -489,7 +511,7 @@ public void shootRows(int index, int count, int row, boolean isBeingThrusted){
 	 //See abstrakt class Gamestate dispose();
 	public void dispose()
 	{
-	
+		
 	}
 	//Saves current score and sets the state to Lost. Called when game is lost
 	public void gameLost()

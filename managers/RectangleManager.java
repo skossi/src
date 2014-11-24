@@ -45,6 +45,7 @@ public class RectangleManager {
 	public float _r;
 	public float _g;
 	public float _b;
+	public float _w;
 	
 	//Font writing
 	public BitmapFont font;
@@ -61,6 +62,7 @@ public class RectangleManager {
 		_r = 1f;
 		_g = 178/255f;
 		_b = 0;
+		_w = 0;
 		
 		font = new BitmapFont();
 	    font.setColor(Color.BLACK);

@@ -49,6 +49,7 @@ public class Loststate extends Gamestate{
 	{
 		if(RectMana._r < 1) RectMana._r += dt;
 		if(RectMana._g < 0.7) RectMana._g += dt;
+		if(RectMana._w > 0) RectMana._w -= 3*dt;
 	}
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
