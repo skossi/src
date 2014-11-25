@@ -32,6 +32,10 @@ public class Playstate extends Gamestate{
 	   private Texture black;
 	   private Texture selected;
 	   private Texture ui_bg;
+	   private Texture ui_pause;
+	   private Texture ui_soundOn;
+	   private Texture ui_soundOff;
+	   private Texture pauseBlock;
 	   private String currScore;
 	   private int score;
 	   private int steps;
@@ -76,6 +80,10 @@ public class Playstate extends Gamestate{
 		  selected = new Texture(Gdx.files.internal("selected.png"));
 		  ui_bg = new Texture(Gdx.files.internal("ui_bg.png"));
 		  redline = new Texture(Gdx.files.internal("redline.png"));
+		  ui_pause = new Texture(Gdx.files.internal("pause.png"));
+		  ui_soundOn = new Texture(Gdx.files.internal("soundOn.png"));
+		  ui_soundOff = new Texture(Gdx.files.internal("soundOff.png"));
+		  pauseBlock = new Texture(Gdx.files.internal("pauseBlock.png"));
 		  destSound = Gdx.audio.newSound(Gdx.files.internal("destroy.wav"));
 		  shootSound = Gdx.audio.newSound(Gdx.files.internal("shoot.wav"));
 		  lastWave = 0;
@@ -150,7 +158,7 @@ public class Playstate extends Gamestate{
    }
    
    public void handleOutOfBounds(Movable m1){
-	   if (m1.y > 800){ //Hér ætti að vera loseCondition en hann hverfur alltaf strax þegar að hann spawnar. Vantar eitthvað boolean fall að kubburinn sé kominn fyrir neðan hann?
+	   if (m1.y > loseCondition && m1.speed > 0){ 
 		   warning[m1.col] -= 1;
 		   Movables[m1.col][m1.row] = null;
 		   addScore(10);
@@ -210,13 +218,22 @@ public class Playstate extends Gamestate{
 	      }
 	      if(isSelected)batch.draw(selected, selectedX-size/2, selectedY-size/2);
 	      batch.draw(ui_bg, UI.x, UI.y, UI.width, UI.height);
+	      batch.draw(ui_pause,UI.x,UI.y,64,64);
+	      if(RectMana.isMuted) batch.draw(ui_soundOff,350,UI.y,64,64);
+	      else batch.draw(ui_soundOn,350,UI.y,64,64);
 	      font.draw(batch, "Score : " + currScore, 120, 50);
 	      batch.draw(redline, 0, loseCondition);
+	      //pauseBlock;
 
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
+		
+		int barPress = UI.isTouched(x, y);
+		if(barPress == 1) isPaused =! isPaused;
+		if(barPress == 4) RectMana.soundMute();
+		
 		int row = (int)(y/size);
 		int column = (int)(x/size);
 		  
@@ -228,8 +245,9 @@ public class Playstate extends Gamestate{
 	}
 	//See abstrakt class Gamestate isTouched(x,y);
 	public void isTouched(float x, float y)
-	{
-	      if (isSelected) findMovable(x, y);
+	{		
+		if(isPaused) return;
+	    if (isSelected) findMovable(x, y);
 	}
 	
 	 /**

@@ -46,7 +46,7 @@ public class BlokkGame implements ApplicationListener {
    private Texture ex;
    private Texture black;
    private int steps;
-   private Music mainTheme;
+   
 
    /**
    * Starts the gameloop by opening components from badlogic pack and sets the orthogonal projection of the camera.
@@ -72,11 +72,7 @@ public class BlokkGame implements ApplicationListener {
 	  black = new Texture(Gdx.files.internal("black.png"));
 	  lastDropTime = TimeUtils.nanoTime();
 	  
-	  mainTheme = Gdx.audio.newMusic(Gdx.files.internal("mainTheme.mp3"));
-
-      // start the playback of the background music immediately
-      mainTheme.setLooping(true);
-      mainTheme.play();
+	  
 	  
    }
    

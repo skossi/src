@@ -3,6 +3,7 @@ package managers;
 import states.RectTex;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -51,6 +52,10 @@ public class RectangleManager {
 	public BitmapFont font;
 	public String betterString;
 	
+	//Main themesound
+	public boolean isMuted;
+	private Music mainTheme;
+	
 	
 	public RectangleManager()
 	{
@@ -69,7 +74,22 @@ public class RectangleManager {
 	    font.setScale(2,2);
 	    
 	    betterString = "Congratulations, new score!";
+	    
+	    mainTheme = Gdx.audio.newMusic(Gdx.files.internal("mainTheme.mp3"));
+
+	    // start the playback of the background music immediately
+	    mainTheme.setLooping(true);
+	    mainTheme.play();
+	    
 	}
+	
+	public void soundMute()
+	{
+		if(isMuted)mainTheme.setVolume(0);
+		else mainTheme.setVolume(1);
+		isMuted =! isMuted;
+	}
+	
 	public void firstDone()
 	{
 		firstTime = true;
