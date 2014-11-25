@@ -5,10 +5,9 @@ import states.Loststate;
 import states.Menustate;
 import states.Playstate;
 import states.Scorestate;
+import states.Storestate;
 import states.Tutorialstate;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //Class by Óttar Guðmundsson
 //Written 30.10.2014
@@ -21,6 +20,7 @@ public class GameStateManager{
 	public static final int SCORE = 2;
 	public static final int TUTORIAL = 3;
 	public static final int LOST = 4;
+	public static final int STORE = 5;
 	
 	public boolean introStart;
 	public boolean introEnd = true;
@@ -45,6 +45,7 @@ public class GameStateManager{
 		if(state == SCORE) gameState = new Scorestate(this);
 		if(state == TUTORIAL) gameState = new Tutorialstate(this);
 		if(state == LOST) gameState = new Loststate(this);
+		if(state == STORE) gameState = new Storestate(this);
 		
 		gameState.init(RectMana);
 	}

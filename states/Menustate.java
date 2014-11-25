@@ -17,6 +17,7 @@ public class Menustate extends Gamestate {
 	 public RectTex Play;
 	 public RectTex Score;
 	 public RectTex Tutorial;
+	 public RectTex Store;
 	 
 	 private int downSpeed;
 	 public boolean intro;
@@ -45,6 +46,7 @@ public class Menustate extends Gamestate {
 		Play = RectMana.EnterPlay;
 		Score = RectMana.EnterScore;
 		Tutorial = RectMana.EnterTut;
+		Store = RectMana.EnterStore;
 		speedAdd = 1;
 		gameSound = Gdx.audio.newSound(Gdx.files.internal("startup.wav"));
 		
@@ -60,6 +62,7 @@ public class Menustate extends Gamestate {
 			Play.y -= downSpeed*dt;
 			Score.y -= downSpeed*dt;
 			Tutorial.y -= downSpeed*dt;
+			Store.y -= downSpeed*dt;
 			if(Menu.y <= -(Menu.height + 64)) setGame();
 			speedAdd +=1;
 		}
@@ -72,6 +75,7 @@ public class Menustate extends Gamestate {
 	      batch.draw(Play.tex, Play.x, Play.y);
 	      batch.draw(Score.tex, Score.x, Score.y);
 	      batch.draw(Tutorial.tex, Tutorial.x, Tutorial.y);
+	      batch.draw(Store.tex, Store.x, Store.y);
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
@@ -85,6 +89,7 @@ public class Menustate extends Gamestate {
 		}
 		if(buttonClick(Score,x,y))gsm.setState(GameStateManager.SCORE);
 		if(buttonClick(Tutorial,x,y))gsm.setState(GameStateManager.TUTORIAL);
+		if(buttonClick(Store,x,y))gsm.setState(GameStateManager.STORE);
 	}
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position

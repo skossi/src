@@ -20,6 +20,7 @@ public class RectangleManager {
 	public RectTex EnterPlay;
 	public RectTex EnterScore;
 	public RectTex EnterTut;
+	public RectTex EnterStore;
 	public int backgroundSpeed;
 	
 	//Tutorial
@@ -32,6 +33,8 @@ public class RectangleManager {
 	
 	//Score
 	public RectTex Score;
+	//Store
+	public RectTex Store;
 	
 	//BackButton and GameOver
 	public RectTex Back;
@@ -42,6 +45,7 @@ public class RectangleManager {
 	public int one, two, thr;
 	public boolean grats;
 	public int currScore;
+	public int currency;
 	
 	//RGB values
 	public float _r;
@@ -108,6 +112,7 @@ public class RectangleManager {
 		one = prefs.getInteger("One");
 		two = prefs.getInteger("Two");
 		thr = prefs.getInteger("Thr");
+		currency = prefs.getInteger("currency");
 	}
 	//Takes in parameter newScore that is players score when game is lost. 
 	//Gets preferences and checks if a new high score was made
@@ -133,6 +138,12 @@ public class RectangleManager {
 			prefs.putInteger("Thr", newScore);
 		}
 		else grats = false;
+		
+		int temp = currency;
+		temp += newScore;
+		prefs.putInteger("currency", temp);
+		
+		
 		prefs.flush();
 		getScores();
 	}
@@ -144,6 +155,7 @@ public class RectangleManager {
 		EnterPlay.y = 450;
 		EnterScore.y = 300;
 		EnterTut.y = 150;
+		EnterStore.y = 50;
 	}
 	//creates all buttons that are used in the game architecture except the blocks in the main game
 	//Each state references to each RectTex to use instead of creating each instance
@@ -167,22 +179,29 @@ public class RectangleManager {
 		width = PlayTex.getWidth();
 		height = PlayTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
-		yHolder = 450; 
+		yHolder = 480; 
 		EnterPlay = new RectTex(xHolder,yHolder, width, height, PlayTex);
 		
 		Texture ScoreTex = new Texture(Gdx.files.internal("score.png"));
 		width = ScoreTex.getWidth();
 		height = ScoreTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
-		yHolder = 300; 
+		yHolder = 330; 
 		EnterScore = new RectTex(xHolder,yHolder, width, height, ScoreTex);
 		
 		Texture TutorialTex = new Texture(Gdx.files.internal("tutorial.png"));
 		width = TutorialTex.getWidth();
 		height = TutorialTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
-		yHolder = 150; 
+		yHolder = 180; 
 		EnterTut = new RectTex(xHolder,yHolder, width, height, TutorialTex);
+		
+		Texture StoreTex = new Texture(Gdx.files.internal("store.png"));
+		width = StoreTex.getWidth();
+		height = StoreTex.getHeight();
+		xHolder = 480 /2 - width / 2; 
+		yHolder = 80; 
+		EnterStore = new RectTex(xHolder,yHolder, width, height, StoreTex);
 		
 		//TutorialLogo
 		Texture TutorialLogoTex = new Texture(Gdx.files.internal("logo_tutorial.png"));
@@ -244,6 +263,14 @@ public class RectangleManager {
 		xHolder = 480 /2 - width / 2; 
 		yHolder = 700;
 		Score = new RectTex(xHolder, yHolder, width, height, ScoreLogoTex);	
+		
+		//ScoreLogo  
+		Texture StoreLogoTex = new Texture(Gdx.files.internal("logo_store.png"));
+		width = StoreLogoTex.getWidth();
+		height = StoreLogoTex.getHeight();
+		xHolder = 480 /2 - width / 2; 
+		yHolder = 700;
+		Store = new RectTex(xHolder, yHolder, width, height, StoreLogoTex);	
 		//Game Over Logo
 		Texture OverTex = new Texture(Gdx.files.internal("logo_over.png"));
 		width = OverTex.getWidth();
