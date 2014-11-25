@@ -22,9 +22,11 @@ public class Loststate extends Gamestate{
 	private int scoreTwo;
 	private int scoreThr;
 	
+	private String scoreMade;
+	
 	private BitmapFont font;
 	private String better;
-	private Sound loseSound;
+	private String worse;
 	
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -36,10 +38,10 @@ public class Loststate extends Gamestate{
 	public void init(RectangleManager RectMan)
 	{
 		RectMana = RectMan;
-		//loseSound = Gdx.audio.newSound(Gdx.files.internal("lose.flac"));
 		GameOver = RectMana.Over;
 		Back = RectMana.Back;
 		
+		scoreMade = Integer.toString(RectMana.currScore);
 		higher = RectMana.grats;
 		scoreOne = RectMana.one;
 		scoreTwo = RectMana.two;
@@ -47,7 +49,9 @@ public class Loststate extends Gamestate{
 		
 		font = RectMana.font;
 		better = RectMana.betterString;
-		//loseSound.play();
+		worse = RectMana.worseString;
+		
+		
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
@@ -61,6 +65,8 @@ public class Loststate extends Gamestate{
 	{
 		batch.draw(GameOver.tex, GameOver.x, GameOver.y);
 		if(higher)font.draw(batch,better , 60, 625);
+		else font.draw(batch,worse , 45, 625);
+		font.draw(batch,"Your score was : " + scoreMade , 105, 575);
 		
 		font.draw(batch, "1st : " + scoreOne, 175, 500);
 		font.draw(batch, "2nd : " + scoreTwo, 175, 400);

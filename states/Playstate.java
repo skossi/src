@@ -12,9 +12,12 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.blokk.game.Movable;
 import com.blokk.game.UI;
 
-//Class by ï¿½ttar Guï¿½mundsson
+//Class by Óttar, Hlynur and Þorsteinn. 
+//
 //Written 30.10.2014
-//Creates a new state when user is playing
+//Creates a new state when user is playing.
+//This is the main game loop that is in charge of the game.
+//This class might be refactored by using the resource manager but currently that is not a priority
 public class Playstate extends Gamestate{
 
 	   private Movable[][] Movables;
@@ -47,6 +50,8 @@ public class Playstate extends Gamestate{
 	   private long lastWave;
 	   private Sound destSound;
 	   private Sound shootSound;
+	   private Sound pauseSound;
+	   private Sound muteSound;
 	   private int loseCondition;
 	   // public static for global access
 	   public static boolean isSelected;
@@ -86,6 +91,8 @@ public class Playstate extends Gamestate{
 		  pauseBlock = new Texture(Gdx.files.internal("pauseBlock.png"));
 		  destSound = Gdx.audio.newSound(Gdx.files.internal("destroy.wav"));
 		  shootSound = Gdx.audio.newSound(Gdx.files.internal("shoot.wav"));
+		  muteSound = Gdx.audio.newSound(Gdx.files.internal("muteSound.mp3"));
+		  pauseSound = Gdx.audio.newSound(Gdx.files.internal("pauseSound.wav"));
 		  lastWave = 0;
 		  UI = new UI(0, 0, 480, 64);
 		  font = RectMana.font;
@@ -128,7 +135,7 @@ public class Playstate extends Gamestate{
 	      warning[movable.col] +=1;
 	      dangerColumn();
 	   }
-   
+   //Spawns a new wave of blocks on a fixed interval
    private void spawnWave() {
 	   for(int j = 0; j < columns; j++){
 		   spawnMovable(j);
@@ -156,7 +163,8 @@ public class Playstate extends Gamestate{
 		   Movables[i][0] = movable;
 	   }
    }
-   
+   //Called when a block is deleted by thrusting it up above the loseCondition line
+   //Deletes the movable, adds scores and plays sound
    public void handleOutOfBounds(Movable m1){
 	   if (m1.y > loseCondition && m1.speed > 0){ 
 		   warning[m1.col] -= 1;
@@ -216,13 +224,14 @@ public class Playstate extends Gamestate{
 	    		  if (m != null) batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); // afhverju ekki m.type hï¿½r?
 	    	  }
 	      }
+	      batch.draw(redline, 0, loseCondition);
 	      if(isSelected)batch.draw(selected, selectedX-size/2, selectedY-size/2);
 	      batch.draw(ui_bg, UI.x, UI.y, UI.width, UI.height);
 	      batch.draw(ui_pause,UI.x,UI.y,64,64);
-	      if(RectMana.isMuted) batch.draw(ui_soundOff,350,UI.y,64,64);
-	      else batch.draw(ui_soundOn,350,UI.y,64,64);
+	      if(RectMana.isMuted) batch.draw(ui_soundOff,416,UI.y,64,64);
+	      else batch.draw(ui_soundOn,416,UI.y,64,64);
 	      font.draw(batch, "Score : " + currScore, 120, 50);
-	      batch.draw(redline, 0, loseCondition);
+	      if(isPaused)batch.draw(pauseBlock,0,64,480,734);
 	      //pauseBlock;
 
 	}
@@ -231,8 +240,16 @@ public class Playstate extends Gamestate{
 	{
 		
 		int barPress = UI.isTouched(x, y);
-		if(barPress == 1) isPaused =! isPaused;
-		if(barPress == 4) RectMana.soundMute();
+		if(barPress == 1) 
+		{
+			isPaused =! isPaused;
+			pauseSound.play();
+		}
+		if(barPress == 4)
+		{
+			RectMana.soundMute();
+			muteSound.play();
+		}
 		
 		int row = (int)(y/size);
 		int column = (int)(x/size);
@@ -328,9 +345,6 @@ public class Playstate extends Gamestate{
    * @param m1 A moved Movable block by the user
    */
    public void checkRowMatches(Movable m1){
-	   //Stundum kemur villa thegar kubbur dettur nidur a milli tveggja kubba
-	   //thad sem gerist er ad kubburinn er merktur sem ad hann matchist adur en hann
-	   //er buinn ad detta nidur
 	   Boolean typeOne = m1.typeOne;
 	   boolean typeTwo = m1.typeTwo;
 	   int count = 0;
@@ -354,9 +368,6 @@ public class Playstate extends Gamestate{
 		   count = 0;
 	   }
 	   if(count > 2){
-//		   for(int j = index; j < index+count; j++){
-//			   Movables[j][row].type = circle;
-//		   }
 		   for(int j = index; j < index+count; j++){
 				Movables[j][row].typeOne = null;
 				Movables[j][row].timeBlacked = System.currentTimeMillis();
@@ -368,12 +379,15 @@ public class Playstate extends Gamestate{
 	   }
 	   return;
    }
+   //Adds score to the players scorepool and prints on the interface
    private void addScore(int add)
    {
 	   score += add;
 	   currScore = Integer.toString(score);
    }
-
+   //Gives the 3 or more blocks combined speed that thrusts them up.
+   //Takes in parameters index and row that represents its columns and rows
+   //The parameter isBeingThrusted is used for debugging tools
    public void shootRows(int index, int count, int row, boolean isBeingThrusted){
 	   
 	   isSelected = false;
@@ -424,24 +438,13 @@ public class Playstate extends Gamestate{
 	   }
 	   return selected;
    }
-   
+   //Finds the block that player when pressing down.
+   //Takes in parameters world co ordinates x and y
    public void findMovable(float x, float y) {
 	   int col = (int)(selectedX/size);
 	   int row = (int)(selectedY/size);
 	   
 	   if (row < 0 || row > rows-1 || col < 0 || col > columns-1) return;
-	   
-//	   for (int i = 0; i < rows; i++) {
-//		   if (Movables[col][i] == null || Movables[col][i].typeOne == null) continue;
-//		   if (y > Movables[col][i].y && y < (Movables[col][i].y + size)) {
-//			   selectedM = new Movable(Movables[col][i]);
-//			   row = selectedM.row;
-////			   System.out.println("row: " + selectedM.row);
-////			   System.out.println("-------------");
-//			   break;
-//		   }
-//	   }
-	  
 	   
 	   if(selectedM != null) {
 		   
@@ -469,45 +472,6 @@ public class Playstate extends Gamestate{
 		   }
 		   
 	   }
-	   
-//	   HLYNURSMIX
-//	   if (y < selectedY - size) {
-//		   Movable targetM = new Movable(Movables[col][row]);
-//		   
-//		   if (targetM.typeOne == null || targetM.speed != Movables[col][row+1].speed) return;
-//		   swapMovables(Movables[col][row], Movables[col][row+1], selectedM.y, col, row+1, -1);
-////		   handleMatches(Movables[col][row]);
-////		   handleMatches(Movables[col][row-1]);
-//		   selectedY -= size;
-//		   return;
-//	   }
-
-	   
-//	   if (selectedM != null) {
-//		   row = selectedM.row;
-//		   if (Movables[col][row+1] != null) {
-//			   Movable targetM = new Movable(Movables[col][row+1]);
-//			   
-//			   if (y > selectedY + size && targetM.typeOne != null && targetM.speed == selectedM.speed) {
-//				   swapMovables(selectedM, targetM, selectedM.y, selectedM.col, selectedM.row, 1);
-//				   handleMatches(Movables[col][row]);
-//				   handleMatches(Movables[col][row+1]);
-//				   selectedY += size;
-//			   }
-//		   }
-//		   
-//		   if (Movables[col][row-1] != null) {
-//			   Movable targetM = new Movable(Movables[col][row-1]);
-//			   
-//			   if (y < selectedY - size && targetM.typeOne != null && targetM.speed == selectedM.speed) {
-//				   swapMovables(selectedM, targetM, selectedM.y, selectedM.col, selectedM.row, -1);
-//				   handleMatches(Movables[col][row]);
-//				   handleMatches(Movables[col][row-1]);
-//				   selectedY -= size;
-//			   }
-//		   }
-//	   }
-	   
    }
 	   
    /**

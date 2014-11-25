@@ -1,12 +1,14 @@
 package managers;
 
 import states.Gamestate;
+import states.Loststate;
 import states.Menustate;
 import states.Playstate;
 import states.Scorestate;
 import states.Tutorialstate;
-import states.Loststate;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //Class by Óttar Guðmundsson
 //Written 30.10.2014
@@ -22,8 +24,8 @@ public class GameStateManager{
 	
 	public boolean introStart;
 	public boolean introEnd = true;
-	//public RectangleAdd RectMan = new RectangleAdd();
 	private RectangleManager RectMana;
+	
 	
 	
 	//initation of the gamestate manager. Called when a new manager is created and sets to starting state

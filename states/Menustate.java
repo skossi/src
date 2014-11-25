@@ -2,6 +2,9 @@ package states;
 
 import managers.GameStateManager;
 import managers.RectangleManager;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //import com.badlogic.gdx.audio.Sound;
 
@@ -20,6 +23,7 @@ public class Menustate extends Gamestate {
 	// private RectangleAdd RectangleManager;
 	 private RectangleManager RectMana;
 	 private int speedAdd;
+	 private Sound gameSound;
 	   
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -42,6 +46,8 @@ public class Menustate extends Gamestate {
 		Score = RectMana.EnterScore;
 		Tutorial = RectMana.EnterTut;
 		speedAdd = 1;
+		gameSound = Gdx.audio.newSound(Gdx.files.internal("startup.wav"));
+		
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
@@ -71,7 +77,12 @@ public class Menustate extends Gamestate {
 	public void justTouched(float x, float y)
 	{
 		if(intro) return;
-		if(buttonClick(Play,x,y)) {gsm.introStart = true; intro = true;}
+		if(buttonClick(Play,x,y)) 
+		{
+			gsm.introStart = true; 
+			intro = true;
+			gameSound.play();
+		}
 		if(buttonClick(Score,x,y))gsm.setState(GameStateManager.SCORE);
 		if(buttonClick(Tutorial,x,y))gsm.setState(GameStateManager.TUTORIAL);
 	}

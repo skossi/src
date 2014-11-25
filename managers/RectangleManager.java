@@ -41,6 +41,7 @@ public class RectangleManager {
 	//ScoreHolder
 	public int one, two, thr;
 	public boolean grats;
+	public int currScore;
 	
 	//RGB values
 	public float _r;
@@ -51,12 +52,13 @@ public class RectangleManager {
 	//Font writing
 	public BitmapFont font;
 	public String betterString;
+	public String worseString;
 	
 	//Main themesound
 	public boolean isMuted;
 	private Music mainTheme;
 	
-	
+	//Creates a resource entity each time the game is opened
 	public RectangleManager()
 	{
 		getScores();
@@ -74,6 +76,7 @@ public class RectangleManager {
 	    font.setScale(2,2);
 	    
 	    betterString = "Congratulations, new score!";
+	    worseString = "Sorry, no high score was made.";
 	    
 	    mainTheme = Gdx.audio.newMusic(Gdx.files.internal("mainTheme.mp3"));
 
@@ -82,14 +85,15 @@ public class RectangleManager {
 	    mainTheme.play();
 	    
 	}
-	
+	//Mutes or unmutes the maintheme of the game
 	public void soundMute()
 	{
-		if(isMuted)mainTheme.setVolume(0);
+		if(!isMuted)mainTheme.setVolume(0);
 		else mainTheme.setVolume(1);
 		isMuted =! isMuted;
 	}
-	
+	//If user opens the game for the first time, the tutorial screen is set. 
+	//After that, this void is called to open the menu screen the next time
 	public void firstDone()
 	{
 		firstTime = true;
@@ -97,7 +101,7 @@ public class RectangleManager {
 		prefs.flush();
 		prefs = Gdx.app.getPreferences("My Preferences");
 	}
-	
+	//Updates the resources manager variables by using data from the phones preferences
 	private void getScores()
 	{
 		prefs = Gdx.app.getPreferences("My Preferences");
@@ -105,9 +109,12 @@ public class RectangleManager {
 		two = prefs.getInteger("Two");
 		thr = prefs.getInteger("Thr");
 	}
-	
+	//Takes in parameter newScore that is players score when game is lost. 
+	//Gets preferences and checks if a new high score was made
+	//if so, it saves it and refreshes the preferences.
 	public void checkScore(int newScore)
 	{
+		currScore = newScore;
 		grats = true;
 		getScores();
 		if(newScore >= one)
@@ -129,7 +136,8 @@ public class RectangleManager {
 		prefs.flush();
 		getScores();
 	}
-	
+	//When the menu entities have moved down after the animation has completed, they are reset
+	//That way the user can access the menu after the game is finished
 	public void resetMenu()
 	{
 		Menu.y = 700;
@@ -137,7 +145,8 @@ public class RectangleManager {
 		EnterScore.y = 300;
 		EnterTut.y = 150;
 	}
-
+	//creates all buttons that are used in the game architecture except the blocks in the main game
+	//Each state references to each RectTex to use instead of creating each instance
 	private void createButtons()
 	{
 		//variable float for temp x,y coordinates
