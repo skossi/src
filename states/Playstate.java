@@ -1,14 +1,12 @@
 package states;
 
 import managers.GameStateManager;
-
 import managers.RectangleManager;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.blokk.game.Movable;
@@ -43,9 +41,13 @@ public class Playstate extends Gamestate{
 	   private BitmapFont font;
 	   private Movable selectedM;
 	   private long lastWave;
+	   private Sound destSound;
+	   private Sound shootSound;
+	   private int loseCondition;
 	   // public static for global access
 	   public static boolean isSelected;
 	   public static double difficulty;
+	   
 	   
 	   private int[] warning;
 	   
@@ -74,12 +76,15 @@ public class Playstate extends Gamestate{
 		  selected = new Texture(Gdx.files.internal("selected.png"));
 		  ui_bg = new Texture(Gdx.files.internal("ui_bg.png"));
 		  redline = new Texture(Gdx.files.internal("redline.png"));
+		  destSound = Gdx.audio.newSound(Gdx.files.internal("destroy.wav"));
+		  shootSound = Gdx.audio.newSound(Gdx.files.internal("shoot.wav"));
 		  lastWave = 0;
 		  UI = new UI(0, 0, 480, 64);
 		  font = RectMana.font;
 	      score = 0;
 	      difficulty = 1.0;
 	      currScore = "0";
+	      loseCondition = 720;
 		  prepareMatrix();
 	}
 	/**
@@ -145,11 +150,12 @@ public class Playstate extends Gamestate{
    }
    
    public void handleOutOfBounds(Movable m1){
-	   if (m1.y > 800){
+	   if (m1.y > 800){ //Hér ætti að vera loseCondition en hann hverfur alltaf strax þegar að hann spawnar. Vantar eitthvað boolean fall að kubburinn sé kominn fyrir neðan hann?
 		   warning[m1.col] -= 1;
 		   Movables[m1.col][m1.row] = null;
 		   addScore(10);
 		   dangerColumn();
+		   destSound.play();
 	   }	   
    }
    //Colors the background red according to the highest column
@@ -205,7 +211,7 @@ public class Playstate extends Gamestate{
 	      if(isSelected)batch.draw(selected, selectedX-size/2, selectedY-size/2);
 	      batch.draw(ui_bg, UI.x, UI.y, UI.width, UI.height);
 	      font.draw(batch, "Score : " + currScore, 120, 50);
-	      batch.draw(redline, 0, 720);
+	      batch.draw(redline, 0, loseCondition);
 
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
@@ -340,6 +346,7 @@ public class Playstate extends Gamestate{
 		   }
 		   addScore(2);
 		   shootRows(index, count, row, false);
+		   shootSound.play();
 	   }
 	   return;
    }
@@ -350,7 +357,7 @@ public class Playstate extends Gamestate{
    }
 
    public void shootRows(int index, int count, int row, boolean isBeingThrusted){
-
+	   
 	   isSelected = false;
 	   if(isBeingThrusted){
 		   //Vantar hÃ©r lÃ³gÃ­k til aÃ° skjÃ³ta platforminu alla leiÃ° upp

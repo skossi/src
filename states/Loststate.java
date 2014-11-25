@@ -2,6 +2,9 @@ package states;
 
 import managers.GameStateManager;
 import managers.RectangleManager;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -21,6 +24,7 @@ public class Loststate extends Gamestate{
 	
 	private BitmapFont font;
 	private String better;
+	private Sound loseSound;
 	
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -32,7 +36,7 @@ public class Loststate extends Gamestate{
 	public void init(RectangleManager RectMan)
 	{
 		RectMana = RectMan;
-
+		//loseSound = Gdx.audio.newSound(Gdx.files.internal("lose.flac"));
 		GameOver = RectMana.Over;
 		Back = RectMana.Back;
 		
@@ -43,6 +47,7 @@ public class Loststate extends Gamestate{
 		
 		font = RectMana.font;
 		better = RectMana.betterString;
+		//loseSound.play();
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
