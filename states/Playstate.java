@@ -169,12 +169,12 @@ public class Playstate extends Gamestate{
    //Colors the background red according to the highest column
    private void dangerColumn()
    {
-	   int i = whichColumn()-8;//threshold so the background wont turn red just yet
+	   int i = whichColumn(warning, rows)-8;//threshold so the background wont turn red just yet
 	   if(i >= 0)RectMana._w = i/5f;
 	   else RectMana._w = 0;
    }
    //Returns how big the largest column is
-   private int whichColumn()
+   public static int whichColumn(int[] warning, int rows)
    {
 	   int ret = -1;
 	   for(int i = 0; i < rows; i++){
