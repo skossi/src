@@ -1,4 +1,4 @@
-package states;
+/*package states;
 
 import junit.framework.TestCase;
 
@@ -8,7 +8,7 @@ public class TestWhichColumn extends TestCase {
 	/** Testcase for the whichColumn function.
 	 
 	   Authors: Þorsteinn Örn Gunnarsson & Hlynur Davíð Hlynsson
-	*/
+
 	  @Test
 	  public void testHighestValue() {
 		final int rows = 13;
@@ -26,3 +26,4 @@ public class TestWhichColumn extends TestCase {
                 6, Playstate.whichColumn(warning4, rows));
 	  }
 }
+*/
