@@ -11,9 +11,25 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 //Written 14.11.2014
 //Creates Manager that was originally supposed to take care of all rectangles for the game.
 //Was changed to be also resource manager 18.11.2014
-public class RectangleManager {
+public class RectangleManager 
+{
 	
 	public boolean firstTime;
+	
+	//Textures for gameplay
+	public Texture square;
+	public Texture triangle;
+	public Texture circle;
+	public Texture ex;
+	public Texture black;
+	public Texture selected;
+	public Texture ui_bg;
+	public Texture ui_pause;
+	public Texture ui_soundOn;
+	public Texture ui_soundOff;
+	public Texture pauseBlock;
+	public Texture redline;
+	
 	
 	//Menu
 	public RectTex Menu;
@@ -66,6 +82,7 @@ public class RectangleManager {
 	public RectangleManager()
 	{
 		getScores();
+		createTextures();
 		createButtons();
 		
 		firstTime = prefs.getBoolean("First");
@@ -157,6 +174,22 @@ public class RectangleManager {
 		EnterTut.y = 150;
 		EnterStore.y = 50;
 	}
+	private void createTextures()
+	{
+		square = new Texture(Gdx.files.internal("square.png"));
+		triangle = new Texture(Gdx.files.internal("triangle.png"));
+		circle = new Texture(Gdx.files.internal("circle.png"));
+		ex = new Texture(Gdx.files.internal("ex.png"));
+		black = new Texture(Gdx.files.internal("black.png"));
+		selected = new Texture(Gdx.files.internal("selected.png"));
+		ui_bg = new Texture(Gdx.files.internal("ui_bg.png"));
+		redline = new Texture(Gdx.files.internal("redline.png"));
+		ui_pause = new Texture(Gdx.files.internal("pause.png"));
+		ui_soundOn = new Texture(Gdx.files.internal("soundOn.png"));
+		ui_soundOff = new Texture(Gdx.files.internal("soundOff.png"));
+		pauseBlock = new Texture(Gdx.files.internal("pauseBlock.png"));
+	}
+	
 	//creates all buttons that are used in the game architecture except the blocks in the main game
 	//Each state references to each RectTex to use instead of creating each instance
 	private void createButtons()
@@ -279,4 +312,5 @@ public class RectangleManager {
 		yHolder = 700;
 		Over = new RectTex(xHolder, yHolder, width, height, OverTex);	
 	}
+
 }

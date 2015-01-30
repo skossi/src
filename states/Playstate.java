@@ -39,10 +39,10 @@ public class Playstate extends Gamestate{
 	   private Texture ui_soundOn;
 	   private Texture ui_soundOff;
 	   private Texture pauseBlock;
+	   private Texture redline;
 	   private String currScore;
 	   private int score;
 	   private int steps;
-	   private Texture redline;
 	   private RectangleManager RectMana;
 	   private UI UI;
 	   private BitmapFont font;
@@ -69,38 +69,37 @@ public class Playstate extends Gamestate{
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
-		
 		RectMana = RectMan;
-	      size = 64;
-	      steps = size; //pixel perfect updating
-	      columns = 7;
-	      rows = 13;
-	      warning = new int[rows];
-	      Movables = new Movable[columns][rows];
-		  square = new Texture(Gdx.files.internal("square.png"));
-		  triangle = new Texture(Gdx.files.internal("triangle.png"));
-		  circle = new Texture(Gdx.files.internal("circle.png"));
-		  ex = new Texture(Gdx.files.internal("ex.png"));
-		  black = new Texture(Gdx.files.internal("black.png"));
-		  selected = new Texture(Gdx.files.internal("selected.png"));
-		  ui_bg = new Texture(Gdx.files.internal("ui_bg.png"));
-		  redline = new Texture(Gdx.files.internal("redline.png"));
-		  ui_pause = new Texture(Gdx.files.internal("pause.png"));
-		  ui_soundOn = new Texture(Gdx.files.internal("soundOn.png"));
-		  ui_soundOff = new Texture(Gdx.files.internal("soundOff.png"));
-		  pauseBlock = new Texture(Gdx.files.internal("pauseBlock.png"));
-		  destSound = Gdx.audio.newSound(Gdx.files.internal("destroy.wav"));
-		  shootSound = Gdx.audio.newSound(Gdx.files.internal("shoot.wav"));
-		  muteSound = Gdx.audio.newSound(Gdx.files.internal("muteSound.mp3"));
-		  pauseSound = Gdx.audio.newSound(Gdx.files.internal("pauseSound.wav"));
-		  lastWave = 0;
-		  UI = new UI(0, 0, 480, 64);
-		  font = RectMana.font;
-	      score = 0;
-	      difficulty = 1.0;
-	      currScore = "0";
-	      loseCondition = 720;
-		  prepareMatrix();
+		size = 64;
+		steps = size; //pixel perfect updating
+		columns = 7;
+		rows = 13;
+		warning = new int[rows];
+		Movables = new Movable[columns][rows];
+		square = RectMan.square;
+		triangle = RectMan.triangle;
+		circle = RectMan.circle;
+		ex = RectMan.circle;
+		black = RectMan.black;
+		selected = RectMan.selected;
+		ui_bg = RectMan.ui_bg;
+		redline = RectMan.redline;
+		ui_pause = RectMana.ui_pause;
+		ui_soundOn = RectMana.ui_soundOn;
+		ui_soundOff = RectMana.ui_soundOff;
+		pauseBlock = RectMana.ui_soundOff;
+		destSound = Gdx.audio.newSound(Gdx.files.internal("destroy.wav"));
+		shootSound = Gdx.audio.newSound(Gdx.files.internal("shoot.wav"));
+		muteSound = Gdx.audio.newSound(Gdx.files.internal("muteSound.mp3"));
+		pauseSound = Gdx.audio.newSound(Gdx.files.internal("pauseSound.wav"));
+		lastWave = 0;
+		UI = new UI(0, 0, 480, 64);
+		font = RectMana.font;
+		score = 0;
+		difficulty = 1.0;
+		currScore = "0";
+		loseCondition = 720;
+		prepareMatrix();
 	}
 	/**
    * Creates a new cube on a timed interval. It�s type is randomed. This method is a temporary solution for spawning cubes in debugging mode

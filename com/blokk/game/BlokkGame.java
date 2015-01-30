@@ -28,11 +28,7 @@ public class BlokkGame implements ApplicationListener {
    private float dy;
    
    private GameStateManager gsm;
-   private RectangleManager rsm;
-   
-   private float _r;
-   private float _b;
-   private float _g;
+   private RectangleManager RectMana;
 
    //BACKGROUND
    private Movable[][] Movables;
@@ -57,23 +53,20 @@ public class BlokkGame implements ApplicationListener {
       camera = new OrthographicCamera();
       camera.setToOrtho(false, 480, 800);
       batch = new SpriteBatch();
-      rsm = new RectangleManager();
-      gsm = new GameStateManager(rsm);
+      RectMana = new RectangleManager();
+      gsm = new GameStateManager(RectMana);
       
       size = 64;
       steps = size; //pixel perfect updating
       columns = 7;
       rows = 13;
       Movables = new Movable[columns][rows];
-	  square = new Texture(Gdx.files.internal("square.png"));
-	  triangle = new Texture(Gdx.files.internal("triangle.png"));
-	  circle = new Texture(Gdx.files.internal("circle.png"));
-	  ex = new Texture(Gdx.files.internal("ex.png"));
-	  black = new Texture(Gdx.files.internal("black.png"));
+	  square = RectMana.square;
+	  triangle = RectMana.triangle;
+	  circle = RectMana.circle;
+	  ex = RectMana.ex;
+	  black = RectMana.black;
 	  lastDropTime = TimeUtils.nanoTime();
-	  
-	  
-	  
    }
    
    /**
@@ -82,7 +75,7 @@ public class BlokkGame implements ApplicationListener {
    */
    @Override
    public void render() {
-      Gdx.gl.glClearColor(rsm._r+rsm._w, rsm._g, 0, 1);
+      Gdx.gl.glClearColor(RectMana._r+RectMana._w, RectMana._g, 0, 1);
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
       
@@ -129,8 +122,8 @@ public class BlokkGame implements ApplicationListener {
 
 	 if(gsm.introStart)
 	 {
-		 if(rsm._r > 0) rsm._r -= 2*dy;
-		 if(rsm._g > 0) rsm._g -= 2*dy;
+		 if(RectMana._r > 0) RectMana._r -= 2*dy;
+		 if(RectMana._g > 0) RectMana._g -= 2*dy;
 	 }
 	   
 	   for(int i = 0; i < columns; i++) {
@@ -162,7 +155,7 @@ public class BlokkGame implements ApplicationListener {
 		for(Movable[] rows : Movables) {
 	    	  for (Movable m1 : rows) {
 	    		  if(m1 == null) continue;
-	    		  m1.speed = -rsm.backgroundSpeed;
+	    		  m1.speed = -RectMana.backgroundSpeed;
 	        	  m1.update(dt);
 	        	  if(m1.y <= -size) m1 = null;//m1.y = 850;
 	    	  }
