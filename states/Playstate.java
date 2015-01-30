@@ -71,7 +71,7 @@ public class Playstate extends Gamestate{
 	{
 		
 		RectMana = RectMan;
-	      size = 64;
+	      size = 68;
 	      steps = size; //pixel perfect updating
 	      columns = 7;
 	      rows = 13;
@@ -130,10 +130,19 @@ public class Playstate extends Gamestate{
 	      movable.width = size;
 	      movable.height = size;
 	      movable.isBeingThrusted = false;
+	      
 		  Movables[movable.col][available_row] = movable;
+		  
+		  
+		  // tilraunastarfsemi
+//		  while (checkRowMatches(movable) == true) {
+//			  movable.typeOne = movable.randomizeType();
+//			  movable.typeOne = movable.randomizeType();
+//			  Movables[movable.col][available_row] = movable;
+//		  }
+		  
 	      lastDropTime = TimeUtils.nanoTime();
 	      warning[movable.col] +=1;
-	      dangerColumn();
 	   }
    //Spawns a new wave of blocks on a fixed interval
    private void spawnWave() {
@@ -165,10 +174,29 @@ public class Playstate extends Gamestate{
    }
    //Called when a block is deleted by thrusting it up above the loseCondition line
    //Deletes the movable, adds scores and plays sound
-   public void handleOutOfBounds(Movable m1){
+   public void killBlock(Movable m1){
 	   if (m1.y > loseCondition && m1.speed > 0){ 
 		   warning[m1.col] -= 1;
 		   Movables[m1.col][m1.row] = null;
+		   
+		   // ensure that there is no gap between blocks inside the array at any time
+		   int lowestEmptyIndex = -1;
+		   for (int i=0; i < rows; i++) {
+			   // find the first empty row in the same column as m1
+			   if (Movables[m1.col][i] == null && lowestEmptyIndex == -1) {
+				   lowestEmptyIndex = i;
+				   continue;
+			   }
+			   // this case only happens if there is a block with a higher index than 
+			   // the first empty one => there is a gap in the array
+			   else if (Movables[m1.col][i] != null && lowestEmptyIndex > -1) {
+				   Movable temp = new Movable(Movables[m1.col][i]);
+				   temp.row = lowestEmptyIndex;
+				   Movables[m1.col][lowestEmptyIndex] = temp;
+				   Movables[m1.col][i] = null;
+			   }
+		   }
+		   
 		   addScore(10);
 		   dangerColumn();
 		   destSound.play();
@@ -254,8 +282,8 @@ public class Playstate extends Gamestate{
 		int row = (int)(y/size);
 		int column = (int)(x/size);
 		  
-		selectedX = column*65 + size/2;
-		selectedY = row*65 + size/2;
+		selectedX = column*(size+1) + size/2;
+		selectedY = row*(size+1) + size/2;
 		
 		isSelected = true;
 		selectedM = locateMovable(x, y);
@@ -280,6 +308,7 @@ public class Playstate extends Gamestate{
 				  if (Movables[m1.col][m1.row-1] != null && m1 != Movables[m1.col][m1.row-1] && m1.intersects(Movables[m1.col][m1.row-1])) {
 					  Movable m2 = Movables[m1.col][m1.row-1];
 					  m1.speed = m2.speed;
+				      dangerColumn();
 					  if(m1.row == 11) gameLost();
 					  if(m1.speed>0){
 	    				  m1.isBeingThrusted = true;
@@ -289,10 +318,11 @@ public class Playstate extends Gamestate{
 				  }
     		  }
         	  m1.update(dy);
-        	  handleOutOfBounds(m1);
+        	  killBlock(m1);
     	  }
       }
 	}
+	
 	/**
    *Checks to see if the player did indeed move a block to a valid position and to find if he added *three or more together
    * @param m1 A moved Movable block by the user
@@ -374,11 +404,28 @@ public class Playstate extends Gamestate{
 
 		   }
 		   addScore(2);
-		   shootRows(index, count, row, false);
+		   shootRows(index, count, row, false);		   
 		   shootSound.play();
 	   }
-	   return;
    }
+   
+   // test fall - pls ignore
+//   public boolean isMatching(Movable m1) {
+//	   int count = 0;
+//	   int max = 0;
+//	   for (int i = 0; i < columns-1; i++) {
+//		   if (Movables[i][m1.row] == null || Movables[i+1][m1.row] == null) continue;
+//		   Movable m2 = new Movable(Movables[i+1][m1.row]);
+//		   if (isSameType(Movables[i][m1.row], m2.typeOne, m2.typeTwo)) {
+//			   count++;
+//			   max = count;
+//		   }
+//		   else count = 0;
+//	   }
+//	   if (max >= 3) return true;
+//	   return false;
+//   }
+   
    //Adds score to the players scorepool and prints on the interface
    private void addScore(int add)
    {
