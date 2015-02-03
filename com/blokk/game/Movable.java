@@ -25,22 +25,21 @@ public class Movable {
 	public long timeThrusted;
 	public long timeBlacked;
 	public boolean isBeingThrusted;
+	public boolean isPower;
+	public String power;
 	
 	/**	
 	*Constructs ablock, i.e. Movable
 	* @param isMovable A boolean which decides if the block is movable by the user
 	*/
 	public Movable(boolean isMovable) {
-//		col = randomizeSlot();
 		
 		if (isMovable) {
 			typeOne = randomizeType();
 			typeTwo = randomizeType();
-//			type = createType();
 		}
 		else {
 			typeOne = null;
-//			type = black;
 		}
 	}
 	
@@ -63,6 +62,8 @@ public class Movable {
 		timeThrusted = m.timeThrusted;
 		isBeingThrusted = m.isBeingThrusted;
 		timeBlacked = Long.MAX_VALUE;
+		isPower = m.isPower;
+		power = m.power;
 	}
 	
 	/**

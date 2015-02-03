@@ -16,13 +16,11 @@ public class Loststate extends Gamestate{
 
 	private RectTex GameOver;
 	private RectTex Back;
-	private RectangleManager RectMana;
-	private boolean higher;
-	private int scoreOne;
-	private int scoreTwo;
-	private int scoreThr;
+	private RectangleManager R_Man;
 	
-	private String scoreMade;
+	private String[] scoreMade;
+			
+	private String[] drawBestScore;
 	
 	private BitmapFont font;
 	private String better;
@@ -37,40 +35,47 @@ public class Loststate extends Gamestate{
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
-		RectMana = RectMan;
-		GameOver = RectMana.Over;
-		Back = RectMana.Back;
+		R_Man = RectMan;
+		GameOver = R_Man.Over;
+		Back = R_Man.Back;
+		scoreMade = new String[4];
+		drawBestScore = new String[4];
+		for(int i = 0; i < 4; i++)
+		{
+			scoreMade[i] = Integer.toString(R_Man.currentScore[i]);
+			drawBestScore[i] = Integer.toString(R_Man.sumRecordHolder[i]);
+		}
 		
-		scoreMade = Integer.toString(RectMana.currScore);
-		higher = RectMana.grats;
-		scoreOne = RectMana.one;
-		scoreTwo = RectMana.two;
-		scoreThr = RectMana.thr;
-		
-		font = RectMana.font;
-		better = RectMana.betterString;
-		worse = RectMana.worseString;
-		
+		font = R_Man.font;
+		better = R_Man.betterString;
+		worse = R_Man.worseString;
 		
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		if(RectMana._r < 1) RectMana._r += dt;
-		if(RectMana._g < 0.7) RectMana._g += dt;
-		if(RectMana._w > 0) RectMana._w -= 3*dt;
+		if(R_Man._r < 1) R_Man._r += dt;
+		if(R_Man._g < 0.7) R_Man._g += dt;
+		if(R_Man._w > 0) R_Man._w -= 3*dt;
 	}
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
 		batch.draw(GameOver.tex, GameOver.x, GameOver.y);
-		if(higher)font.draw(batch,better , 60, 625);
+		if(R_Man.grats)font.draw(batch,better , 60, 625);
 		else font.draw(batch,worse , 45, 625);
-		font.draw(batch,"Your score was : " + scoreMade , 105, 575);
-		
-		font.draw(batch, "1st : " + scoreOne, 175, 500);
-		font.draw(batch, "2nd : " + scoreTwo, 175, 400);
-		font.draw(batch, "3rd : " + scoreThr, 175, 300);
+		font.draw(batch,"Your score was :", 135, 575);
+		batch.draw(R_Man.ScoreBoard, 105, 440);
+		for(int i = 0; i < 4 ; i++)
+		{
+			font.draw(batch, scoreMade[i], 130+70*i, 500);
+		}
+		font.draw(batch,"Your best score is :", 115, 420);
+		batch.draw(R_Man.ScoreBoard, 105, 285);
+		for(int i = 0; i < 4 ; i++)
+		{
+			font.draw(batch, drawBestScore[i], 130+70*i, 345);
+		}
 		
 		batch.draw(Back.tex, Back.x, Back.y);
 	}

@@ -1,7 +1,6 @@
 package com.blokk.game;
 
 import managers.GameStateManager;
-import com.badlogic.gdx.audio.Music;
 import managers.MyInputProcessor;
 import managers.RectangleManager;
 
@@ -77,8 +76,7 @@ public class BlokkGame implements ApplicationListener {
    public void render() {
       Gdx.gl.glClearColor(RectMana._r+RectMana._w, RectMana._g, 0, 1);
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-      
+   
       dy = Gdx.graphics.getDeltaTime()/3;
       gsm.update(dy);
       
@@ -94,15 +92,16 @@ public class BlokkGame implements ApplicationListener {
       MyInputProcessor inputProcessor = new MyInputProcessor();
       Gdx.input.setInputProcessor(inputProcessor);
       
-      if (Gdx.input.justTouched()) {
-    	  
+      if (Gdx.input.justTouched()) 
+      {  
     	  Vector3 touchPosOld = new Vector3();
     	  touchPosOld.set(Gdx.input.getX(),Gdx.input.getY(),0);
     	  camera.unproject(touchPosOld);
     	  gsm.justTouched(touchPosOld.x, touchPosOld.y);
       }
       
-      if(Gdx.input.isTouched()) {
+      if(Gdx.input.isTouched()) 
+      {
          Vector3 touchPos = new Vector3();
          touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
          camera.unproject(touchPos);

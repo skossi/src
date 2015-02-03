@@ -13,7 +13,7 @@ public class Storestate extends Gamestate {
 
 	   private RectTex Back;
 	   private RectTex Store;
-	   private RectangleManager RectMana;
+	   private RectangleManager R_Man;
 	   
 	   private int scoreOne;
 	   private int scoreTwo;
@@ -33,14 +33,14 @@ public class Storestate extends Gamestate {
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
-		RectMana = RectMan;
+		R_Man = RectMan;
 
-		Store = RectMana.Store;
-		Back = RectMana.Back;
+		Store = R_Man.Store;
+		Back = R_Man.Back;
 		
-		font = RectMana.font;
+		font = R_Man.font;
 		
-		dispCurrency = Integer.toString(RectMana.currency);
+		dispCurrency = Integer.toString(R_Man.currency);
 	      
 	}
 	//See abstrakt class Gamestate update(float dt);

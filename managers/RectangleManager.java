@@ -4,6 +4,7 @@ import states.RectTex;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -12,8 +13,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 //Creates Manager that was originally supposed to take care of all rectangles for the game.
 //Was changed to be also resource manager 18.11.2014
 public class RectangleManager 
-{
-	
+{	
 	public boolean firstTime;
 	
 	//Textures for gameplay
@@ -29,7 +29,7 @@ public class RectangleManager
 	public Texture ui_soundOff;
 	public Texture pauseBlock;
 	public Texture redline;
-	
+	public Texture ScoreBoard;
 	
 	//Menu
 	public RectTex Menu;
@@ -49,6 +49,7 @@ public class RectangleManager
 	
 	//Score
 	public RectTex Score;
+	//public RectTex ScoreBoard;
 	//Store
 	public RectTex Store;
 	
@@ -57,10 +58,12 @@ public class RectangleManager
 	public RectTex Over;
 	//preferences
 	private Preferences prefs;
+	
 	//ScoreHolder
-	public int one, two, thr;
+	public int sumRecord,squareRecord, triangleRecord, circleRecord, exRecord;
+	public int[] sumRecordHolder;
 	public boolean grats;
-	public int currScore;
+	public int[] currentScore;
 	public int currency;
 	
 	//RGB values
@@ -74,17 +77,24 @@ public class RectangleManager
 	public String betterString;
 	public String worseString;
 	
-	//Main themesound
+	//Main themesound and audio effects
+	public float Volume;
 	public boolean isMuted;
 	private Music mainTheme;
+	public Sound destSound;
+	public Sound shootSound;
+	public Sound pauseSound;
+	public Sound muteSound;
 	
 	//Creates a resource entity each time the game is opened
 	public RectangleManager()
 	{
-		getScores();
 		createTextures();
 		createButtons();
-		
+		createSounds();
+		sumRecordHolder = new int[4];
+		getScores();
+
 		firstTime = prefs.getBoolean("First");
 		
 		_r = 1f;
@@ -99,18 +109,20 @@ public class RectangleManager
 	    betterString = "Congratulations, new score!";
 	    worseString = "Sorry, no high score was made.";
 	    
-	    mainTheme = Gdx.audio.newMusic(Gdx.files.internal("mainTheme.mp3"));
-
-	    // start the playback of the background music immediately
-	    mainTheme.setLooping(true);
-	    mainTheme.play();
-	    
 	}
 	//Mutes or unmutes the maintheme of the game
 	public void soundMute()
 	{
-		if(!isMuted)mainTheme.setVolume(0);
-		else mainTheme.setVolume(1);
+		if(!isMuted)
+		{	
+			Volume = 0;
+			mainTheme.setVolume(Volume);
+		}
+		else
+		{
+			Volume = 1;
+			mainTheme.setVolume(1);
+		}
 		isMuted =! isMuted;
 	}
 	//If user opens the game for the first time, the tutorial screen is set. 
@@ -126,40 +138,59 @@ public class RectangleManager
 	private void getScores()
 	{
 		prefs = Gdx.app.getPreferences("My Preferences");
-		one = prefs.getInteger("One");
-		two = prefs.getInteger("Two");
-		thr = prefs.getInteger("Thr");
+		//Best overall Score
+		sumRecord = prefs.getInteger("SumRecord");
+		sumRecordHolder[0] = prefs.getInteger("SumRecordSquare");
+		sumRecordHolder[1] = prefs.getInteger("SumRecordTriangle");
+		sumRecordHolder[2] = prefs.getInteger("SumRecordCircle");
+		sumRecordHolder[3] = prefs.getInteger("SumRecordEx");
+		//Individual blocks
+		squareRecord = prefs.getInteger("SquareRecord");
+		triangleRecord = prefs.getInteger("triangleRecord");
+		circleRecord =  prefs.getInteger("CircleRecord");
+		exRecord = prefs.getInteger("ExRecord");
 		currency = prefs.getInteger("currency");
 	}
 	//Takes in parameter newScore that is players score when game is lost. 
 	//Gets preferences and checks if a new high score was made
 	//if so, it saves it and refreshes the preferences.
-	public void checkScore(int newScore)
+	public void checkScore(int[] newScore)
 	{
-		currScore = newScore;
-		grats = true;
+		currentScore = newScore;
+		grats = false;
 		getScores();
-		if(newScore >= one)
-		{	
-			prefs.putInteger("One", newScore);
-			prefs.putInteger("Two", one);
-			prefs.putInteger("Thr", two);
-		}
-		else if(newScore >= two)
+		//Check if the sum of all bricks are new record
+		int sum = 0;
+		for(int i = 0; i < 4; i++)
 		{
-			prefs.putInteger("Two", newScore);
-			prefs.putInteger("Thr", two);
+			sum += newScore[i];
 		}
-		else if(newScore >= thr)
+		if(sum > sumRecord) 
 		{
-			prefs.putInteger("Thr", newScore);
+			sumRecordHolder[0] = newScore[0];
+			sumRecordHolder[1] = newScore[1];
+			sumRecordHolder[2] = newScore[2];
+			sumRecordHolder[3] = newScore[3];
+			prefs.putInteger("SumRecord",sum);
+			prefs.putInteger("SumRecordSquare", newScore[0]);
+			prefs.putInteger("SumRecordTriangle", newScore[1]);
+			prefs.putInteger("SumRecordCircle", newScore[2]);
+			prefs.putInteger("SumRecordEx", newScore[3]);
+			grats = true;
 		}
-		else grats = false;
+
+		//Check if we made a new record of different cubes
+		if(newScore[0] > squareRecord) prefs.putInteger("SquareRecord", newScore[0]);
+		if(newScore[1] > triangleRecord) prefs.putInteger("TriangleRecord", newScore[1]);
+		if(newScore[2] > circleRecord) prefs.putInteger("CircleRecord", newScore[2]);
+		if(newScore[3] > exRecord) prefs.putInteger("ExRecord", newScore[3]);
+
 		
-		int temp = currency;
+		//TODO : Here we need to add all the blocks to currency. Impliment when store is made
+		/*int temp = currency;
 		temp += newScore;
 		prefs.putInteger("currency", temp);
-		
+		*/
 		
 		prefs.flush();
 		getScores();
@@ -174,6 +205,22 @@ public class RectangleManager
 		EnterTut.y = 150;
 		EnterStore.y = 50;
 	}
+	private void createSounds()
+	{
+		//Sounds initiated
+	    mainTheme = Gdx.audio.newMusic(Gdx.files.internal("mainTheme.mp3"));
+	    destSound = Gdx.audio.newSound(Gdx.files.internal("destroy.wav"));
+		shootSound = Gdx.audio.newSound(Gdx.files.internal("shoot.wav"));
+		muteSound = Gdx.audio.newSound(Gdx.files.internal("muteSound.mp3"));
+		pauseSound = Gdx.audio.newSound(Gdx.files.internal("pauseSound.wav"));
+
+	    // start the playback of the background music immediately
+	    mainTheme.setLooping(true);
+	    mainTheme.play();
+	    
+	    Volume = 1;
+	}
+	
 	private void createTextures()
 	{
 		square = new Texture(Gdx.files.internal("square.png"));
@@ -188,6 +235,7 @@ public class RectangleManager
 		ui_soundOn = new Texture(Gdx.files.internal("soundOn.png"));
 		ui_soundOff = new Texture(Gdx.files.internal("soundOff.png"));
 		pauseBlock = new Texture(Gdx.files.internal("pauseBlock.png"));
+		ScoreBoard = new Texture(Gdx.files.internal("scoreboard.png"));
 	}
 	
 	//creates all buttons that are used in the game architecture except the blocks in the main game
@@ -303,7 +351,14 @@ public class RectangleManager
 		height = StoreLogoTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
 		yHolder = 700;
-		Store = new RectTex(xHolder, yHolder, width, height, StoreLogoTex);	
+		Store = new RectTex(xHolder, yHolder, width, height, StoreLogoTex);
+		/*
+		Texture ScoreBoardTex = new Texture(Gdx.files.internal("scoreboard.png"));
+		width = ScoreBoardTex.getWidth();
+		height = ScoreBoardTex.getHeight();
+		xHolder = 480/2 - width/2;
+		yHolder = 50;
+		ScoreBoard = new RectTex(xHolder,yHolder,width, height, ScoreBoardTex);*/
 		//Game Over Logo
 		Texture OverTex = new Texture(Gdx.files.internal("logo_over.png"));
 		width = OverTex.getWidth();

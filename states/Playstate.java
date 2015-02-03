@@ -28,36 +28,18 @@ public class Playstate extends Gamestate{
 	   private int size;
 	   private float selectedX;
 	   private float selectedY;
-	   private Texture square;
-	   private Texture triangle;
-	   private Texture circle;
-	   private Texture ex;
-	   private Texture black;
-	   private Texture selected;
-	   private Texture ui_bg;
-	   private Texture ui_pause;
-	   private Texture ui_soundOn;
-	   private Texture ui_soundOff;
-	   private Texture pauseBlock;
-	   private Texture redline;
-	   private String currScore;
-	   private int score;
+	   private int[] swapScores;
+	   private String[] drawSwapScores;
 	   private int steps;
-	   private RectangleManager RectMana;
+	   private RectangleManager R_Man;
 	   private UI UI;
 	   private BitmapFont font;
 	   private Movable selectedM;
 	   private long lastWave;
-	   private Sound destSound;
-	   private Sound shootSound;
-	   private Sound pauseSound;
-	   private Sound muteSound;
 	   private int loseCondition;
 	   // public static for global access
 	   public static boolean isSelected;
 	   public static double difficulty;
-	   
-	   
 	   private int[] warning;
 	   
 	//Constructor
@@ -69,36 +51,20 @@ public class Playstate extends Gamestate{
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
-		RectMana = RectMan;
+		R_Man = RectMan;
 		size = 64;
 		steps = size; //pixel perfect updating
 		columns = 7;
 		rows = 13;
 		warning = new int[rows];
 		Movables = new Movable[columns][rows];
-		square = RectMan.square;
-		triangle = RectMan.triangle;
-		circle = RectMan.circle;
-		ex = RectMan.circle;
-		black = RectMan.black;
-		selected = RectMan.selected;
-		ui_bg = RectMan.ui_bg;
-		redline = RectMan.redline;
-		ui_pause = RectMana.ui_pause;
-		ui_soundOn = RectMana.ui_soundOn;
-		ui_soundOff = RectMana.ui_soundOff;
-		pauseBlock = RectMana.ui_soundOff;
-		destSound = Gdx.audio.newSound(Gdx.files.internal("destroy.wav"));
-		shootSound = Gdx.audio.newSound(Gdx.files.internal("shoot.wav"));
-		muteSound = Gdx.audio.newSound(Gdx.files.internal("muteSound.mp3"));
-		pauseSound = Gdx.audio.newSound(Gdx.files.internal("pauseSound.wav"));
 		lastWave = 0;
 		UI = new UI(0, 0, 480, 64);
-		font = RectMana.font;
-		score = 0;
+		font = R_Man.font;
 		difficulty = 1.0;
-		currScore = "0";
 		loseCondition = 720;
+		swapScores = new int[4];
+		drawSwapScores = new String[]{"0","0","0","0"};
 		prepareMatrix();
 	}
 	/**
@@ -122,6 +88,16 @@ public class Playstate extends Gamestate{
 	    		  break;
 	    	  }
 	      }
+	      
+	      double givePower = Math.random();
+	      if(givePower < 0.15)
+	      {
+	    	  movable.isPower = true;
+	    	  double whichPower = Math.random();
+	    	  if(whichPower < 0.5) movable.power = "10";
+	    	  else movable.power = "2x";
+	      }
+	      else movable.isPower = false;
 	      movable.row = available_row;
 	      movable.x = (size+1)*movable.col;
 	      movable.y = 800;
@@ -159,6 +135,7 @@ public class Playstate extends Gamestate{
 	       movable.height = size;
 	       movable.isBeingThrusted = false;
 	       movable.x = (size+1)*i;
+	       movable.isPower = false;
 		   Movables[i][0] = movable;
 	   }
    }
@@ -168,17 +145,17 @@ public class Playstate extends Gamestate{
 	   if (m1.y > loseCondition && m1.speed > 0){ 
 		   warning[m1.col] -= 1;
 		   Movables[m1.col][m1.row] = null;
-		   addScore(10);
+		   //addScore(10);
 		   dangerColumn();
-		   destSound.play();
+		   R_Man.destSound.play(R_Man.Volume);
 	   }	   
    }
    //Colors the background red according to the highest column
    private void dangerColumn()
    {
 	   int i = whichColumn(warning, rows)-8;//threshold so the background wont turn red just yet
-	   if(i >= 0)RectMana._w = i/5f;
-	   else RectMana._w = 0;
+	   if(i >= 0)R_Man._w = i/5f;
+	   else R_Man._w = 0;
    }
    //Returns how big the largest column is
    public static int whichColumn(int[] warning, int rows)
@@ -198,8 +175,8 @@ public class Playstate extends Gamestate{
    */   
 	private Texture createType(Boolean typeOne, boolean typeTwo) 
 	{
-			if (typeOne == null) return black;
-			return (typeOne ? (typeTwo ? square : circle) : (typeTwo ? triangle : ex));
+			if (typeOne == null) return R_Man.black;
+			return (typeOne ? (typeTwo ? R_Man.square : R_Man.circle) : (typeTwo ? R_Man.triangle : R_Man.ex));
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
@@ -220,18 +197,28 @@ public class Playstate extends Gamestate{
 	      for(int i = 0; i < columns; i++) {
 	    	  for (int j = 0; j < rows; j++) {
 	    		  Movable m = Movables[i][j];
-	    		  if (m != null) batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); // afhverju ekki m.type h�r?
+	    		  if (m != null)
+	    		  {		batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
+		    		  if(m.isPower)font.draw(batch, m.power, m.x+size/4, m.y+size-15);//just seeing how it looks
+	    			  
+	    		  }
 	    	  }
 	      }
-	      batch.draw(redline, 0, loseCondition);
-	      if(isSelected)batch.draw(selected, selectedX-size/2, selectedY-size/2);
-	      batch.draw(ui_bg, UI.x, UI.y, UI.width, UI.height);
-	      batch.draw(ui_pause,UI.x,UI.y,64,64);
-	      if(RectMana.isMuted) batch.draw(ui_soundOff,416,UI.y,64,64);
-	      else batch.draw(ui_soundOn,416,UI.y,64,64);
-	      font.draw(batch, "Score : " + currScore, 120, 50);
-	      if(isPaused)batch.draw(pauseBlock,0,64,480,734);
-	      //pauseBlock;
+	      batch.draw(R_Man.redline, 0, loseCondition);
+	      if(isSelected)batch.draw(R_Man.selected, selectedX-size/2, selectedY-size/2);
+	      batch.draw(R_Man.ui_bg, UI.x, UI.y, UI.width, UI.height);
+	      batch.draw(R_Man.ui_pause,UI.x,UI.y,64,64);
+	      if(R_Man.isMuted) batch.draw(R_Man.ui_soundOff,416,UI.y,64,64);
+	      else batch.draw(R_Man.ui_soundOn,416,UI.y,64,64);
+	      
+	      //Draw all the numbers of swapped blocks here
+	      //font.draw(batch, currScore, 120, 50);
+	      for(int i = 0; i < 4; i++)
+	      {
+	    	  font.draw(batch, drawSwapScores[i], 130+70*i, 45); 	  
+	      }
+	      
+	      if(isPaused)batch.draw(R_Man.pauseBlock,0,64,480,734);
 
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
@@ -242,12 +229,12 @@ public class Playstate extends Gamestate{
 		if(barPress == 1) 
 		{
 			isPaused =! isPaused;
-			pauseSound.play();
+			R_Man.pauseSound.play(R_Man.Volume);
 		}
 		if(barPress == 4)
 		{
-			RectMana.soundMute();
-			muteSound.play();
+			R_Man.soundMute();
+			R_Man.muteSound.play();
 		}
 		
 		int row = (int)(y/size);
@@ -319,8 +306,7 @@ public class Playstate extends Gamestate{
 			   if( isSameType(Movables[col][i], typeOne, typeTwo)){
 				   if(Movables[col][i].speed == 0){
 					   count++;   
-				   }
-				   
+				   }   
 			   } else{
 				   break;
 			   }
@@ -333,7 +319,7 @@ public class Playstate extends Gamestate{
 	   }
 	   if(count > 1){
 		   for(int j = index; j < index+count; j++){
-			   Movables[col][j].type = circle;
+			   Movables[col][j].type = R_Man.circle;
 		   }
 	   }
 	   return;
@@ -354,8 +340,7 @@ public class Playstate extends Gamestate{
 			   if( isSameType(Movables[i][row], typeOne, typeTwo)){
 				   if(Movables[i][row].speed == 0){
 					   count++;   
-				   }
-				   
+				   }   
 			   } else{
 				   break;
 			   }
@@ -367,23 +352,35 @@ public class Playstate extends Gamestate{
 		   count = 0;
 	   }
 	   if(count > 2){
-		   for(int j = index; j < index+count; j++){
+		   int scoreToAdd = count;
+		   int multiplier = 1;
+		   for(int j = index; j < index+count; j++){ 
+			   if(Movables[j][row].isPower)
+			   {
+				   if(Movables[j][row].power == "10") scoreToAdd += 10;
+				   if(Movables[j][row].power == "2x") multiplier += 1;
+				   Movables[j][row].isPower = false;
+				   Movables[j][row].power = "";
+			   }
+			   
 				Movables[j][row].typeOne = null;
 				Movables[j][row].timeBlacked = System.currentTimeMillis();
-
 		   }
-		   addScore(2);
+		   scoreToAdd *= multiplier;
+		   addScore(typeOne, typeTwo, scoreToAdd);
 		   shootRows(index, count, row, false);
-		   shootSound.play();
+		   R_Man.shootSound.play(R_Man.Volume);
 	   }
 	   return;
    }
-   //Adds score to the players scorepool and prints on the interface
-   private void addScore(int add)
-   {
-	   score += add;
-	   currScore = Integer.toString(score);
-   }
+
+   //This should be fixed. 
+	private void addScore(Boolean typeOne, boolean typeTwo, int aScore) 
+	{
+		int swapToAdd = typeOne ? (typeTwo ? 0 : 2) : (typeTwo ? 1 : 3);
+		swapScores[swapToAdd] += aScore;
+		drawSwapScores[swapToAdd] = Integer.toString(swapScores[swapToAdd]);
+	}
    //Gives the 3 or more blocks combined speed that thrusts them up.
    //Takes in parameters index and row that represents its columns and rows
    //The parameter isBeingThrusted is used for debugging tools
@@ -458,7 +455,6 @@ public class Playstate extends Gamestate{
 			   return;
 		   }
 		   
-		   
 		   if (y < selectedY - size) {
 			   if (Movables[col][row-1] == null) return;
 			   Movable targetM = new Movable(Movables[col][row-1]);
@@ -504,8 +500,8 @@ public class Playstate extends Gamestate{
 	//Saves current score and sets the state to Lost. Called when game is lost
 	public void gameLost()
 	{
-		RectMana.checkScore(score);
+		R_Man.checkScore(swapScores);
 		gsm.setState(GameStateManager.LOST);
-		RectMana.resetMenu();
+		R_Man.resetMenu();
 	}	
 }

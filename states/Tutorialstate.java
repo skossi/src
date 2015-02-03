@@ -19,7 +19,7 @@ public class Tutorialstate extends Gamestate {
 	 private int infoDisp;
 	
 	 private Texture[] infoTex;
-	 private RectangleManager RectMana;
+	 private RectangleManager R_Man;
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
 	public Tutorialstate(GameStateManager gsm)
@@ -29,19 +29,19 @@ public class Tutorialstate extends Gamestate {
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
-		RectMana = RectMan;
-		Tutorial = RectMana.Tutorial;
-		Info = RectMana.Info;
-		ObjBar = RectMana.ObjBar;
-		CtrBar = RectMana.CtrBar;
-		ScrBar = RectMana.ScrBar;
+		R_Man = RectMan;
+		Tutorial = R_Man.Tutorial;
+		Info = R_Man.Info;
+		ObjBar = R_Man.ObjBar;
+		CtrBar = R_Man.CtrBar;
+		ScrBar = R_Man.ScrBar;
 		
-		infoTex = RectMana.infoTex;
+		infoTex = R_Man.infoTex;
 		infoDisp = 3;
 		
-		if(!RectMana.firstTime)RectMana.firstDone();
+		if(!R_Man.firstTime)R_Man.firstDone();
 		
-		Back = RectMana.Back;
+		Back = R_Man.Back;
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)

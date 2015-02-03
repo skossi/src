@@ -22,7 +22,7 @@ public class Menustate extends Gamestate {
 	 private int downSpeed;
 	 public boolean intro;
 	// private RectangleAdd RectangleManager;
-	 private RectangleManager RectMana;
+	 private RectangleManager R_Man;
 	 private int speedAdd;
 	 private Sound gameSound;
 	   
@@ -39,14 +39,14 @@ public class Menustate extends Gamestate {
 		gsm.introEnd = false;
 		intro = false;
 			
-		RectMana = RectMan;
-		RectMana.backgroundSpeed = 600;
-		downSpeed = RectMana.backgroundSpeed;	
-		Menu = RectMana.Menu;
-		Play = RectMana.EnterPlay;
-		Score = RectMana.EnterScore;
-		Tutorial = RectMana.EnterTut;
-		Store = RectMana.EnterStore;
+		R_Man = RectMan;
+		R_Man.backgroundSpeed = 600;
+		downSpeed = R_Man.backgroundSpeed;	
+		Menu = R_Man.Menu;
+		Play = R_Man.EnterPlay;
+		Score = R_Man.EnterScore;
+		Tutorial = R_Man.EnterTut;
+		Store = R_Man.EnterStore;
 		speedAdd = 1;
 		gameSound = Gdx.audio.newSound(Gdx.files.internal("startup.wav"));
 		
@@ -56,8 +56,8 @@ public class Menustate extends Gamestate {
 	{
 		if(intro)
 		{
-			RectMana.backgroundSpeed +=speedAdd;
-			downSpeed = RectMana.backgroundSpeed;
+			R_Man.backgroundSpeed +=speedAdd;
+			downSpeed = R_Man.backgroundSpeed;
 			Menu.y -= downSpeed*dt;
 			Play.y -= downSpeed*dt;
 			Score.y -= downSpeed*dt;
@@ -85,7 +85,7 @@ public class Menustate extends Gamestate {
 		{
 			gsm.introStart = true; 
 			intro = true;
-			gameSound.play();
+			gameSound.play(R_Man.Volume);
 		}
 		if(buttonClick(Score,x,y))gsm.setState(GameStateManager.SCORE);
 		if(buttonClick(Tutorial,x,y))gsm.setState(GameStateManager.TUTORIAL);
