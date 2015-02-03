@@ -103,7 +103,7 @@ public class Movable {
 	/**
  	*  A function for randoming the types of the Movable blocks, each being a combination of two booleans
  	*/
-	private boolean randomizeType() {
+	public boolean randomizeType() {
 		boolean type = false;
 		
 		if (Math.random() < 0.5) type = true;

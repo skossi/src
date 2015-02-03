@@ -55,7 +55,7 @@ public class BlokkGame implements ApplicationListener {
       RectMana = new RectangleManager();
       gsm = new GameStateManager(RectMana);
       
-      size = 64;
+      size = 68;
       steps = size; //pixel perfect updating
       columns = 7;
       rows = 13;
