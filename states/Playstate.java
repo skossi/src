@@ -242,9 +242,9 @@ public class Playstate extends Gamestate{
 	      //Draw all the numbers of swapped blocks here
 	      for(int i = 0; i < 4; i++)
 	      {
-	    	  if(drawSwapScores[i].length() == 3)font.draw(batch, drawSwapScores[i], 110+size*i, 875); 
-	    	  else if(drawSwapScores[i].length() == 2)font.draw(batch, drawSwapScores[i], 120+size*i, 875);
-	    	  else font.draw(batch, drawSwapScores[i], 130+size*i, 875); 	  
+	    	  if(drawSwapScores[i].length() == 3)font.draw(batch, drawSwapScores[i], 110+size*i, 775); 
+	    	  else if(drawSwapScores[i].length() == 2)font.draw(batch, drawSwapScores[i], 120+size*i, 775);
+	    	  else font.draw(batch, drawSwapScores[i], 130+size*i, 775); 	  
 	      }
 	      if(isPaused)batch.draw(R_Man.pauseBlock,0,0,480,800-size);
 

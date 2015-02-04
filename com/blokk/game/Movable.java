@@ -35,8 +35,8 @@ public class Movable {
 	public Movable(boolean isMovable) {
 		timeBlacked = Long.MAX_VALUE;
 		if (isMovable) {
-			typeOne = false;
-			typeTwo = true;
+			typeOne = randomizeType();//false;
+			typeTwo = randomizeType();//true;
 		}
 		else {
 			typeOne = null;
