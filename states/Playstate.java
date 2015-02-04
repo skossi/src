@@ -94,7 +94,7 @@ public class Playstate extends Gamestate{
 	      {
 	    	  movable.isPower = true;
 	    	  double whichPower = Math.random();
-	    	  if(whichPower < 0.5) movable.power = "10";
+	    	  if(whichPower < 0.3) movable.power = "50";
 	    	  else movable.power = "2x";
 	      }
 	      else movable.isPower = false;
@@ -152,10 +152,9 @@ public class Playstate extends Gamestate{
    //Deletes the movable, adds scores and plays sound
    public void killBlock(Movable m1){
 	   if (m1.y > loseCondition && m1.speed > 0){ 
+		   addScore(Movables[m1.col][m1.row].typeOne, Movables[m1.col][m1.row].typeTwo,1);
 		   warning[m1.col] -= 1;
 		   Movables[m1.col][m1.row] = null;
-
-		   
 		   // ensure that there is no gap between blocks inside the array at any time
 		   int lowestEmptyIndex = -1;
 		   for (int i=0; i < rows; i++) {
@@ -240,12 +239,12 @@ public class Playstate extends Gamestate{
 	      else batch.draw(R_Man.ui_soundOn,416,UI.y,64,64);
 	      
 	      //Draw all the numbers of swapped blocks here
-	      //font.draw(batch, currScore, 120, 50);
 	      for(int i = 0; i < 4; i++)
 	      {
-	    	  font.draw(batch, drawSwapScores[i], 130+70*i, 45); 	  
+	    	  if(drawSwapScores[i].length() == 3)font.draw(batch, drawSwapScores[i], 110+size*i, 45); 
+	    	  else if(drawSwapScores[i].length() == 2)font.draw(batch, drawSwapScores[i], 120+size*i, 45);
+	    	  else font.draw(batch, drawSwapScores[i], 130+size*i, 45); 	  
 	      }
-	      
 	      if(isPaused)batch.draw(R_Man.pauseBlock,0,64,480,734);
 
 	}
@@ -387,7 +386,7 @@ public class Playstate extends Gamestate{
 		   for(int j = index; j < index+count; j++){ 
 			   if(Movables[j][row].isPower)
 			   {
-				   if(Movables[j][row].power == "10") scoreToAdd += 10;
+				   if(Movables[j][row].power == "50") scoreToAdd += 50;
 				   if(Movables[j][row].power == "2x") multiplier += 1;
 				   Movables[j][row].isPower = false;
 				   Movables[j][row].power = "";
@@ -406,6 +405,7 @@ public class Playstate extends Gamestate{
    //This should be fixed. 
 	private void addScore(Boolean typeOne, boolean typeTwo, int aScore) 
 	{
+		if(typeOne == null) return;
 		int swapToAdd = typeOne ? (typeTwo ? 0 : 2) : (typeTwo ? 1 : 3);
 		swapScores[swapToAdd] += aScore;
 		drawSwapScores[swapToAdd] = Integer.toString(swapScores[swapToAdd]);

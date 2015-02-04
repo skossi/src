@@ -62,9 +62,13 @@ public class RectangleManager
 	//ScoreHolder
 	public int sumRecord,squareRecord, triangleRecord, circleRecord, exRecord;
 	public int[] sumRecordHolder;
+	public int[] squareRecordHolder;
+	public int[] triangleRecordHolder;
+	public int[] circleRecordHolder;
+	public int[] exRecordHolder;
 	public boolean grats;
 	public int[] currentScore;
-	public int currency;
+	public int[] currency;
 	
 	//RGB values
 	public float _r;
@@ -93,6 +97,10 @@ public class RectangleManager
 		createButtons();
 		createSounds();
 		sumRecordHolder = new int[4];
+		squareRecordHolder = new int[4];
+		triangleRecordHolder = new int[4];
+		circleRecordHolder = new int[4];
+		exRecordHolder = new int[4];
 		getScores();
 
 		firstTime = prefs.getBoolean("First");
@@ -145,11 +153,33 @@ public class RectangleManager
 		sumRecordHolder[2] = prefs.getInteger("SumRecordCircle");
 		sumRecordHolder[3] = prefs.getInteger("SumRecordEx");
 		//Individual blocks
+		//Square
 		squareRecord = prefs.getInteger("SquareRecord");
+		squareRecordHolder[0] = prefs.getInteger("SquareRecord");
+		squareRecordHolder[1] = prefs.getInteger("SquareRecordTriangle");
+		squareRecordHolder[2] = prefs.getInteger("SquareRecordCircle");
+		squareRecordHolder[3] = prefs.getInteger("SquareRecordEx");
+		System.out.println(squareRecordHolder[0]);
+		//Triangle
 		triangleRecord = prefs.getInteger("triangleRecord");
+		triangleRecordHolder[0] = prefs.getInteger("TriangleRecordSquare");
+		triangleRecordHolder[1] = prefs.getInteger("TriangleRecord");
+		triangleRecordHolder[2] = prefs.getInteger("TriangleRecordCircle");
+		triangleRecordHolder[3] = prefs.getInteger("TriangleRecordEx");
+		//Circle
 		circleRecord =  prefs.getInteger("CircleRecord");
-		exRecord = prefs.getInteger("ExRecord");
-		currency = prefs.getInteger("currency");
+		circleRecordHolder[0] = prefs.getInteger("CircleRecordSquare");
+		circleRecordHolder[1] = prefs.getInteger("CircleRecordTriangle");
+		circleRecordHolder[2] = prefs.getInteger("CircleRecord");
+		circleRecordHolder[3] = prefs.getInteger("CircleRecordEx");
+		//Ex
+		exRecord = prefs.getInteger("ExRecord");	
+		exRecordHolder[0] = prefs.getInteger("ExRecordSquare");
+		exRecordHolder[1] = prefs.getInteger("ExRecordTriangle");
+		exRecordHolder[2] = prefs.getInteger("ExRecordCircle");
+		exRecordHolder[3] = prefs.getInteger("ExRecord");
+				
+		//currency = prefs.getInteger("currency");
 	}
 	//Takes in parameter newScore that is players score when game is lost. 
 	//Gets preferences and checks if a new high score was made
@@ -167,10 +197,7 @@ public class RectangleManager
 		}
 		if(sum > sumRecord) 
 		{
-			sumRecordHolder[0] = newScore[0];
-			sumRecordHolder[1] = newScore[1];
-			sumRecordHolder[2] = newScore[2];
-			sumRecordHolder[3] = newScore[3];
+			CopyArray(sumRecordHolder,newScore);
 			prefs.putInteger("SumRecord",sum);
 			prefs.putInteger("SumRecordSquare", newScore[0]);
 			prefs.putInteger("SumRecordTriangle", newScore[1]);
@@ -180,10 +207,42 @@ public class RectangleManager
 		}
 
 		//Check if we made a new record of different cubes
-		if(newScore[0] > squareRecord) prefs.putInteger("SquareRecord", newScore[0]);
-		if(newScore[1] > triangleRecord) prefs.putInteger("TriangleRecord", newScore[1]);
-		if(newScore[2] > circleRecord) prefs.putInteger("CircleRecord", newScore[2]);
-		if(newScore[3] > exRecord) prefs.putInteger("ExRecord", newScore[3]);
+		if(newScore[0] > squareRecord)
+		{
+			CopyArray(squareRecordHolder,newScore);
+			prefs.putInteger("SquareRecord", newScore[0]);
+			prefs.putInteger("SquareRecordTriangle", newScore[1]);
+			prefs.putInteger("SquareRecordCircle", newScore[2]);
+			prefs.putInteger("SquareRecordEx", newScore[3]);
+			grats = true;
+		}
+		if(newScore[1] > triangleRecord)
+		{
+			CopyArray(triangleRecordHolder,newScore);
+			prefs.putInteger("TriangleRecordSquare", newScore[0]);
+			prefs.putInteger("TriangleRecord", newScore[1]);
+			prefs.putInteger("TriangleRecordCircle", newScore[2]);
+			prefs.putInteger("TriangleRecordEx", newScore[3]);
+			grats = true;
+		}
+		if(newScore[2] > circleRecord)
+		{
+			CopyArray(circleRecordHolder,newScore);
+			prefs.putInteger("CircleRecordSquare", newScore[0]);
+			prefs.putInteger("CircleRecordTriangle", newScore[1]);
+			prefs.putInteger("CircleRecord", newScore[2]);
+			prefs.putInteger("CircleRecordEx", newScore[3]);
+			grats = true;
+		}
+		if(newScore[3] > exRecord)
+		{
+			CopyArray(exRecordHolder,newScore);
+			prefs.putInteger("ExRecordSquare", newScore[0]);
+			prefs.putInteger("ExRecordTriangle", newScore[1]);
+			prefs.putInteger("ExRecordCircle", newScore[2]);
+			prefs.putInteger("ExRecord", newScore[3]);
+			grats = true;
+		}
 
 		
 		//TODO : Here we need to add all the blocks to currency. Impliment when store is made
@@ -194,6 +253,13 @@ public class RectangleManager
 		
 		prefs.flush();
 		getScores();
+	}
+	public void CopyArray(int[] aArray, int[] aNewArray)
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			aArray[i] = aNewArray[i];
+		}
 	}
 	//When the menu entities have moved down after the animation has completed, they are reset
 	//That way the user can access the menu after the game is finished
@@ -260,28 +326,28 @@ public class RectangleManager
 		width = PlayTex.getWidth();
 		height = PlayTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
-		yHolder = 480; 
+		yHolder = 530; 
 		EnterPlay = new RectTex(xHolder,yHolder, width, height, PlayTex);
 		
 		Texture ScoreTex = new Texture(Gdx.files.internal("score.png"));
 		width = ScoreTex.getWidth();
 		height = ScoreTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
-		yHolder = 330; 
+		yHolder = 380; 
 		EnterScore = new RectTex(xHolder,yHolder, width, height, ScoreTex);
 		
 		Texture TutorialTex = new Texture(Gdx.files.internal("tutorial.png"));
 		width = TutorialTex.getWidth();
 		height = TutorialTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
-		yHolder = 180; 
+		yHolder = 230; 
 		EnterTut = new RectTex(xHolder,yHolder, width, height, TutorialTex);
 		
 		Texture StoreTex = new Texture(Gdx.files.internal("store.png"));
 		width = StoreTex.getWidth();
 		height = StoreTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
-		yHolder = 80; 
+		yHolder = 130; 
 		EnterStore = new RectTex(xHolder,yHolder, width, height, StoreTex);
 		
 		//TutorialLogo

@@ -128,7 +128,11 @@ public class BlokkGame implements ApplicationListener {
 	   for(int i = 0; i < columns; i++) {
 	    	  for (int j = 0; j < rows; j++) {
 	    		  Movable m = Movables[i][j];
-	    		  if (m != null) batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); // afhverju ekki m.type hér?
+	    		  if (m != null)
+	    		  {
+	    			  if(m.y < 0-size)Movables[m.col][m.row] = null;
+	    			  batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
+	    		  }
 	    	  }
 	      }
    }

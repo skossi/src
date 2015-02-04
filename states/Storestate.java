@@ -40,7 +40,7 @@ public class Storestate extends Gamestate {
 		
 		font = R_Man.font;
 		
-		dispCurrency = Integer.toString(R_Man.currency);
+		//dispCurrency = Integer.toString(R_Man.currency);
 	      
 	}
 	//See abstrakt class Gamestate update(float dt);

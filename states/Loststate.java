@@ -3,8 +3,6 @@ package states;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -25,6 +23,7 @@ public class Loststate extends Gamestate{
 	private BitmapFont font;
 	private String better;
 	private String worse;
+	private int size;
 	
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -36,6 +35,7 @@ public class Loststate extends Gamestate{
 	public void init(RectangleManager RectMan)
 	{
 		R_Man = RectMan;
+		size = 68;
 		GameOver = R_Man.Over;
 		Back = R_Man.Back;
 		scoreMade = new String[4];
@@ -62,21 +62,24 @@ public class Loststate extends Gamestate{
 	public void draw(SpriteBatch batch)
 	{
 		batch.draw(GameOver.tex, GameOver.x, GameOver.y);
-		if(R_Man.grats)font.draw(batch,better , 60, 625);
-		else font.draw(batch,worse , 45, 625);
-		font.draw(batch,"Your score was :", 135, 575);
-		batch.draw(R_Man.ScoreBoard, 105, 440);
-		for(int i = 0; i < 4 ; i++)
-		{
-			font.draw(batch, scoreMade[i], 130+70*i, 500);
-		}
-		font.draw(batch,"Your best score is :", 115, 420);
-		batch.draw(R_Man.ScoreBoard, 105, 285);
-		for(int i = 0; i < 4 ; i++)
-		{
-			font.draw(batch, drawBestScore[i], 130+70*i, 345);
-		}
-		
+		if(R_Man.grats)font.draw(batch,better , 60, 675);
+		else font.draw(batch,worse , 45, 675);
+		font.draw(batch,"Your score was :", 135, 625);
+		batch.draw(R_Man.ScoreBoard, 100, 490);
+		for(int i = 0; i < 4; i++)
+	    {
+			if(scoreMade[i].length() == 3)font.draw(batch, scoreMade[i], 110+size*i, 550); 
+    		else if(scoreMade[i].length() == 2)font.draw(batch, scoreMade[i], 120+size*i, 550);
+    		else font.draw(batch, scoreMade[i], 130+size*i, 550); 	  
+	    }
+		font.draw(batch,"Your best score is :", 115, 470);
+		batch.draw(R_Man.ScoreBoard, 100, 335);
+		for(int i = 0; i < 4; i++)
+	    {
+			if(drawBestScore[i].length() == 3)font.draw(batch, drawBestScore[i], 110+size*i, 395); 
+			else if(drawBestScore[i].length() == 2)font.draw(batch, drawBestScore[i], 120+size*i, 395);
+			else font.draw(batch, drawBestScore[i], 130+size*i, 395); 	  
+	    }
 		batch.draw(Back.tex, Back.x, Back.y);
 	}
 	
