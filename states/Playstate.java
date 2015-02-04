@@ -59,10 +59,10 @@ public class Playstate extends Gamestate{
 		warning = new int[rows];
 		Movables = new Movable[columns][rows];
 		lastWave = 0;
-		UI = new UI(0, 0, 480, 64);
+		UI = new UI(0, 800-size, 480, size);
 		font = R_Man.font;
 		difficulty = 1.0;
-		loseCondition = 720;
+		loseCondition = 720-size;
 		swapScores = new int[4];
 		drawSwapScores = new String[]{"0","0","0","0"};
 		prepareMatrix();
@@ -138,7 +138,7 @@ public class Playstate extends Gamestate{
 		   movable.type = createType(movable.typeOne, movable.typeTwo);
 		   
 	       movable.row = 0;
-	       movable.y = 1;
+	       movable.y = -size;
 	       movable.speed = 0;
 	       movable.width = size;
 	       movable.height = size;
@@ -146,6 +146,7 @@ public class Playstate extends Gamestate{
 	       movable.x = (size+1)*i;
 	       movable.isPower = false;
 		   Movables[i][0] = movable;
+		   
 	   }
    }
    //Called when a block is deleted by thrusting it up above the loseCondition line
@@ -241,11 +242,11 @@ public class Playstate extends Gamestate{
 	      //Draw all the numbers of swapped blocks here
 	      for(int i = 0; i < 4; i++)
 	      {
-	    	  if(drawSwapScores[i].length() == 3)font.draw(batch, drawSwapScores[i], 110+size*i, 45); 
-	    	  else if(drawSwapScores[i].length() == 2)font.draw(batch, drawSwapScores[i], 120+size*i, 45);
-	    	  else font.draw(batch, drawSwapScores[i], 130+size*i, 45); 	  
+	    	  if(drawSwapScores[i].length() == 3)font.draw(batch, drawSwapScores[i], 110+size*i, 875); 
+	    	  else if(drawSwapScores[i].length() == 2)font.draw(batch, drawSwapScores[i], 120+size*i, 875);
+	    	  else font.draw(batch, drawSwapScores[i], 130+size*i, 875); 	  
 	      }
-	      if(isPaused)batch.draw(R_Man.pauseBlock,0,64,480,734);
+	      if(isPaused)batch.draw(R_Man.pauseBlock,0,0,480,800-size);
 
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
@@ -301,6 +302,28 @@ public class Playstate extends Gamestate{
 	    			  }
 	    			  handleMatches(m1);
 				  }
+    		  }
+    		  // this happens when block can be unblacked
+    		  if(m1.movableCheck()){
+    			  // we don't care about the first two blocks
+    			  if (m1.col == 0 || m1.col == 1) {
+    				  m1.setType(m1.randomizeType(), m1.randomizeType());
+    			  } else {
+	    			  Boolean neighborTypeOne = Movables[m1.col-1][m1.row].typeOne;
+	    			  boolean neighborTypeTwo= Movables[m1.col-1][m1.row].typeTwo;
+	    			  Boolean neighborNeighborTypeOne = Movables[m1.col-2][m1.row].typeOne;
+	    			  boolean neighborNeighborTypeTwo = Movables[m1.col-2][m1.row].typeTwo;
+	    			  if (isSameType(m1, neighborTypeOne, neighborTypeTwo)
+	    					  && isSameType(m1, neighborNeighborTypeOne, neighborNeighborTypeTwo))
+	    			  // if the two blocks to the left of a block are of same type, then 
+	    		      // randomize a new different type
+	    			  m1.setInvertType(m1.typeOne,m1.typeTwo);
+	    			  // if the two blocks to the left of a block or not of same type,
+	    			  // then randomize a completely random type
+	    			  else {
+	    				  m1.setType(m1.randomizeType(), m1.randomizeType());
+	    			  }
+    			  }
     		  }
         	  m1.update(dy);
         	  killBlock(m1);
@@ -467,7 +490,7 @@ public class Playstate extends Gamestate{
    //Takes in parameters world co ordinates x and y
    public void findMovable(float x, float y) {
 	   int col = (int)(selectedX/size);
-	   int row = (int)(selectedY/size);
+	   int row = (int)(selectedY/size)+1;
 	   
 	   if (row < 0 || row > rows-1 || col < 0 || col > columns-1) return;
 	   

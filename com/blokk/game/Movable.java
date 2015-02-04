@@ -33,10 +33,10 @@ public class Movable {
 	* @param isMovable A boolean which decides if the block is movable by the user
 	*/
 	public Movable(boolean isMovable) {
-		
+		timeBlacked = Long.MAX_VALUE;
 		if (isMovable) {
-			typeOne = randomizeType();
-			typeTwo = randomizeType();
+			typeOne = false;
+			typeTwo = true;
 		}
 		else {
 			typeOne = null;
@@ -80,15 +80,41 @@ public class Movable {
 //			typeTwo = randomizeType();
 			
 		}
-		if(System.currentTimeMillis() - timeBlacked > 15000*Playstate.difficulty){
-			typeOne = randomizeType();
-			typeTwo = randomizeType();
-			timeBlacked = Long.MAX_VALUE;
-		}
 			
 		y += speed*dy;
 		
 		return;
+	}
+	//This function checks whether a movable was unmovable and whether its time
+	//for it to become movable
+	public boolean movableCheck() {
+		if(System.currentTimeMillis() - timeBlacked > 15000*Playstate.difficulty){
+			timeBlacked = Long.MAX_VALUE;
+			return true;
+		}
+		return false;
+	}
+	
+	public void setType (Boolean type1, boolean type2) {
+		typeOne = type1;
+		typeTwo = type2;
+		
+		return;
+	}
+	
+	public void setInvertType(Boolean type1, boolean type2) {
+		if (type1 == null) {
+			typeOne = randomizeType();
+			typeTwo = randomizeType();
+		}
+		else if (Math.random() < 0.5) {
+			typeOne = !type1;
+			typeTwo = randomizeType();
+		}
+		else {
+			typeTwo = !type2;
+			typeOne = randomizeType();
+		}
 	}
 	
 	/**
