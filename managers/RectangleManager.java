@@ -159,7 +159,6 @@ public class RectangleManager
 		squareRecordHolder[1] = prefs.getInteger("SquareRecordTriangle");
 		squareRecordHolder[2] = prefs.getInteger("SquareRecordCircle");
 		squareRecordHolder[3] = prefs.getInteger("SquareRecordEx");
-		System.out.println(squareRecordHolder[0]);
 		//Triangle
 		triangleRecord = prefs.getInteger("triangleRecord");
 		triangleRecordHolder[0] = prefs.getInteger("TriangleRecordSquare");
@@ -326,28 +325,28 @@ public class RectangleManager
 		width = PlayTex.getWidth();
 		height = PlayTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
-		yHolder = 530; 
+		yHolder = 550; 
 		EnterPlay = new RectTex(xHolder,yHolder, width, height, PlayTex);
 		
 		Texture ScoreTex = new Texture(Gdx.files.internal("score.png"));
 		width = ScoreTex.getWidth();
 		height = ScoreTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
-		yHolder = 380; 
+		yHolder = 400; 
 		EnterScore = new RectTex(xHolder,yHolder, width, height, ScoreTex);
 		
 		Texture TutorialTex = new Texture(Gdx.files.internal("tutorial.png"));
 		width = TutorialTex.getWidth();
 		height = TutorialTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
-		yHolder = 230; 
+		yHolder = 250; 
 		EnterTut = new RectTex(xHolder,yHolder, width, height, TutorialTex);
 		
 		Texture StoreTex = new Texture(Gdx.files.internal("store.png"));
 		width = StoreTex.getWidth();
 		height = StoreTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
-		yHolder = 130; 
+		yHolder = 100; 
 		EnterStore = new RectTex(xHolder,yHolder, width, height, StoreTex);
 		
 		//TutorialLogo
