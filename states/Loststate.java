@@ -21,7 +21,8 @@ public class Loststate extends Gamestate{
 	private String[] drawBestScore;
 	
 	private BitmapFont font;
-	private String better;
+	private String newHigh;
+	private String newIndiv;
 	private String worse;
 	private int size;
 	
@@ -47,22 +48,25 @@ public class Loststate extends Gamestate{
 		}
 		
 		font = R_Man.font;
-		better = R_Man.betterString;
+		newHigh = R_Man.newHighString;
+		newIndiv = R_Man.newIndivString;
 		worse = R_Man.worseString;
 		
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		if(R_Man._r < 1) R_Man._r += dt;
-		if(R_Man._g < 0.7) R_Man._g += dt;
+		if(R_Man._r < R_Man._rOrg) R_Man._r += dt;
+		if(R_Man._g < R_Man._gOrg) R_Man._g += dt;
+		if(R_Man._b < R_Man._bOrg) R_Man._b += dt;
 		if(R_Man._w > 0) R_Man._w -= 3*dt;
 	}
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
 		batch.draw(GameOver.tex, GameOver.x, GameOver.y);
-		if(R_Man.grats)font.draw(batch,better , 60, 675);
+		if(R_Man.NewHighScore)font.draw(batch,newHigh , 60, 675);
+		else if (R_Man.NewIndivScore)font.draw(batch,newIndiv , 60, 675);
 		else font.draw(batch,worse , 45, 675);
 		font.draw(batch,"Your score was :", 135, 625);
 		batch.draw(R_Man.ScoreBoard, 100, 490);

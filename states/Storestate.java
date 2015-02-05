@@ -20,6 +20,7 @@ public class Storestate extends Gamestate {
 	   private int scoreThr;
 	   
 	   private String dispCurrency;
+	   private String[] drawCurrency;
 	   
 	   private BitmapFont font;
 	   
@@ -34,6 +35,12 @@ public class Storestate extends Gamestate {
 	public void init(RectangleManager RectMan)
 	{
 		R_Man = RectMan;
+		
+		drawCurrency = new String[4];
+		for(int i = 0; i < 4; i++)
+		{
+			drawCurrency[i] = Integer.toString(R_Man.currencyInt[i]);
+		}
 
 		Store = R_Man.Store;
 		Back = R_Man.Back;
@@ -52,7 +59,16 @@ public class Storestate extends Gamestate {
 	public void draw(SpriteBatch batch)
 	{
 		batch.draw(Store.tex, Store.x, Store.y);
-		font.draw(batch, "Your currency : " + dispCurrency, 20, 650);
+		font.draw(batch, "Your currency : ", 10, 650);
+		
+		batch.draw(R_Man.ScoreBoard, 210, 590);
+		for(int i = 0; i < 4; i++)
+	    {
+			if(drawCurrency[i].length() == 4)font.draw(batch, drawCurrency[i], 210+68*i, 650);
+			else if(drawCurrency[i].length() == 3)font.draw(batch, drawCurrency[i], 220+68*i, 650); 
+    		else if(drawCurrency[i].length() == 2)font.draw(batch, drawCurrency[i], 230+68*i, 650);
+    		else font.draw(batch, drawCurrency[i], 240+68*i, 650); 	  
+	    }
 		
 		//Note : These are just placeholder to show what the user might buy. The strings are just made for fun.
 		font.draw(batch, "Extra sound pack :", 20, 550);

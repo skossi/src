@@ -27,6 +27,8 @@ public class Movable {
 	public boolean isBeingThrusted;
 	public boolean isPower;
 	public String power;
+	public boolean typePowerOne;
+	public boolean typePowerTwo;
 	
 	/**	
 	*Constructs ablock, i.e. Movable

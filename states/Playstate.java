@@ -42,6 +42,9 @@ public class Playstate extends Gamestate{
 	   public static double difficulty;
 	   private int[] warning;
 	   
+	   //chosen background
+	   private Texture Background;
+	   
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
 	public Playstate(GameStateManager gsm)
@@ -66,6 +69,11 @@ public class Playstate extends Gamestate{
 		swapScores = new int[4];
 		drawSwapScores = new String[]{"0","0","0","0"};
 		prepareMatrix();
+		int back = (int) ((Math.random()*4) - 1);
+		if(back == 1)Background = R_Man.back_1;
+		else if(back == 2)Background = R_Man.back_2;
+		else Background = R_Man.back_3;
+		
 	}
 	/**
    * Creates a new cube on a timed interval. It�s type is randomed. This method is a temporary solution for spawning cubes in debugging mode
@@ -94,8 +102,18 @@ public class Playstate extends Gamestate{
 	      {
 	    	  movable.isPower = true;
 	    	  double whichPower = Math.random();
-	    	  if(whichPower < 0.3) movable.power = "50";
-	    	  else movable.power = "2x";
+	    	  if(whichPower < 0.3)
+	    	  {
+	    		  movable.power = "50";
+	    		  movable.typePowerOne = true;
+	    		  movable.typePowerTwo = false;
+	    	  }
+	    	  else
+	    	  {
+	    		  movable.power = "2x";
+	    		  movable.typePowerOne = true;
+	    		  movable.typePowerTwo = true;
+	    	  }
 	      }
 	      else movable.isPower = false;
 	      movable.row = available_row;
@@ -181,7 +199,7 @@ public class Playstate extends Gamestate{
    //Colors the background red according to the highest column
    private void dangerColumn()
    {
-	   int i = whichColumn(warning, rows)-8;//threshold so the background wont turn red just yet
+	   int i = whichColumn(warning, rows)-11;//threshold so the background wont turn red just yet
 	   if(i >= 0)R_Man._w = i/5f;
 	   else R_Man._w = 0;
    }
@@ -206,6 +224,11 @@ public class Playstate extends Gamestate{
 			if (typeOne == null) return R_Man.black;
 			return (typeOne ? (typeTwo ? R_Man.square : R_Man.circle) : (typeTwo ? R_Man.triangle : R_Man.ex));
 	}
+	private Texture drawPower(Boolean typeOne, boolean typeTwo) 
+	{
+			if (typeOne == null) return R_Man.black;
+			return (typeOne ? (typeTwo ? R_Man.Power_Multi : R_Man.Power_50) : (typeTwo ? R_Man.triangle : R_Man.ex));
+	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
@@ -222,31 +245,43 @@ public class Playstate extends Gamestate{
 	//See abstract class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
+		batch.draw(Background, 0, 0);
 	      for(int i = 0; i < columns; i++) {
 	    	  for (int j = 0; j < rows; j++) {
 	    		  Movable m = Movables[i][j];
 	    		  if (m != null)
 	    		  {		batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
-		    		  if(m.isPower)font.draw(batch, m.power, m.x+size/4, m.y+size-15);//just seeing how it looks
+		    		  if(m.isPower)
+		    		  {
+		    			  //The function to draw images did not work. We need to change this
+		    			  if(m.power == "2x") batch.draw(R_Man.Power_Multi, m.x, m.y);
+		    			  if(m.power == "50") batch.draw(R_Man.Power_50, m.x, m.y);
+		    			  //batch.draw(drawPower(m.typePowerOne,m.typePowerTwo), m.x, m.y);
+		    			  font.draw(batch, m.power, m.x+size/4, m.y+size-15);//just seeing how it looks
+		    		  }
 	    			  
 	    		  }
 	    	  }
 	      }
+	      
 	      batch.draw(R_Man.redline, 0, loseCondition);
 	      if(isSelected)batch.draw(R_Man.selected, selectedX-size/2, selectedY-size/2);
+	      if(isPaused)batch.draw(R_Man.pauseBlock,0,0,480,800);
 	      batch.draw(R_Man.ui_bg, UI.x, UI.y, UI.width, UI.height);
-	      batch.draw(R_Man.ui_pause,UI.x,UI.y,64,64);
-	      if(R_Man.isMuted) batch.draw(R_Man.ui_soundOff,416,UI.y,64,64);
-	      else batch.draw(R_Man.ui_soundOn,416,UI.y,64,64);
+	      if(!isPaused)batch.draw(R_Man.ui_pauseOn,UI.x,UI.y+5,64,64);
+	      else batch.draw(R_Man.ui_pauseOff,UI.x,UI.y+5,64,64);
+	     
+	      if(R_Man.isMuted) batch.draw(R_Man.ui_soundOff,416,UI.y+10,64,64);
+	      else batch.draw(R_Man.ui_soundOn,416,UI.y+10,64,64);
 	      
+	      batch.draw(R_Man.ScoreBoard,100,UI.y+15);
 	      //Draw all the numbers of swapped blocks here
 	      for(int i = 0; i < 4; i++)
 	      {
-	    	  if(drawSwapScores[i].length() == 3)font.draw(batch, drawSwapScores[i], 110+size*i, 775); 
-	    	  else if(drawSwapScores[i].length() == 2)font.draw(batch, drawSwapScores[i], 120+size*i, 775);
-	    	  else font.draw(batch, drawSwapScores[i], 130+size*i, 775); 	  
+	    	  if(drawSwapScores[i].length() == 3)font.draw(batch, drawSwapScores[i], 110+size*i, 790); 
+	    	  else if(drawSwapScores[i].length() == 2)font.draw(batch, drawSwapScores[i], 120+size*i, 790);
+	    	  else font.draw(batch, drawSwapScores[i], 130+size*i, 790); 	  
 	      }
-	      if(isPaused)batch.draw(R_Man.pauseBlock,0,0,480,800-size);
 
 	}
 	//See abstrakt class Gamestate justTouched(x,y);

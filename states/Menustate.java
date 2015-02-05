@@ -47,9 +47,9 @@ public class Menustate extends Gamestate {
 		Score = R_Man.EnterScore;
 		Tutorial = R_Man.EnterTut;
 		Store = R_Man.EnterStore;
-		R_Man._r = 1f;
-		R_Man._g = 178/255f;
-		R_Man._b = 0;
+		R_Man._r = R_Man._rOrg;
+		R_Man._g = R_Man._gOrg;
+		R_Man._b = R_Man._bOrg;
 		R_Man._w = 0;
 		speedAdd = 1;
 		gameSound = Gdx.audio.newSound(Gdx.files.internal("startup.wav"));

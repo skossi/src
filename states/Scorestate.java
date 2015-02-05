@@ -77,7 +77,7 @@ public class Scorestate extends Gamestate {
 		
 		//We can put this is somekind of a function to draw each thing but for the
 		//UT Messan we will just make this work. Hardcoding ftw
-		font.draw(batch,"Pink Run : ", 10, 480);
+		font.draw(batch,"Red Run : ", 10, 480);
 		batch.draw(R_Man.ScoreBoard, 180, 420);
 		for(int i = 0; i < 4; i++)
 	    {
@@ -93,7 +93,7 @@ public class Scorestate extends Gamestate {
 			else if(drawBestTriangle[i].length() == 2)font.draw(batch, drawBestTriangle[i], 200+size*i, 380);
 			else font.draw(batch, drawBestTriangle[i], 210+size*i, 380); 	  
 	    }
-		font.draw(batch,"Brown Run : ", 10, 280);
+		font.draw(batch,"Yellow Run : ", 10, 280);
 		batch.draw(R_Man.ScoreBoard, 180, 220);
 		for(int i = 0; i < 4; i++)
 	    {

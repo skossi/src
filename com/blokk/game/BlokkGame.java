@@ -74,7 +74,7 @@ public class BlokkGame implements ApplicationListener {
    */
    @Override
    public void render() {
-      Gdx.gl.glClearColor(RectMana._r+RectMana._w, RectMana._g, 0, 1);
+	  Gdx.gl.glClearColor(RectMana._r+RectMana._w, RectMana._g, RectMana._b, 1);
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
    
       dy = Gdx.graphics.getDeltaTime()/3;
@@ -123,6 +123,7 @@ public class BlokkGame implements ApplicationListener {
 	 {
 		 if(RectMana._r > 0) RectMana._r -= 2*dy;
 		 if(RectMana._g > 0) RectMana._g -= 2*dy;
+		 if(RectMana._b > 0) RectMana._b -= 2*dy;
 	 }
 	   
 	   for(int i = 0; i < columns; i++) {

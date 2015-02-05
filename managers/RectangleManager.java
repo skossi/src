@@ -24,12 +24,20 @@ public class RectangleManager
 	public Texture black;
 	public Texture selected;
 	public Texture ui_bg;
-	public Texture ui_pause;
+	public Texture ui_pauseOn;
+	public Texture ui_pauseOff;
 	public Texture ui_soundOn;
 	public Texture ui_soundOff;
 	public Texture pauseBlock;
 	public Texture redline;
 	public Texture ScoreBoard;
+	public Texture Power_Multi;
+	public Texture Power_50;
+	
+	//Backgrounds
+	public Texture back_1;
+	public Texture back_2;
+	public Texture back_3;
 	
 	//Menu
 	public RectTex Menu;
@@ -66,11 +74,15 @@ public class RectangleManager
 	public int[] triangleRecordHolder;
 	public int[] circleRecordHolder;
 	public int[] exRecordHolder;
-	public boolean grats;
+	public boolean NewHighScore;
+	public boolean NewIndivScore;
 	public int[] currentScore;
-	public int[] currency;
+	public int[] currencyInt;
 	
 	//RGB values
+	public float _rOrg;
+	public float _gOrg;
+	public float _bOrg;
 	public float _r;
 	public float _g;
 	public float _b;
@@ -78,7 +90,8 @@ public class RectangleManager
 	
 	//Font writing
 	public BitmapFont font;
-	public String betterString;
+	public String newHighString;
+	public String newIndivString;
 	public String worseString;
 	
 	//Main themesound and audio effects
@@ -101,20 +114,25 @@ public class RectangleManager
 		triangleRecordHolder = new int[4];
 		circleRecordHolder = new int[4];
 		exRecordHolder = new int[4];
+		currencyInt = new int[4];
 		getScores();
 
 		firstTime = prefs.getBoolean("First");
 		
-		_r = 1f;
-		_g = 178/255f;
-		_b = 0;
+		_rOrg = 44f/255f;
+		_gOrg = 194f/255f;
+		_bOrg = 95f/255f;
+		_r = _rOrg;
+		_g = _gOrg;
+		_b = _bOrg;
 		_w = 0;
 		
 		font = new BitmapFont();
 	    font.setColor(Color.BLACK);
 	    font.setScale(2,2);
 	    
-	    betterString = "Congratulations, new score!";
+	    newHighString = "Congratulations, new score!";
+	    newIndivString = "You made a new record run!";
 	    worseString = "Sorry, no high score was made.";
 	    
 	}
@@ -177,7 +195,13 @@ public class RectangleManager
 		exRecordHolder[1] = prefs.getInteger("ExRecordTriangle");
 		exRecordHolder[2] = prefs.getInteger("ExRecordCircle");
 		exRecordHolder[3] = prefs.getInteger("ExRecord");
-				
+		
+		
+		currencyInt[0] = prefs.getInteger("currencySquare");
+		currencyInt[1] = prefs.getInteger("currencyTriangle");
+		currencyInt[2] = prefs.getInteger("currencyCircle");
+		currencyInt[3] = prefs.getInteger("currencyEx");
+		
 		//currency = prefs.getInteger("currency");
 	}
 	//Takes in parameter newScore that is players score when game is lost. 
@@ -186,14 +210,22 @@ public class RectangleManager
 	public void checkScore(int[] newScore)
 	{
 		currentScore = newScore;
-		grats = false;
+		NewHighScore = false;
+		NewIndivScore = false;
 		getScores();
 		//Check if the sum of all bricks are new record
 		int sum = 0;
 		for(int i = 0; i < 4; i++)
 		{
 			sum += newScore[i];
+			currencyInt[i] += newScore[i];
 		}
+		
+		prefs.putInteger("currencySquare", currencyInt[0]);
+		prefs.putInteger("currencyTriangle", currencyInt[1]);
+		prefs.putInteger("currencyCircle", currencyInt[2]);
+		prefs.putInteger("currencyEx", currencyInt[3]);
+		
 		if(sum > sumRecord) 
 		{
 			CopyArray(sumRecordHolder,newScore);
@@ -202,7 +234,7 @@ public class RectangleManager
 			prefs.putInteger("SumRecordTriangle", newScore[1]);
 			prefs.putInteger("SumRecordCircle", newScore[2]);
 			prefs.putInteger("SumRecordEx", newScore[3]);
-			grats = true;
+			NewHighScore = true;
 		}
 
 		//Check if we made a new record of different cubes
@@ -213,7 +245,7 @@ public class RectangleManager
 			prefs.putInteger("SquareRecordTriangle", newScore[1]);
 			prefs.putInteger("SquareRecordCircle", newScore[2]);
 			prefs.putInteger("SquareRecordEx", newScore[3]);
-			grats = true;
+			NewIndivScore = true;
 		}
 		if(newScore[1] > triangleRecord)
 		{
@@ -222,7 +254,7 @@ public class RectangleManager
 			prefs.putInteger("TriangleRecord", newScore[1]);
 			prefs.putInteger("TriangleRecordCircle", newScore[2]);
 			prefs.putInteger("TriangleRecordEx", newScore[3]);
-			grats = true;
+			NewIndivScore = true;
 		}
 		if(newScore[2] > circleRecord)
 		{
@@ -231,7 +263,7 @@ public class RectangleManager
 			prefs.putInteger("CircleRecordTriangle", newScore[1]);
 			prefs.putInteger("CircleRecord", newScore[2]);
 			prefs.putInteger("CircleRecordEx", newScore[3]);
-			grats = true;
+			NewIndivScore = true;
 		}
 		if(newScore[3] > exRecord)
 		{
@@ -240,7 +272,7 @@ public class RectangleManager
 			prefs.putInteger("ExRecordTriangle", newScore[1]);
 			prefs.putInteger("ExRecordCircle", newScore[2]);
 			prefs.putInteger("ExRecord", newScore[3]);
-			grats = true;
+			NewIndivScore = true;
 		}
 
 		
@@ -265,10 +297,10 @@ public class RectangleManager
 	public void resetMenu()
 	{
 		Menu.y = 700;
-		EnterPlay.y = 450;
-		EnterScore.y = 300;
-		EnterTut.y = 150;
-		EnterStore.y = 50;
+		EnterPlay.y = 550;
+		EnterScore.y = 400;
+		EnterTut.y = 250;
+		EnterStore.y = 100;
 	}
 	private void createSounds()
 	{
@@ -296,11 +328,17 @@ public class RectangleManager
 		selected = new Texture(Gdx.files.internal("selected.png"));
 		ui_bg = new Texture(Gdx.files.internal("ui_bg.png"));
 		redline = new Texture(Gdx.files.internal("redline.png"));
-		ui_pause = new Texture(Gdx.files.internal("pause.png"));
+		ui_pauseOn = new Texture(Gdx.files.internal("pauseOn.png"));
+		ui_pauseOff = new Texture(Gdx.files.internal("pauseOff.png"));
 		ui_soundOn = new Texture(Gdx.files.internal("soundOn.png"));
 		ui_soundOff = new Texture(Gdx.files.internal("soundOff.png"));
 		pauseBlock = new Texture(Gdx.files.internal("pauseBlock.png"));
 		ScoreBoard = new Texture(Gdx.files.internal("scoreboard.png"));
+		Power_Multi = new Texture(Gdx.files.internal("powerMulti.png"));
+		Power_50 = new Texture(Gdx.files.internal("power50.png"));
+		back_1 = new Texture(Gdx.files.internal("background_1.png"));
+		back_2 = new Texture(Gdx.files.internal("background_2.png"));
+		back_3 = new Texture(Gdx.files.internal("background_3.png"));
 	}
 	
 	//creates all buttons that are used in the game architecture except the blocks in the main game
