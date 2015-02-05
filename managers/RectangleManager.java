@@ -119,16 +119,16 @@ public class RectangleManager
 
 		firstTime = prefs.getBoolean("First");
 		
-		_rOrg = 44f/255f;
-		_gOrg = 194f/255f;
-		_bOrg = 95f/255f;
+		_rOrg = 0/255f;
+		_gOrg = 0/255f;
+		_bOrg = 32f/255f;
 		_r = _rOrg;
 		_g = _gOrg;
 		_b = _bOrg;
 		_w = 0;
 		
 		font = new BitmapFont();
-	    font.setColor(Color.BLACK);
+	    font.setColor(Color.WHITE); //var Color.BLACK
 	    font.setScale(2,2);
 	    
 	    newHighString = "Congratulations, new score!";
