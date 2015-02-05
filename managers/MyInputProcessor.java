@@ -2,12 +2,16 @@ package managers;
 
 import states.Playstate;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 
 public class MyInputProcessor implements InputProcessor {
 	   @Override
-	   public boolean keyDown (int keycode) {
-	      return false;
+	   public boolean keyDown(int keycode) {
+	        if(keycode == Keys.BACK){
+	        	  Playstate.isPaused = !Playstate.isPaused;
+	        }
+	        return false;
 	   }
 
 	   @Override

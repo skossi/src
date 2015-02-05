@@ -24,7 +24,7 @@ public class Playstate extends Gamestate{
 	   private long lastDropTime;
 	   private int rows;
 	   private int columns;
-	   private boolean isPaused;
+	   public static boolean isPaused;
 	   private int size;
 	   private float selectedX;
 	   private float selectedY;
@@ -232,7 +232,15 @@ public class Playstate extends Gamestate{
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		if (isPaused) return;
+		if (isPaused) {
+//			for (int i=0; i < columns; i++) {
+//				for (int j=0; j < rows; i++) {
+//					if (Movables[i][j] == null) {continue;}
+//					System.out.println(Movables[i][j].row);
+//				}
+//			}
+			return;
+		}
 		if(System.currentTimeMillis() - lastWave > 15000*difficulty){
 			lastWave = System.currentTimeMillis();
 			spawnWave();
@@ -265,7 +273,10 @@ public class Playstate extends Gamestate{
 	      }
 	      
 	      batch.draw(R_Man.redline, 0, loseCondition);
-	      if(isSelected)batch.draw(R_Man.selected, selectedX-size/2, selectedY-size/2);
+	      if(isSelected && selectedM != null) {
+	    	  if (selectedM.speed == 0) 
+	    		  batch.draw(R_Man.selected, selectedX-size/2, selectedY-size/2);
+	      }
 	      if(isPaused)batch.draw(R_Man.pauseBlock,0,0,480,800);
 	      batch.draw(R_Man.ui_bg, UI.x, UI.y, UI.width, UI.height);
 	      if(!isPaused)batch.draw(R_Man.ui_pauseOn,UI.x,UI.y+5,64,64);
@@ -404,12 +415,27 @@ public class Playstate extends Gamestate{
 		   }
 		   count = 0;
 	   }
-	   if(count > 1){
-		   for(int j = index; j < index+count; j++){
-			   Movables[col][j].type = R_Man.circle;
+	   if(count > 2){
+		   int scoreToAdd = count;
+		   int multiplier = 1;
+		   for(int j = index; j < index+count; j++){ 
+			   if(Movables[col][j].isPower)
+			   {
+				   if(Movables[col][j].power == "50") scoreToAdd += 50;
+				   if(Movables[col][j].power == "2x") multiplier += 1;
+				   Movables[col][j].isPower = false;
+				   Movables[col][j].power = "";
+			   }
+			   
+				Movables[col][j].typeOne = null;
+				Movables[col][j].timeBlacked = System.currentTimeMillis();
 		   }
+		   scoreToAdd *= multiplier;
+		   addScore(typeOne, typeTwo, scoreToAdd);
+		   //TODO: Fix this
+		   shootRows(m1.col, 1, index-1, false);
+		   R_Man.shootSound.play(R_Man.Volume);
 	   }
-	   return;
    }
 	   
 /**
@@ -530,7 +556,8 @@ public class Playstate extends Gamestate{
 	   if (row < 0 || row > rows-1 || col < 0 || col > columns-1) return;
 	   
 	   if(selectedM != null) {
-		   
+		 // XXX: Disable this if we want to swap falling guy
+		 if (selectedM.speed != 0) return;
 		   if (y > selectedY + size) {
 			   if (Movables[col][row+1] == null) return;
 			   Movable targetM = new Movable(Movables[col][row+1]);

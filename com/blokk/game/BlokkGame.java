@@ -1,11 +1,13 @@
 package com.blokk.game;
 
+import states.Playstate;
 import managers.GameStateManager;
 import managers.MyInputProcessor;
 import managers.RectangleManager;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -54,6 +56,7 @@ public class BlokkGame implements ApplicationListener {
       batch = new SpriteBatch();
       RectMana = new RectangleManager();
       gsm = new GameStateManager(RectMana);
+      Gdx.input.setCatchBackKey(true);
       
       size = 68;
       steps = size; //pixel perfect updating
