@@ -69,10 +69,9 @@ public class Playstate extends Gamestate{
 		swapScores = new int[4];
 		drawSwapScores = new String[]{"0","0","0","0"};
 		prepareMatrix();
-		int back = (int) ((Math.random()*4) - 1);
-		if(back == 1)Background = R_Man.back_1;
-		else if(back == 2)Background = R_Man.back_2;
-		else Background = R_Man.back_3;
+		double back = Math.random();
+		if(back < 0.5) Background = R_Man.back_1;
+		else Background = R_Man.back_2;
 		
 	}
 	/**
