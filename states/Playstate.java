@@ -432,7 +432,7 @@ public class Playstate extends Gamestate{
 		   scoreToAdd *= multiplier;
 		   addScore(typeOne, typeTwo, scoreToAdd);
 		   //TODO: Fix this
-		   shootRows(m1.col, 1, index-1, false);
+		   shootRows(m1.col, 1, index, false);
 		   R_Man.shootSound.play(R_Man.Volume);
 	   }
    }
