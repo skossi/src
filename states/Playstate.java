@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.blokk.game.Movable;
 import com.blokk.game.UI;
 
-//Class by �ttar, Hlynur and �orsteinn. 
+//Class by �ttar, Hlynur and �orsteinn. 
 //
 //Written 30.10.2014
 //Creates a new state when user is playing.
@@ -75,7 +75,7 @@ public class Playstate extends Gamestate{
 		
 	}
 	/**
-   * Creates a new cube on a timed interval. It�s type is randomed. This method is a temporary solution for spawning cubes in debugging mode
+   * Creates a new cube on a timed interval. It���s type is randomed. This method is a temporary solution for spawning cubes in debugging mode
    *
    * @return            a new cube of some sort is created and placed in the grid
    */
@@ -216,11 +216,17 @@ public class Playstate extends Gamestate{
    * 
    * @param typeOne file Boolean which decides if it is a movable cube or black block
    * @param typeTwo boolean that decides what kind of color the cube is
-   * @return            returns Texture corresponding to it�s boolean structure
+   * @return            returns Texture corresponding to it���s boolean structure
    */   
 	private Texture createType(Boolean typeOne, boolean typeTwo) 
 	{
-			if (typeOne == null) return R_Man.black;
+			if (typeOne == null)
+			{
+				if(!typeTwo)
+					return R_Man.black;
+				else
+					return R_Man.blinkBlack;
+			}
 			return (typeOne ? (typeTwo ? R_Man.square : R_Man.circle) : (typeTwo ? R_Man.triangle : R_Man.ex));
 	}
 	private Texture drawPower(Boolean typeOne, boolean typeTwo) 
@@ -427,6 +433,7 @@ public class Playstate extends Gamestate{
 			   }
 			   
 				Movables[col][j].typeOne = null;
+				Movables[col][j].typeTwo = false;
 				Movables[col][j].timeBlacked = System.currentTimeMillis();
 		   }
 		   scoreToAdd *= multiplier;
@@ -476,6 +483,7 @@ public class Playstate extends Gamestate{
 			   }
 			   
 				Movables[j][row].typeOne = null;
+				Movables[j][row].typeTwo = false;
 				Movables[j][row].timeBlacked = System.currentTimeMillis();
 		   }
 		   scoreToAdd *= multiplier;
@@ -500,7 +508,7 @@ public class Playstate extends Gamestate{
 	   
 	   isSelected = false;
 	   if(isBeingThrusted){
-		   //Vantar hér lógík til að skjóta platforminu alla leið upp
+		   //Vantar h��r l��g��k til a�� skj��ta platforminu alla lei�� upp
 	   }
 	   for(int j = index; j < index+count; j++){
 		   for (int i = row; i < rows; i++){
@@ -515,7 +523,7 @@ public class Playstate extends Gamestate{
    }
 	   
   /**
-   *Finds out if the moved block was indeed the same color is the one moved in it�s direction
+   *Finds out if the moved block was indeed the same color is the one moved in it���s direction
    * @param m1 A moved Movable block by the user
    * @param typeOne lets the method know what kind of cube it is.
    * @param typeOne lets the method know what kind of cube it is.
@@ -527,7 +535,7 @@ public class Playstate extends Gamestate{
    }
 	   
    /**
-   *Passes the x,y coordinates of the screen on to it�s chiled methods to find out if the player is  *indeed clicking at a cube.
+   *Passes the x,y coordinates of the screen on to it���s chiled methods to find out if the player is  *indeed clicking at a cube.
    * @param x X-coordinates of the screen
    * @param y Y-coordinates of the screen
    */

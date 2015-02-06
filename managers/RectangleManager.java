@@ -8,7 +8,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-//Class by Óttar Guðmundsson
+//Class by ï¿½ttar Guï¿½mundsson
 //Written 14.11.2014
 //Creates Manager that was originally supposed to take care of all rectangles for the game.
 //Was changed to be also resource manager 18.11.2014
@@ -22,6 +22,7 @@ public class RectangleManager
 	public Texture circle;
 	public Texture ex;
 	public Texture black;
+	public Texture blinkBlack;
 	public Texture selected;
 	public Texture ui_bg;
 	public Texture ui_pauseOn;
@@ -325,6 +326,7 @@ public class RectangleManager
 		circle = new Texture(Gdx.files.internal("circle.png"));
 		ex = new Texture(Gdx.files.internal("ex.png"));
 		black = new Texture(Gdx.files.internal("black.png"));
+		blinkBlack = new Texture(Gdx.files.internal("blackBlikk.png"));
 		selected = new Texture(Gdx.files.internal("selected.png"));
 		ui_bg = new Texture(Gdx.files.internal("ui_bg.png"));
 		redline = new Texture(Gdx.files.internal("redline.png"));

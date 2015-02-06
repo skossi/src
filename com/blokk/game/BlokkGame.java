@@ -18,7 +18,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 
 /**
- * @author     Ottar og Þorsteinn. Edit by Hlynur
+ * @author     Ottar og ï¿½orsteinn. Edit by Hlynur
  * @version     1.0a                 Alpha
  * @since       2014-10-10        
  */
@@ -42,6 +42,7 @@ public class BlokkGame implements ApplicationListener {
    private Texture circle;
    private Texture ex;
    private Texture black;
+   private Texture blinkBlack;
    private int steps;
    
 
@@ -142,15 +143,20 @@ public class BlokkGame implements ApplicationListener {
    }
    
    /**
-    * Gives a created cube it’s texture depend on his boolean tree structure
+    * Gives a created cube itï¿½s texture depend on his boolean tree structure
     *
     * @param typeOne file Boolean which decides if it is a movable cube or black block
     * @param typeTwo boolean that decides what kind of color the cube is
-    * @return            returns Texture corresponding to it’s boolean structure
+    * @return            returns Texture corresponding to itï¿½s boolean structure
     */
 	private Texture createType(Boolean typeOne, boolean typeTwo) 
 	{
-			if (typeOne == null) return black;
+			if (typeOne == null)
+			{
+				if(!typeTwo)
+					return black;
+				else return blinkBlack;
+			}
 			return (typeOne ? (typeTwo ? square : circle) : (typeTwo ? triangle : ex));
 	}
 	
@@ -170,7 +176,7 @@ public class BlokkGame implements ApplicationListener {
 	  }
 	
 	/**
-	* Creates a new cube on a timed interval. It’s type is randomed. This method is a temporaty solution for spawning cubes in debugging mode
+	* Creates a new cube on a timed interval. Itï¿½s type is randomed. This method is a temporaty solution for spawning cubes in debugging mode
 	*
 	* @return            a new cube of some sort is created and placed in the grid
 	*/
