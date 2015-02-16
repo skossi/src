@@ -1,16 +1,18 @@
 package states;
 
+import java.util.Random;
+
 import managers.GameStateManager;
 import managers.RectangleManager;
-import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.blokk.game.Movable;
 import com.blokk.game.UI;
+ 
 
 //Class by Óttar, Hlynur and Þorsteinn. 
 //
@@ -31,19 +33,25 @@ public class Playstate extends Gamestate{
 	   private int[] swapScores;
 	   private String[] drawSwapScores;
 	   private int steps;
+	   private int startingRows;
 	   private RectangleManager R_Man;
 	   private UI UI;
 	   private BitmapFont font;
 	   private Movable selectedM;
 	   private long lastWave;
 	   private int loseCondition;
+	   private float defaultSpeed;
+	   private long actionTime;
+	   private int actions;
 	   // public static for global access
 	   public static boolean isSelected;
 	   public static double difficulty;
-	   private int[] warning;
+//	   private int[] warning;
 	   
 	   //chosen background
 	   private Texture Background;
+	   
+	   private boolean isTesting;
 	   
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -54,17 +62,21 @@ public class Playstate extends Gamestate{
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
+		actions = 0;
+		actionTime = System.currentTimeMillis()-500;
 		R_Man = RectMan;
 		size = 68;
 		steps = size; //pixel perfect updating
 		columns = 7;
 		rows = 13;
-		warning = new int[rows];
+		startingRows = 3;
+//		warning = new int[rows];
 		Movables = new Movable[columns][rows];
 		lastWave = 0;
 		UI = new UI(0, 800-size, 480, size);
 		font = R_Man.font;
 		difficulty = 1.0;
+		defaultSpeed = 600;
 		loseCondition = 720-size;
 		swapScores = new int[4];
 		drawSwapScores = new String[]{"0","0","0","0"};
@@ -73,13 +85,14 @@ public class Playstate extends Gamestate{
 		if(back < 0.5) Background = R_Man.back_1;
 		else Background = R_Man.back_2;
 		
+		isTesting = false;
 	}
 	/**
    * Creates a new cube on a timed interval. Itï¿½s type is randomed. This method is a temporary solution for spawning cubes in debugging mode
    *
    * @return            a new cube of some sort is created and placed in the grid
    */
-   private void spawnMovable(int col) {
+   private void spawnMovable(int col, float speed) {
 		  Movable movable;
 
 		  movable = new Movable(true);
@@ -118,11 +131,12 @@ public class Playstate extends Gamestate{
 	      movable.row = available_row;
 	      movable.x = (size+1)*movable.col;
 	      movable.y = 800;
-	      movable.speed = -600;
+	      movable.speed = -speed;
 	      movable.width = size;
 	      movable.height = size;
 	      movable.isBeingThrusted = false;
 	      
+//	      warning[movable.col] +=1;
 		  Movables[movable.col][available_row] = movable;
 		  
 		  
@@ -134,15 +148,15 @@ public class Playstate extends Gamestate{
 //		  }
 		  
 	      lastDropTime = TimeUtils.nanoTime();
-	      warning[movable.col] +=1;
+	      
 	   }
    //Spawns a new wave of blocks on a fixed interval
-   private void spawnWave() {
+   private void spawnWave(float speed) {
 	   for(int j = 0; j < columns; j++){
-		   spawnMovable(j);
-		   warning[j] +=1;
+		   spawnMovable(j, speed);
+//		   warning[j] +=1;
 	   }
-	   dangerColumn();
+//	   dangerColumn();
    }
 	 /**
    * Prepares the Movables matrix by adding a row of immovable blocks below the screen for collision purposes    
@@ -166,12 +180,14 @@ public class Playstate extends Gamestate{
 		   
 	   }
    }
+   
+   
    //Called when a block is deleted by thrusting it up above the loseCondition line
    //Deletes the movable, adds scores and plays sound
    public void killBlock(Movable m1){
 	   if (m1.y > loseCondition && m1.speed > 0){ 
 		   addScore(Movables[m1.col][m1.row].typeOne, Movables[m1.col][m1.row].typeTwo,1);
-		   warning[m1.col] -= 1;
+//		   warning[m1.col] -= 1;
 		   Movables[m1.col][m1.row] = null;
 		   // ensure that there is no gap between blocks inside the array at any time
 		   int lowestEmptyIndex = -1;
@@ -191,26 +207,26 @@ public class Playstate extends Gamestate{
 			   }
 		   }
 		   
-		   dangerColumn();
+//		   dangerColumn();
 		   R_Man.destSound.play(R_Man.Volume);
 	   }	   
    }
-   //Colors the background red according to the highest column
-   private void dangerColumn()
-   {
-	   int i = whichColumn(warning, rows)-11;//threshold so the background wont turn red just yet
-	   if(i >= 0)R_Man._w = i/5f;
-	   else R_Man._w = 0;
-   }
+//   //Colors the background red according to the highest column
+//   private void dangerColumn()
+//   {
+//	   int i = whichColumn(warning, rows)-11;//threshold so the background wont turn red just yet
+//	   if(i >= 0)R_Man._w = i/5f;
+//	   else R_Man._w = 0;
+//   }
    //Returns how big the largest column is
-   public static int whichColumn(int[] warning, int rows)
-   {
-	   int ret = -1;
-	   for(int i = 0; i < rows; i++){
-		   if(warning[i] > ret) ret = warning[i];
-	   }
-	   return ret;
-   }
+//   public static int whichColumn(int[] warning, int rows)
+//   {
+//	   int ret = -1;
+//	   for(int i = 0; i < rows; i++){
+//		   if(warning[i] > ret) ret = warning[i];
+//	   }
+//	   return ret;
+//   }
    /**
    * Gives a created cube its texture depend on his boolean tree structure    
    * 
@@ -228,24 +244,61 @@ public class Playstate extends Gamestate{
 			if (typeOne == null) return R_Man.black;
 			return (typeOne ? (typeTwo ? R_Man.Power_Multi : R_Man.Power_50) : (typeTwo ? R_Man.triangle : R_Man.ex));
 	}
+	
+	private void printMovables() {
+		for (int j=rows-1; j > 0; j--) {
+			String log = "";
+			for (int i=0; i < columns; i++) {
+				    log += translateType(Movables[i][j]);
+			}
+				System.out.println(log);
+			}
+	    }
+				
+	
+    private int translateType(Movable m) {
+    	if (m == null) return 0;
+    	
+    	Boolean typeOne = m.typeOne;
+    	boolean typeTwo = m.typeTwo;
+    	if (typeOne == null) return -1;
+    	
+    	else if (typeOne && typeTwo) return 1;
+    	else if (typeOne && !typeTwo) return 3;
+    	else if (!typeOne && typeTwo) return 2;
+    	else if (!typeOne && !typeTwo) return 4;
+    	
+    	return 0;
+    }
+    
+    public void beginAction() {
+ 	   spawnWave(2500); // test, var í 2000
+    }
+    
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
+		if(actions < startingRows){
+			if(System.currentTimeMillis() - actionTime > 1000) { // testing, var 1000
+				beginAction();
+				actionTime = System.currentTimeMillis();
+				actions++;
+			}
+			lastWave = System.currentTimeMillis();
+		}
+		if(isTesting) return;
 		if (isPaused) {
-//			for (int i=0; i < columns; i++) {
-//				for (int j=0; j < rows; i++) {
-//					if (Movables[i][j] == null) {continue;}
-//					System.out.println(Movables[i][j].row);
-//				}
-//			}
+			System.out.println("csvCat");
+			printMovables();
+			isTesting = true;
 			return;
 		}
 		if(System.currentTimeMillis() - lastWave > 15000*difficulty){
 			lastWave = System.currentTimeMillis();
-			spawnWave();
+			spawnWave((float)((1+(1-difficulty))*defaultSpeed));
 			if(difficulty > 0.45) difficulty -= 0.03;
 			
-		} else if (TimeUtils.nanoTime() - lastDropTime > 900000000*difficulty) spawnMovable(MathUtils.random(0, 6));
+		} else if (actions == startingRows && TimeUtils.nanoTime() - lastDropTime > 900000000*difficulty) spawnMovable(MathUtils.random(0, 6), (float)((1+(1-difficulty))*defaultSpeed));
 		
 		for (int i = 0; i < steps; i++) computeSubStep(dt/steps);
 	}
@@ -276,7 +329,7 @@ public class Playstate extends Gamestate{
 	    	  if (selectedM.speed == 0) 
 	    		  batch.draw(R_Man.selected, selectedX-size/2, selectedY-size/2);
 	      }
-	      if(isPaused)batch.draw(R_Man.pauseBlock,0,0,480,800);
+	      if(isPaused && !isTesting)batch.draw(R_Man.pauseBlock,0,0,480,800);
 	      batch.draw(R_Man.ui_bg, UI.x, UI.y, UI.width, UI.height);
 	      if(!isPaused)batch.draw(R_Man.ui_pauseOn,UI.x,UI.y+5,64,64);
 	      else batch.draw(R_Man.ui_pauseOff,UI.x,UI.y+5,64,64);
@@ -339,7 +392,8 @@ public class Playstate extends Gamestate{
 				  if (Movables[m1.col][m1.row-1] != null && m1 != Movables[m1.col][m1.row-1] && m1.intersects(Movables[m1.col][m1.row-1])) {
 					  Movable m2 = Movables[m1.col][m1.row-1];
 					  m1.speed = m2.speed;
-				      dangerColumn();
+					  if (m1.y < m2.y+size) m1.y = m2.y+size;
+//				      dangerColumn();
 					  if(m1.row == 11) gameLost();
 					  if(m1.speed>0){
 	    				  m1.isBeingThrusted = true;
@@ -350,30 +404,92 @@ public class Playstate extends Gamestate{
     		  }
     		  // this happens when block can be unblacked
     		  if(m1.movableCheck()){
-    			  // we don't care about the first two blocks
-    			  if (m1.col == 0 || m1.col == 1) {
-    				  m1.setType(m1.randomizeType(), m1.randomizeType());
-    			  } else {
-	    			  Boolean neighborTypeOne = Movables[m1.col-1][m1.row].typeOne;
-	    			  boolean neighborTypeTwo= Movables[m1.col-1][m1.row].typeTwo;
-	    			  Boolean neighborNeighborTypeOne = Movables[m1.col-2][m1.row].typeOne;
-	    			  boolean neighborNeighborTypeTwo = Movables[m1.col-2][m1.row].typeTwo;
-	    			  if (isSameType(m1, neighborTypeOne, neighborTypeTwo)
-	    					  && isSameType(m1, neighborNeighborTypeOne, neighborNeighborTypeTwo))
-	    			  // if the two blocks to the left of a block are of same type, then 
-	    		      // randomize a new different type
-	    			  m1.setInvertType(m1.typeOne,m1.typeTwo);
-	    			  // if the two blocks to the left of a block or not of same type,
-	    			  // then randomize a completely random type
-	    			  else {
-	    				  m1.setType(m1.randomizeType(), m1.randomizeType());
-	    			  }
-    			  }
+    			  Random ran = new Random();
+    			  int x = ran.nextInt(4);
+    			  for(int i = 0; i<4; i++){
+    				  int[] tryType = integerType(((x+i)%4)+1);
+    				  System.out.println(((x+i)%4)+1);
+    				  boolean tryOne = toBoolean(tryType[0]);
+    				  boolean tryTwo = toBoolean(tryType[1]);
+    				  m1.setType(tryOne, tryTwo);
+    				  int[] matchResults = findHorizontalMatches(m1);
+    				  if(matchResults[0] == 0)
+    					  break;
+    			  }    				  
+    			  
+    			  
     		  }
         	  m1.update(dy);
         	  killBlock(m1);
     	  }
       }
+	}
+	
+	public int[] integerType(int i){
+		int[] result = new int[2];
+		switch(i){
+		case 1: 
+			return result;
+		case 2:
+			result[1] = 1;
+			return result;
+		case 3: 
+			result[0] = 1;
+			return result;
+		case 4:
+			result[0] = 1;
+			result[1] = 1;
+			return result;
+		}
+		return result;
+	}
+
+	public boolean toBoolean(int i){
+		return i == 1;
+	}
+	
+	public int[] findHorizontalMatches(Movable m1) {
+		   Boolean typeOne = m1.typeOne;
+		   boolean typeTwo = m1.typeTwo;
+		   int count = 0;
+		   int row = m1.row;
+		   int index = -1;
+		   for(int j = 0; j < columns; j++){
+			   for(int i = j;  i< columns; i++){
+				   if( isSameType(Movables[i][row], m1)){
+					   if(Movables[i][row].speed == 0){
+						   count++;   
+					   }   
+				   } else{
+					   break;
+				   }
+			   }
+			   if(count >= 3){
+				   index = j;
+				   break;
+			   }
+			   count = 0;
+		   }
+		   int[] result = new int[3];
+		   if(count==0) {
+			   return result;
+			   }
+		   else {
+			   result[0] = 1;
+			   result[1] = index;
+			   result[2] = count;
+			   return result;
+			   }
+		
+	}
+	
+	
+	public void setUnmatchedType(){
+		//viljum ad handlematches gefi bara boolean hvort thad se column eda row match
+		//kollum svo a thau foll her:
+		//gongum i gegnum typurnar, gefum kubb lit og gerum svo handlematches
+		//ef thad matchast eitthvad tha profum vid naesta lit
+		
 	}
 	
 	/**
@@ -400,7 +516,7 @@ public class Playstate extends Gamestate{
 	   int index = -1;
 	   for(int j = 0; j < rows; j++){
 		   for(int i = j;  i< rows; i++){
-			   if( isSameType(Movables[col][i], typeOne, typeTwo)){
+			   if( isSameType(Movables[col][i], m1)){
 				   if(Movables[col][i].speed == 0){
 					   count++;   
 				   }   
@@ -431,7 +547,8 @@ public class Playstate extends Gamestate{
 		   }
 		   scoreToAdd *= multiplier;
 		   addScore(typeOne, typeTwo, scoreToAdd);
-		   //TODO: Fix this
+		   //TODO: Lata fallid gera miklu minna
+		   //af hverju er shootrows herna inni
 		   shootRows(m1.col, 1, index, false);
 		   R_Man.shootSound.play(R_Man.Volume);
 	   }
@@ -442,27 +559,30 @@ public class Playstate extends Gamestate{
    * @param m1 A moved Movable block by the user
    */
    public void checkRowMatches(Movable m1){
+	   int row = m1.row;
 	   Boolean typeOne = m1.typeOne;
 	   boolean typeTwo = m1.typeTwo;
-	   int count = 0;
-	   int row = m1.row;
-	   int index = -1;
-	   for(int j = 0; j < columns; j++){
-		   for(int i = j;  i< columns; i++){
-			   if( isSameType(Movables[i][row], typeOne, typeTwo)){
-				   if(Movables[i][row].speed == 0){
-					   count++;   
-				   }   
-			   } else{
-				   break;
-			   }
-		   }
-		   if(count >= 3){
-			   index = j;
-			   break;
-		   }
-		   count = 0;
-	   }
+//	   int count = 0;
+//	   int index = -1;
+//	   for(int j = 0; j < columns; j++){
+//		   for(int i = j;  i< columns; i++){
+//			   if( isSameType(Movables[i][row], m1)){
+//				   if(Movables[i][row].speed == 0){
+//					   count++;   
+//				   }   
+//			   } else{
+//				   break;
+//			   }
+//		   }
+//		   if(count >= 3){
+//			   index = j;
+//			   break;
+//		   }
+//		   count = 0;
+//	   }
+	   int[] shootCoordinates = findHorizontalMatches(m1);
+	   int index = shootCoordinates[1];
+	   int count = shootCoordinates[2];
 	   if(count > 2){
 		   int scoreToAdd = count;
 		   int multiplier = 1;
@@ -521,9 +641,9 @@ public class Playstate extends Gamestate{
    * @param typeOne lets the method know what kind of cube it is.
    * @return true if a corresponding block is matched
    */
-   public boolean isSameType(Movable m1, Boolean typeOne, boolean typeTwo){
-	   if(m1 == null){return false;}
-	   return m1.typeOne == typeOne && m1.typeTwo == typeTwo;
+   public boolean isSameType(Movable m1, Movable m2){
+	   if(m1 == null || m2 == null || m1.typeOne == null || m2.typeOne == null){return false;}
+	   return m1.typeOne == m2.typeOne && m1.typeTwo == m2.typeTwo;
    }
 	   
    /**
@@ -555,7 +675,6 @@ public class Playstate extends Gamestate{
 	   if (row < 0 || row > rows-1 || col < 0 || col > columns-1) return;
 	   
 	   if(selectedM != null) {
-		 // XXX: Disable this if we want to swap falling guy
 		 if (selectedM.speed != 0) return;
 		   if (y > selectedY + size) {
 			   if (Movables[col][row+1] == null) return;

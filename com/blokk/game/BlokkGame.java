@@ -44,6 +44,7 @@ public class BlokkGame implements ApplicationListener {
    private Texture black;
    private int steps;
    
+   
 
    /**
    * Starts the gameloop by opening components from badlogic pack and sets the orthogonal projection of the camera.
