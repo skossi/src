@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 
 /**
- * @author     Ottar og �orsteinn. Edit by Hlynur
+ * @author     Ottar og �orsteinn. Edit by Hlynur
  * @version     1.0a                 Alpha
  * @since       2014-10-10        
  */
@@ -42,6 +42,7 @@ public class Movable {
 		}
 		else {
 			typeOne = null;
+			typeTwo = false;
 		}
 	}
 	
@@ -77,8 +78,8 @@ public class Movable {
 		if(System.currentTimeMillis() - timeThrusted > 2000 && isBeingThrusted){
 			isBeingThrusted = false;
 			speed = -600;
-			//breytum týpum svo þetta fari ekki að haga sér illa
-			//semsagt skjótast upp aftur og aftur
+			//breytum t��pum svo ��etta fari ekki a�� haga s��r illa
+			//semsagt skj��tast upp aftur og aftur
 //			typeTwo = randomizeType();
 			
 		}
@@ -90,6 +91,15 @@ public class Movable {
 	//This function checks whether a movable was unmovable and whether its time
 	//for it to become movable
 	public boolean movableCheck() {
+		//the upper if statements magic number is meant to be 3000 lower
+		//than the one in the lower if statement
+		if(System.currentTimeMillis() - timeBlacked > 12000*Playstate.difficulty)
+		{
+			if(System.currentTimeMillis()%1000<500)
+				this.typeTwo=true;
+			else
+				this.typeTwo=false;
+		}
 		if(System.currentTimeMillis() - timeBlacked > 15000*Playstate.difficulty){
 			timeBlacked = Long.MAX_VALUE;
 			return true;

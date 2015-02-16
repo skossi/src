@@ -22,8 +22,10 @@ public class GameStateManager{
 	public static final int LOST = 4;
 	public static final int STORE = 5;
 	
+	public int ACTIVESTATE;
+	
 	public boolean introStart;
-	public boolean introEnd = true;
+	public boolean introEnd = false; //VAR TRUE - BREYTT TIL AÐ SKOÐA PRUFA MENU
 	private RectangleManager RectMana;
 	
 	
@@ -46,12 +48,14 @@ public class GameStateManager{
 		if(state == TUTORIAL) gameState = new Tutorialstate(this);
 		if(state == LOST) gameState = new Loststate(this);
 		if(state == STORE) gameState = new Storestate(this);
-		
+		//System.out.println(state);
+		ACTIVESTATE = state;
 		gameState.init(RectMana);
 	}
 	//update each state with parameter float dt which is passed from the main game screen
 	public void update(float dt)
 	{
+		//System.out.println(RectMana.MenuXOffset);
 		gameState.update(dt);
 	}
 

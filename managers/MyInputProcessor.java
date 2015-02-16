@@ -1,6 +1,11 @@
 package managers;
 
 import states.Playstate;
+import states.Loststate;
+import states.Menustate;
+import states.Scorestate;
+import states.Storestate;
+import managers.RectangleManager;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;

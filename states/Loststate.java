@@ -13,18 +13,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class Loststate extends Gamestate{
 
 	private RectTex GameOver;
-	private RectTex Back;
+	private RectTex Replay;
+	private RectTex MainMenu;
 	private RectangleManager R_Man;
 	
 	private String[] scoreMade;
 			
 	private String[] drawBestScore;
 	
-	private BitmapFont font;
 	private String newHigh;
 	private String newIndiv;
 	private String worse;
-	private int size;
 	
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -36,9 +35,7 @@ public class Loststate extends Gamestate{
 	public void init(RectangleManager RectMan)
 	{
 		R_Man = RectMan;
-		size = 68;
 		GameOver = R_Man.Over;
-		Back = R_Man.Back;
 		scoreMade = new String[4];
 		drawBestScore = new String[4];
 		for(int i = 0; i < 4; i++)
@@ -47,10 +44,12 @@ public class Loststate extends Gamestate{
 			drawBestScore[i] = Integer.toString(R_Man.sumRecordHolder[i]);
 		}
 		
-		font = R_Man.font;
 		newHigh = R_Man.newHighString;
 		newIndiv = R_Man.newIndivString;
 		worse = R_Man.worseString;
+		
+		Replay = R_Man.Replay;
+		MainMenu = R_Man.MainMenu;
 		
 	}
 	//See abstrakt class Gamestate update(float dt);
@@ -62,35 +61,30 @@ public class Loststate extends Gamestate{
 		if(R_Man._w > 0) R_Man._w -= 3*dt;
 	}
 	//See abstrakt class Gamestate draw(SpriteBatch b);
+	
+	
 	public void draw(SpriteBatch batch)
 	{
 		batch.draw(GameOver.tex, GameOver.x, GameOver.y);
-		if(R_Man.NewHighScore)font.draw(batch,newHigh , 60, 675);
-		else if (R_Man.NewIndivScore)font.draw(batch,newIndiv , 60, 675);
-		else font.draw(batch,worse , 45, 675);
-		font.draw(batch,"Your score was :", 135, 625);
-		batch.draw(R_Man.ScoreBoard, 100, 490);
-		for(int i = 0; i < 4; i++)
-	    {
-			if(scoreMade[i].length() == 3)font.draw(batch, scoreMade[i], 110+size*i, 550); 
-    		else if(scoreMade[i].length() == 2)font.draw(batch, scoreMade[i], 120+size*i, 550);
-    		else font.draw(batch, scoreMade[i], 130+size*i, 550); 	  
-	    }
-		font.draw(batch,"Your best score is :", 115, 470);
-		batch.draw(R_Man.ScoreBoard, 100, 335);
-		for(int i = 0; i < 4; i++)
-	    {
-			if(drawBestScore[i].length() == 3)font.draw(batch, drawBestScore[i], 110+size*i, 395); 
-			else if(drawBestScore[i].length() == 2)font.draw(batch, drawBestScore[i], 120+size*i, 395);
-			else font.draw(batch, drawBestScore[i], 130+size*i, 395); 	  
-	    }
-		batch.draw(Back.tex, Back.x, Back.y);
+		if(R_Man.NewHighScore)R_Man.fontBlack.draw(batch,newHigh , 60, 675);
+		else if (R_Man.NewIndivScore)R_Man.fontBlack.draw(batch,newIndiv , 60, 675);
+		else R_Man.fontBlack.draw(batch,worse , 45, 675);
+		
+		R_Man.fontBlack.draw(batch,"Your score was :", 135, 630);
+		R_Man.drawScoreBoard(batch, 100, 530, scoreMade, R_Man.NewIndivScore, R_Man.whichNewIndivScore, R_Man.fontBlack );
+	
+		R_Man.fontBlack.draw(batch,"Your best score is :", 115, 470);
+		R_Man.drawScoreBoard(batch, 100, 370, drawBestScore, false, -1, R_Man.fontBlack);
+
+		batch.draw(Replay.tex, Replay.x, Replay.y);
+		batch.draw(MainMenu.tex, MainMenu.x, MainMenu.y);
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
-		if(buttonClick(Back,x,y)) gsm.setState(GameStateManager.MENU);
+		if(buttonClick(Replay,x,y)) gsm.setState(GameStateManager.PLAY);
+		if(buttonClick(MainMenu,x,y)) gsm.setState(GameStateManager.MENU);
 	}
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position

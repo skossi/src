@@ -14,7 +14,7 @@ import com.blokk.game.Movable;
 import com.blokk.game.UI;
  
 
-//Class by �ttar, Hlynur and �orsteinn. 
+//Class by �ttar, Hlynur and �orsteinn. 
 //
 //Written 30.10.2014
 //Creates a new state when user is playing.
@@ -36,7 +36,6 @@ public class Playstate extends Gamestate{
 	   private int startingRows;
 	   private RectangleManager R_Man;
 	   private UI UI;
-	   private BitmapFont font;
 	   private Movable selectedM;
 	   private long lastWave;
 	   private int loseCondition;
@@ -65,6 +64,8 @@ public class Playstate extends Gamestate{
 		actions = 0;
 		actionTime = System.currentTimeMillis()-500;
 		R_Man = RectMan;
+		isPaused = false;
+		R_Man.isMenuDown = true;
 		size = 68;
 		steps = size; //pixel perfect updating
 		columns = 7;
@@ -74,7 +75,6 @@ public class Playstate extends Gamestate{
 		Movables = new Movable[columns][rows];
 		lastWave = 0;
 		UI = new UI(0, 800-size, 480, size);
-		font = R_Man.font;
 		difficulty = 1.0;
 		defaultSpeed = 600;
 		loseCondition = 720-size;
@@ -88,7 +88,7 @@ public class Playstate extends Gamestate{
 		isTesting = false;
 	}
 	/**
-   * Creates a new cube on a timed interval. It�s type is randomed. This method is a temporary solution for spawning cubes in debugging mode
+   * Creates a new cube on a timed interval. It���s type is randomed. This method is a temporary solution for spawning cubes in debugging mode
    *
    * @return            a new cube of some sort is created and placed in the grid
    */
@@ -232,11 +232,17 @@ public class Playstate extends Gamestate{
    * 
    * @param typeOne file Boolean which decides if it is a movable cube or black block
    * @param typeTwo boolean that decides what kind of color the cube is
-   * @return            returns Texture corresponding to it�s boolean structure
+   * @return            returns Texture corresponding to it���s boolean structure
    */   
 	private Texture createType(Boolean typeOne, boolean typeTwo) 
 	{
-			if (typeOne == null) return R_Man.black;
+			if (typeOne == null)
+			{
+				if(!typeTwo)
+					return R_Man.black;
+				else
+					return R_Man.blinkBlack;
+			}
 			return (typeOne ? (typeTwo ? R_Man.square : R_Man.circle) : (typeTwo ? R_Man.triangle : R_Man.ex));
 	}
 	private Texture drawPower(Boolean typeOne, boolean typeTwo) 
@@ -290,7 +296,7 @@ public class Playstate extends Gamestate{
 		if (isPaused) {
 			System.out.println("csvCat");
 			printMovables();
-			isTesting = true;
+//			isTesting = true;
 			return;
 		}
 		if(System.currentTimeMillis() - lastWave > 15000*difficulty){
@@ -305,19 +311,20 @@ public class Playstate extends Gamestate{
 	//See abstract class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		batch.draw(Background, 0, 0);
+		//batch.draw(Background, 0, 0);
 	      for(int i = 0; i < columns; i++) {
 	    	  for (int j = 0; j < rows; j++) {
 	    		  Movable m = Movables[i][j];
 	    		  if (m != null)
-	    		  {		batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
+	    		  {		
+	    			  batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
 		    		  if(m.isPower)
 		    		  {
 		    			  //The function to draw images did not work. We need to change this
-		    			  if(m.power == "2x") batch.draw(R_Man.Power_Multi, m.x, m.y);
-		    			  if(m.power == "50") batch.draw(R_Man.Power_50, m.x, m.y);
+		    			  //if(m.power == "2x") batch.draw(R_Man.Power_Multi, m.x, m.y);
+		    			  //if(m.power == "50") batch.draw(R_Man.Power_50, m.x, m.y);
 		    			  //batch.draw(drawPower(m.typePowerOne,m.typePowerTwo), m.x, m.y);
-		    			  font.draw(batch, m.power, m.x+size/4, m.y+size-15);//just seeing how it looks
+		    			  R_Man.fontBlack.draw(batch, m.power, m.x+size/4, m.y+size-15);//just seeing how it looks
 		    		  }
 	    			  
 	    		  }
@@ -329,7 +336,13 @@ public class Playstate extends Gamestate{
 	    	  if (selectedM.speed == 0) 
 	    		  batch.draw(R_Man.selected, selectedX-size/2, selectedY-size/2);
 	      }
-	      if(isPaused && !isTesting)batch.draw(R_Man.pauseBlock,0,0,480,800);
+	      if(isPaused && !isTesting)
+	      {
+	    	  batch.draw(R_Man.pauseBlock,0,0,480,800);
+	    	  batch.draw(R_Man.PauseResume.tex, R_Man.PauseResume.x, R_Man.PauseResume.y);
+	    	  batch.draw(R_Man.PauseRestart.tex, R_Man.PauseRestart.x, R_Man.PauseRestart.y);
+	    	  batch.draw(R_Man.PauseQuit.tex, R_Man.PauseQuit.x, R_Man.PauseQuit.y);
+	      }
 	      batch.draw(R_Man.ui_bg, UI.x, UI.y, UI.width, UI.height);
 	      if(!isPaused)batch.draw(R_Man.ui_pauseOn,UI.x,UI.y+5,64,64);
 	      else batch.draw(R_Man.ui_pauseOff,UI.x,UI.y+5,64,64);
@@ -337,14 +350,7 @@ public class Playstate extends Gamestate{
 	      if(R_Man.isMuted) batch.draw(R_Man.ui_soundOff,416,UI.y+10,64,64);
 	      else batch.draw(R_Man.ui_soundOn,416,UI.y+10,64,64);
 	      
-	      batch.draw(R_Man.ScoreBoard,100,UI.y+15);
-	      //Draw all the numbers of swapped blocks here
-	      for(int i = 0; i < 4; i++)
-	      {
-	    	  if(drawSwapScores[i].length() == 3)font.draw(batch, drawSwapScores[i], 110+size*i, 790); 
-	    	  else if(drawSwapScores[i].length() == 2)font.draw(batch, drawSwapScores[i], 120+size*i, 790);
-	    	  else font.draw(batch, drawSwapScores[i], 130+size*i, 790); 	  
-	      }
+	      R_Man.drawScoreBoard(batch, 100, (int)UI.y+5, drawSwapScores, false, -1, R_Man.fontWhite);
 
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
@@ -371,7 +377,40 @@ public class Playstate extends Gamestate{
 		
 		isSelected = true;
 		selectedM = locateMovable(x, y);
+		
+		if(isPaused)
+		{
+			if(buttonClick(R_Man.PauseResume,x,y)) isPaused = false;
+			if(buttonClick(R_Man.PauseRestart,x,y)) RestartGame();
+			if(buttonClick(R_Man.PauseQuit,x,y))
+			{
+				isPaused = false;
+				gsm.setState(GameStateManager.MENU);		
+			}
+		}
 	}
+	
+	private void RestartGame()
+	{
+		for(int i = 0; i < columns; i++)
+		{
+			for(int j = 0; j < rows ; j++)
+			{
+				Movables[i][j] = null;
+			}
+		}
+		difficulty = 1.0;
+		for(int k = 0; k < swapScores.length;k++)
+		{
+			swapScores[k] = 0;
+			drawSwapScores[k] = "0";
+		}
+		isPaused = false;
+		prepareMatrix();
+		actions = 0;
+		actionTime = System.currentTimeMillis()-500;
+	}
+	
 	//See abstrakt class Gamestate isTouched(x,y);
 	public void isTouched(float x, float y)
 	{		
@@ -543,6 +582,7 @@ public class Playstate extends Gamestate{
 			   }
 			   
 				Movables[col][j].typeOne = null;
+				Movables[col][j].typeTwo = false;
 				Movables[col][j].timeBlacked = System.currentTimeMillis();
 		   }
 		   scoreToAdd *= multiplier;
@@ -596,6 +636,7 @@ public class Playstate extends Gamestate{
 			   }
 			   
 				Movables[j][row].typeOne = null;
+				Movables[j][row].typeTwo = false;
 				Movables[j][row].timeBlacked = System.currentTimeMillis();
 		   }
 		   scoreToAdd *= multiplier;
@@ -620,7 +661,7 @@ public class Playstate extends Gamestate{
 	   
 	   isSelected = false;
 	   if(isBeingThrusted){
-		   //Vantar hér lógík til að skjóta platforminu alla leið upp
+		   //Vantar h��r l��g��k til a�� skj��ta platforminu alla lei�� upp
 	   }
 	   for(int j = index; j < index+count; j++){
 		   for (int i = row; i < rows; i++){
@@ -635,7 +676,7 @@ public class Playstate extends Gamestate{
    }
 	   
   /**
-   *Finds out if the moved block was indeed the same color is the one moved in it�s direction
+   *Finds out if the moved block was indeed the same color is the one moved in it���s direction
    * @param m1 A moved Movable block by the user
    * @param typeOne lets the method know what kind of cube it is.
    * @param typeOne lets the method know what kind of cube it is.
@@ -647,7 +688,7 @@ public class Playstate extends Gamestate{
    }
 	   
    /**
-   *Passes the x,y coordinates of the screen on to it�s chiled methods to find out if the player is  *indeed clicking at a cube.
+   *Passes the x,y coordinates of the screen on to it���s chiled methods to find out if the player is  *indeed clicking at a cube.
    * @param x X-coordinates of the screen
    * @param y Y-coordinates of the screen
    */
@@ -727,13 +768,17 @@ public class Playstate extends Gamestate{
 	 //See abstrakt class Gamestate dispose();
 	public void dispose()
 	{
-		
+
 	}
+	public boolean buttonClick(RectTex rekt, float x, float y) {
+		if (x < (rekt.x + rekt.width) && x > rekt.x && y > rekt.y && y < (rekt.y + rekt.height)) return true;
+		return false;
+	}
+	
 	//Saves current score and sets the state to Lost. Called when game is lost
 	public void gameLost()
 	{
 		R_Man.checkScore(swapScores);
 		gsm.setState(GameStateManager.LOST);
-		R_Man.resetMenu();
 	}	
 }
