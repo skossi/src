@@ -15,13 +15,15 @@ public class Scorestate extends Gamestate {
 	   private RectTex Score;
 	   private RectangleManager R_Man;
 	   
-	   private BitmapFont font;
 	   private String[] drawBestScore;
 	   private String[] drawBestSquare;
 	   private String[] drawBestTriangle;
 	   private String[] drawBestCircle;
 	   private String[] drawBestEx;
-	   private int size;
+	   
+	   private boolean Animation;
+	   private int xOffset;
+	   private int screenDir;
 	   
 	   
 	//Constructor
@@ -36,9 +38,8 @@ public class Scorestate extends Gamestate {
 		R_Man = RectMan;
 
 		Score = R_Man.Score;
-		Back = R_Man.Back;
+		Back = R_Man.BackScore;
 		
-		font = R_Man.font;
 		drawBestScore = new String[4];
 		drawBestSquare = new String[4];
 		drawBestTriangle = new String[4];
@@ -52,72 +53,78 @@ public class Scorestate extends Gamestate {
 			drawBestCircle[i] = Integer.toString(R_Man.circleRecordHolder[i]);
 			drawBestEx[i] = Integer.toString(R_Man.exRecordHolder[i]);
 		}
-		size = 68;
+		Animation = true;
+		xOffset = -480;
+		screenDir = 1;
 	      
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		
+		if(Animation)
+		{
+			if(xOffset < 0 && screenDir > 0)
+			{
+				R_Man.verticalSpeed -= R_Man.speedAdd;
+				xOffset += R_Man.verticalSpeed*dt*screenDir;
+				R_Man.speedAdd--;
+				if(xOffset >= 0) 
+				{
+					xOffset = 0;
+					Animation = false;	
+				}
+			}
+			else
+			{
+				R_Man.verticalSpeed += R_Man.speedAdd;
+				xOffset += R_Man.verticalSpeed*dt*screenDir;
+				R_Man.speedAdd++;
+				if(xOffset < -480)
+				{
+					R_Man.moveFromSides = true;
+					R_Man.sideDir = -1;
+					R_Man.MenuXOffset = 480;
+					gsm.setState(GameStateManager.MENU);
+				}
+			}
+		}
 	}
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		batch.draw(Score.tex, Score.x, Score.y+10);
+		batch.draw(Score.tex, Score.x+xOffset, Score.y+10);
 		
-		font.draw(batch,"Your best score is :", 115, 695);
-		batch.draw(R_Man.ScoreBoard, 100, 560);
-		for(int i = 0; i < 4; i++)
-	    {
-			if(drawBestScore[i].length() == 3)font.draw(batch, drawBestScore[i], 110+size*i, 620); 
-			else if(drawBestScore[i].length() == 2)font.draw(batch, drawBestScore[i], 120+size*i, 620);
-			else font.draw(batch, drawBestScore[i], 130+size*i, 620); 	  
-	    }
-		font.draw(batch,"Your best individual score is :", 50, 550);
+		R_Man.fontBlack.draw(batch,"Your best score is :", 115+xOffset, 695);
+		R_Man.drawScoreBoard(batch, 100+xOffset, 560, drawBestScore, false, -1,R_Man.fontBlack);
 		
-		//We can put this is somekind of a function to draw each thing but for the
-		//UT Messan we will just make this work. Hardcoding ftw
-		font.draw(batch,"Red Run : ", 10, 480);
-		batch.draw(R_Man.ScoreBoard, 180, 420);
-		for(int i = 0; i < 4; i++)
-	    {
-			if(drawBestSquare[i].length() == 3)font.draw(batch, drawBestSquare[i], 190+size*i, 480); 
-			else if(drawBestSquare[i].length() == 2)font.draw(batch, drawBestSquare[i], 200+size*i, 480);
-			else font.draw(batch, drawBestSquare[i], 210+size*i, 480); 	  
-	    }
-		font.draw(batch,"Green Run : ", 10, 380);
-		batch.draw(R_Man.ScoreBoard, 180, 320);
-		for(int i = 0; i < 4; i++)
-	    {
-			if(drawBestTriangle[i].length() == 3)font.draw(batch, drawBestTriangle[i], 190+size*i, 380); 
-			else if(drawBestTriangle[i].length() == 2)font.draw(batch, drawBestTriangle[i], 200+size*i, 380);
-			else font.draw(batch, drawBestTriangle[i], 210+size*i, 380); 	  
-	    }
-		font.draw(batch,"Yellow Run : ", 10, 280);
-		batch.draw(R_Man.ScoreBoard, 180, 220);
-		for(int i = 0; i < 4; i++)
-	    {
-			if(drawBestCircle[i].length() == 3)font.draw(batch, drawBestCircle[i], 190+size*i, 280); 
-			else if(drawBestCircle[i].length() == 2)font.draw(batch, drawBestCircle[i], 200+size*i, 280);
-			else font.draw(batch, drawBestCircle[i], 210+size*i, 280); 	  
-	    }
-		font.draw(batch,"Blue Run : ", 10, 180);
-		batch.draw(R_Man.ScoreBoard, 180, 120);
-		for(int i = 0; i < 4; i++)
-	    {
-			if(drawBestEx[i].length() == 3)font.draw(batch, drawBestEx[i], 190+size*i, 180); 
-			else if(drawBestEx[i].length() == 2)font.draw(batch, drawBestEx[i], 200+size*i, 180);
-			else font.draw(batch, drawBestEx[i], 210+size*i, 180); 	  
-	    }
+		R_Man.fontBlack.draw(batch,"Your best individual score is :", 50+xOffset, 550);
 		
-		batch.draw(Back.tex, Back.x, Back.y);
+		R_Man.fontBlack.draw(batch,"Red Run : ", 10+xOffset, 480);
+		R_Man.drawScoreBoard(batch, 180+xOffset, 435, drawBestSquare, true, 0,R_Man.fontWhite);
+		
+		R_Man.fontBlack.draw(batch,"Green Run : ", 10+xOffset, 380);
+		R_Man.drawScoreBoard(batch, 180+xOffset, 335, drawBestTriangle, true, 1,R_Man.fontWhite);
+
+		R_Man.fontBlack.draw(batch,"Yellow Run : ", 10+xOffset, 280);
+		R_Man.drawScoreBoard(batch, 180+xOffset, 235, drawBestCircle, true, 2,R_Man.fontWhite);
+
+		R_Man.fontBlack.draw(batch,"Blue Run : ", 10+xOffset, 180);
+		R_Man.drawScoreBoard(batch, 180+xOffset, 135, drawBestEx, true, 3,R_Man.fontWhite);
+		
+		batch.draw(Back.tex, Back.x+xOffset, Back.y);
+		
 		
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
-		if(buttonClick(Back,x,y)) gsm.setState(GameStateManager.MENU);
+		if(buttonClick(Back,x,y))
+		{
+			screenDir = -1;
+			Animation = true;
+			//gsm.setState(GameStateManager.MENU);
+		}
 	}
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position

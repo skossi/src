@@ -12,18 +12,21 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //Written 30.10.2014
 //Creates a new state when user is viewing the menu
 public class Menustate extends Gamestate {
-	   
+	 
+	
+	 private RectangleManager R_Man;
 	 public RectTex Menu;
 	 public RectTex Play;
 	 public RectTex Score;
 	 public RectTex Tutorial;
 	 public RectTex Store;
 	 
-	 private int downSpeed;
-	 public boolean intro;
-	// private RectangleAdd RectangleManager;
-	 private RectangleManager R_Man;
-	 private int speedAdd;
+	 private RectTex[] MenuArray;
+	 
+	 private boolean toPlay;
+	 private int stateDir;
+	 private boolean moveMenu;
+	 
 	 private Sound gameSound;
 	   
 	//Constructor
@@ -35,65 +38,116 @@ public class Menustate extends Gamestate {
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
+		MenuArray = new RectTex[5];
 		
-		gsm.introEnd = false;
-		intro = false;
-			
 		R_Man = RectMan;
-		R_Man.backgroundSpeed = 600;
-		downSpeed = R_Man.backgroundSpeed;	
-		Menu = R_Man.Menu;
-		Play = R_Man.EnterPlay;
-		Score = R_Man.EnterScore;
-		Tutorial = R_Man.EnterTut;
-		Store = R_Man.EnterStore;
+
+		MenuArray[0] = R_Man.Menu;
+		MenuArray[1] = R_Man.EnterPlay;
+		MenuArray[2] = R_Man.EnterScore;
+		MenuArray[3] = R_Man.EnterTut;
+		MenuArray[4] = R_Man.EnterStore;
 		R_Man._r = R_Man._rOrg;
 		R_Man._g = R_Man._gOrg;
 		R_Man._b = R_Man._bOrg;
-		R_Man._w = 0;
-		speedAdd = 1;
+		
+		//R_Man.horizontalSpeed = 600;
+		//if(R_Man.moveFromSides) speedAdd = 65;
+		//else speedAdd = 1;
+		moveMenu = false;
 		gameSound = Gdx.audio.newSound(Gdx.files.internal("startup.wav"));
 		
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		if(intro)
+		if(moveMenu)
 		{
-			R_Man.backgroundSpeed +=speedAdd;
-			downSpeed = R_Man.backgroundSpeed;
-			Menu.y -= downSpeed*dt;
-			Play.y -= downSpeed*dt;
-			Score.y -= downSpeed*dt;
-			Tutorial.y -= downSpeed*dt;
-			Store.y -= downSpeed*dt;
-			if(Menu.y <= -(Menu.height + 64)) setGame();
-			speedAdd +=1;
+			if(toPlay)
+			{
+				R_Man.horizontalSpeed += R_Man.speedAdd;
+				R_Man.MenuYOffset += R_Man.horizontalSpeed*dt*stateDir;
+				//for(int i = 0; i < MenuArray.length;i++)MenuArray[i].y += R_Man.horizontalSpeed*dt*stateDir;		
+				R_Man.speedAdd++;
+				if(R_Man.MenuYOffset <= -800) setPlayState(GameStateManager.PLAY);
+				if(R_Man.MenuYOffset >= 800) setPlayState(GameStateManager.TUTORIAL);
+				//if(MenuArray[0].y <= -(MenuArray[0].height + 64)) setPlayState(GameStateManager.PLAY);
+				//if(MenuArray[4].y >= 800 + MenuArray[4].height) setPlayState(GameStateManager.TUTORIAL);	
+			}	
+			else
+			{
+				R_Man.verticalSpeed += R_Man.speedAdd;
+				R_Man.MenuXOffset += R_Man.verticalSpeed*dt*stateDir;
+				R_Man.speedAdd++;
+				if(R_Man.MenuXOffset >= 480) gsm.setState(GameStateManager.SCORE);
+				if(R_Man.MenuXOffset <= -480) gsm.setState(GameStateManager.STORE);
+			}
+		}
+		if(R_Man.moveFromSides)EaseMenuBack(dt);
+		if(R_Man.isMenuDown)
+		{
+			R_Man.horizontalSpeed -= R_Man.speedAdd;
+			R_Man.MenuYOffset += R_Man.horizontalSpeed*dt;
+			R_Man.speedAdd -= 2;
+			if(R_Man.MenuYOffset >= 0)
+			{
+				R_Man.resetMenu();
+				System.out.println("TOKST AD RESETTA");
+				R_Man.MenuYOffset = 0;
+				R_Man.horizontalSpeed = 600;
+				gsm.introEnd = false;
+				R_Man.isMenuDown = false;
+			}
 		}
 		
 	}
+	private void EaseMenuBack(float dt)
+	{
+		R_Man.verticalSpeed -= R_Man.speedAdd;
+		R_Man.MenuXOffset += R_Man.verticalSpeed*dt*R_Man.sideDir; //**sinnum r_man.dir
+		R_Man.speedAdd--;
+		if(R_Man.MenuXOffset*R_Man.sideDir*-1 <= 0) R_Man.moveFromSides = false;
+	}
+	
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		  batch.draw(Menu.tex, Menu.x, Menu.y);
-	      batch.draw(Play.tex, Play.x, Play.y);
-	      batch.draw(Score.tex, Score.x, Score.y);
-	      batch.draw(Tutorial.tex, Tutorial.x, Tutorial.y);
-	      batch.draw(Store.tex, Store.x, Store.y);
+		for(int i = 0; i < MenuArray.length; i++)batch.draw(MenuArray[i].tex, MenuArray[i].x+R_Man.MenuXOffset, MenuArray[i].y+R_Man.MenuYOffset);    
+	}
+	
+	private void TransitionToState(boolean aActionState, int aDirection)
+	{
+		moveMenu = true;
+		toPlay = aActionState;
+		stateDir = aDirection;
+		R_Man.horizontalSpeed = 600;
+		R_Man.verticalSpeed = 600;
+		R_Man.speedAdd = 1;
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
-		if(intro) return;
-		if(buttonClick(Play,x,y)) 
+		if(moveMenu || R_Man.moveFromSides ) return; //|| !R_Man.isMenuDown
+		if(buttonClick(MenuArray[1],x,y)) 
 		{
+			TransitionToState(true,-1);
 			gsm.introStart = true; 
-			intro = true;
 			gameSound.play(R_Man.Volume);
 		}
-		if(buttonClick(Score,x,y))gsm.setState(GameStateManager.SCORE);
-		if(buttonClick(Tutorial,x,y))gsm.setState(GameStateManager.TUTORIAL);
-		if(buttonClick(Store,x,y))gsm.setState(GameStateManager.STORE);
+		if(buttonClick(MenuArray[3],x,y))
+		{
+			TransitionToState(true,1);
+			gsm.introStart = true; 
+		}
+		if(buttonClick(MenuArray[2],x,y))
+		{
+			TransitionToState(false,1);
+		}
+		
+		if(buttonClick(MenuArray[4],x,y))
+		{
+			TransitionToState(false,-1);
+		}
 	}
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position
@@ -102,9 +156,9 @@ public class Menustate extends Gamestate {
 		return false;
 	}
 	//calls the main game loop to stop rendering the background with introend and tells the state machine manager to set the next state to playing state since the intro is finished
-	private void setGame()
+	private void setPlayState(int aState)
 	{
-		gsm.setState(GameStateManager.PLAY);
+		gsm.setState(aState);
 		gsm.introEnd = true;
 		gsm.introStart = false;
 	}

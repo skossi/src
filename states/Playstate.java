@@ -33,7 +33,6 @@ public class Playstate extends Gamestate{
 	   private int steps;
 	   private RectangleManager R_Man;
 	   private UI UI;
-	   private BitmapFont font;
 	   private Movable selectedM;
 	   private long lastWave;
 	   private int loseCondition;
@@ -55,6 +54,8 @@ public class Playstate extends Gamestate{
 	public void init(RectangleManager RectMan)
 	{
 		R_Man = RectMan;
+		isPaused = false;
+		R_Man.isMenuDown = true;
 		size = 68;
 		steps = size; //pixel perfect updating
 		columns = 7;
@@ -63,7 +64,6 @@ public class Playstate extends Gamestate{
 		Movables = new Movable[columns][rows];
 		lastWave = 0;
 		UI = new UI(0, 800-size, 480, size);
-		font = R_Man.font;
 		difficulty = 1.0;
 		loseCondition = 720-size;
 		swapScores = new int[4];
@@ -199,8 +199,8 @@ public class Playstate extends Gamestate{
    private void dangerColumn()
    {
 	   int i = whichColumn(warning, rows)-11;//threshold so the background wont turn red just yet
-	   if(i >= 0)R_Man._w = i/5f;
-	   else R_Man._w = 0;
+	   //if(i >= 0)R_Man._w = i/5f;
+	   //else R_Man._w = 0;
    }
    //Returns how big the largest column is
    public static int whichColumn(int[] warning, int rows)
@@ -258,19 +258,20 @@ public class Playstate extends Gamestate{
 	//See abstract class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		batch.draw(Background, 0, 0);
+		//batch.draw(Background, 0, 0);
 	      for(int i = 0; i < columns; i++) {
 	    	  for (int j = 0; j < rows; j++) {
 	    		  Movable m = Movables[i][j];
 	    		  if (m != null)
-	    		  {		batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
+	    		  {		
+	    			  batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
 		    		  if(m.isPower)
 		    		  {
 		    			  //The function to draw images did not work. We need to change this
-		    			  if(m.power == "2x") batch.draw(R_Man.Power_Multi, m.x, m.y);
-		    			  if(m.power == "50") batch.draw(R_Man.Power_50, m.x, m.y);
+		    			  //if(m.power == "2x") batch.draw(R_Man.Power_Multi, m.x, m.y);
+		    			  //if(m.power == "50") batch.draw(R_Man.Power_50, m.x, m.y);
 		    			  //batch.draw(drawPower(m.typePowerOne,m.typePowerTwo), m.x, m.y);
-		    			  font.draw(batch, m.power, m.x+size/4, m.y+size-15);//just seeing how it looks
+		    			  R_Man.fontBlack.draw(batch, m.power, m.x+size/4, m.y+size-15);//just seeing how it looks
 		    		  }
 	    			  
 	    		  }
@@ -282,7 +283,13 @@ public class Playstate extends Gamestate{
 	    	  if (selectedM.speed == 0) 
 	    		  batch.draw(R_Man.selected, selectedX-size/2, selectedY-size/2);
 	      }
-	      if(isPaused)batch.draw(R_Man.pauseBlock,0,0,480,800);
+	      if(isPaused)
+	      {
+	    	  batch.draw(R_Man.pauseBlock,0,0,480,800);
+	    	  batch.draw(R_Man.PauseResume.tex, R_Man.PauseResume.x, R_Man.PauseResume.y);
+	    	  batch.draw(R_Man.PauseRestart.tex, R_Man.PauseRestart.x, R_Man.PauseRestart.y);
+	    	  batch.draw(R_Man.PauseQuit.tex, R_Man.PauseQuit.x, R_Man.PauseQuit.y);
+	      }
 	      batch.draw(R_Man.ui_bg, UI.x, UI.y, UI.width, UI.height);
 	      if(!isPaused)batch.draw(R_Man.ui_pauseOn,UI.x,UI.y+5,64,64);
 	      else batch.draw(R_Man.ui_pauseOff,UI.x,UI.y+5,64,64);
@@ -290,14 +297,7 @@ public class Playstate extends Gamestate{
 	      if(R_Man.isMuted) batch.draw(R_Man.ui_soundOff,416,UI.y+10,64,64);
 	      else batch.draw(R_Man.ui_soundOn,416,UI.y+10,64,64);
 	      
-	      batch.draw(R_Man.ScoreBoard,100,UI.y+15);
-	      //Draw all the numbers of swapped blocks here
-	      for(int i = 0; i < 4; i++)
-	      {
-	    	  if(drawSwapScores[i].length() == 3)font.draw(batch, drawSwapScores[i], 110+size*i, 790); 
-	    	  else if(drawSwapScores[i].length() == 2)font.draw(batch, drawSwapScores[i], 120+size*i, 790);
-	    	  else font.draw(batch, drawSwapScores[i], 130+size*i, 790); 	  
-	      }
+	      R_Man.drawScoreBoard(batch, 100, (int)UI.y+5, drawSwapScores, false, -1, R_Man.fontWhite);
 
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
@@ -324,7 +324,39 @@ public class Playstate extends Gamestate{
 		
 		isSelected = true;
 		selectedM = locateMovable(x, y);
+		
+		if(isPaused)
+		{
+			if(buttonClick(R_Man.PauseResume,x,y)) isPaused = false;
+			if(buttonClick(R_Man.PauseRestart,x,y)) RestartGame();
+			if(buttonClick(R_Man.PauseQuit,x,y))
+			{
+				isPaused = false;
+				gsm.setState(GameStateManager.MENU);		
+			}
+		}
 	}
+	
+	private void RestartGame()
+	{
+		for(int i = 0; i < columns; i++)
+		{
+			for(int j = 0; j < rows ; j++)
+			{
+				Movables[i][j] = null;
+			}
+		}
+		difficulty = 1.0;
+		for(int k = 0; k < swapScores.length;k++)
+		{
+			swapScores[k] = 0;
+			drawSwapScores[k] = "0";
+		}
+		isPaused = false;
+		prepareMatrix();
+		spawnWave();
+	}
+	
 	//See abstrakt class Gamestate isTouched(x,y);
 	public void isTouched(float x, float y)
 	{		
@@ -616,13 +648,17 @@ public class Playstate extends Gamestate{
 	 //See abstrakt class Gamestate dispose();
 	public void dispose()
 	{
-		
+
 	}
+	public boolean buttonClick(RectTex rekt, float x, float y) {
+		if (x < (rekt.x + rekt.width) && x > rekt.x && y > rekt.y && y < (rekt.y + rekt.height)) return true;
+		return false;
+	}
+	
 	//Saves current score and sets the state to Lost. Called when game is lost
 	public void gameLost()
 	{
 		R_Man.checkScore(swapScores);
 		gsm.setState(GameStateManager.LOST);
-		R_Man.resetMenu();
 	}	
 }

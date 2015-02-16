@@ -14,15 +14,13 @@ public class Storestate extends Gamestate {
 	   private RectTex Back;
 	   private RectTex Store;
 	   private RectangleManager R_Man;
-	   
-	   private int scoreOne;
-	   private int scoreTwo;
-	   private int scoreThr;
-	   
-	   private String dispCurrency;
+
 	   private String[] drawCurrency;
 	   
-	   private BitmapFont font;
+	   private boolean Animation;
+	   
+	   private int xOffset;
+	   private int screenDir;
 	   
 	   
 	//Constructor
@@ -41,58 +39,65 @@ public class Storestate extends Gamestate {
 		{
 			drawCurrency[i] = Integer.toString(R_Man.currencyInt[i]);
 		}
-
+		
+		Animation = true;
+		xOffset = 480;
+		screenDir = -1;
+		
 		Store = R_Man.Store;
-		Back = R_Man.Back;
-		
-		font = R_Man.font;
-		
-		//dispCurrency = Integer.toString(R_Man.currency);
+		Back = R_Man.BackStore;
 	      
 	}
+	
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		
+		if(Animation)
+		{
+			if(xOffset > 0 && screenDir < 0)
+			{
+				R_Man.verticalSpeed -= R_Man.speedAdd;//speedMin;
+				xOffset += R_Man.verticalSpeed*dt*screenDir;
+				R_Man.speedAdd--;
+				if(xOffset <= 0) 
+				{
+					xOffset = 0;
+					Animation = false;	
+				}
+			}
+			else
+			{
+				R_Man.verticalSpeed += R_Man.speedAdd;
+				xOffset += R_Man.verticalSpeed*dt*screenDir;
+				R_Man.speedAdd++;
+				if(xOffset >= 480)
+				{
+					R_Man.moveFromSides = true;
+					R_Man.sideDir = 1;
+					R_Man.MenuXOffset = -480;
+					gsm.setState(GameStateManager.MENU);
+				}
+			}
+		}
 	}
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		batch.draw(Store.tex, Store.x, Store.y);
-		font.draw(batch, "Your currency : ", 10, 650);
+		batch.draw(Store.tex, Store.x+xOffset, Store.y);
+		R_Man.fontBlack.draw(batch, "Your currency : ", 10+xOffset, 650);
+		R_Man.drawScoreBoard(batch, 210+xOffset, 590, drawCurrency,false, -1, R_Man.fontBlack);
 		
-		batch.draw(R_Man.ScoreBoard, 210, 590);
-		for(int i = 0; i < 4; i++)
-	    {
-			if(drawCurrency[i].length() == 4)font.draw(batch, drawCurrency[i], 210+68*i, 650);
-			else if(drawCurrency[i].length() == 3)font.draw(batch, drawCurrency[i], 220+68*i, 650); 
-    		else if(drawCurrency[i].length() == 2)font.draw(batch, drawCurrency[i], 230+68*i, 650);
-    		else font.draw(batch, drawCurrency[i], 240+68*i, 650); 	  
-	    }
-		
-		//Note : These are just placeholder to show what the user might buy. The strings are just made for fun.
-		font.draw(batch, "Extra sound pack :", 20, 550);
-		font.draw(batch, "5.000", 350, 550);
-		font.draw(batch, "More blocks :", 20, 500);
-		font.draw(batch, "20.000", 350, 500);
-		font.draw(batch, "Slow motion mode :", 20, 450);
-		font.draw(batch, "25.000", 350, 450);
-		font.draw(batch, "Buggy mode :", 20, 400);
-		font.draw(batch, "35.000", 350, 400);
-		font.draw(batch, "Unlock credit list", 20, 350);
-		font.draw(batch, "40.000", 350, 350);
-		font.draw(batch, "Golden carrot :", 20, 300);
-		font.draw(batch, "50.000", 350, 300);
-		font.draw(batch, "Unlock the whole game for $0.99.", 20, 200);
-		font.draw(batch, "Coming soon.", 140, 150);
-		
-		batch.draw(Back.tex, Back.x, Back.y);
+		batch.draw(Back.tex, Back.x+xOffset, Back.y);
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
-		if(buttonClick(Back,x,y)) gsm.setState(GameStateManager.MENU);
+		if(buttonClick(Back,x,y))
+		{
+			screenDir = 1;
+			Animation = true;
+		}
 	}
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position

@@ -8,6 +8,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //Class by �ttar Gu�mundsson
 //Written 14.11.2014
 //Creates Manager that was originally supposed to take care of all rectangles for the game.
@@ -15,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 public class RectangleManager 
 {	
 	public boolean firstTime;
+	public int size;
 	
 	//Textures for gameplay
 	public Texture square;
@@ -32,6 +34,7 @@ public class RectangleManager
 	public Texture pauseBlock;
 	public Texture redline;
 	public Texture ScoreBoard;
+	public Texture newScore;
 	public Texture Power_Multi;
 	public Texture Power_50;
 	
@@ -46,7 +49,20 @@ public class RectangleManager
 	public RectTex EnterScore;
 	public RectTex EnterTut;
 	public RectTex EnterStore;
-	public int backgroundSpeed;
+	public int MenuXOffset;
+	public int MenuYOffset;
+	public int horizontalSpeed;
+	public int verticalSpeed;
+	public int speedAdd;
+	public boolean moveMenu;
+	public boolean moveFromSides;
+	public int sideDir;
+	public boolean isMenuDown;
+	
+	//Play
+	public RectTex PauseResume;
+	public RectTex PauseRestart;
+	public RectTex PauseQuit;
 	
 	//Tutorial
 	public RectTex Tutorial;
@@ -63,8 +79,12 @@ public class RectangleManager
 	public RectTex Store;
 	
 	//BackButton and GameOver
-	public RectTex Back;
+	public RectTex BackStore;
+	public RectTex BackScore;
 	public RectTex Over;
+	public RectTex Replay;
+	public RectTex MainMenu;
+	
 	//preferences
 	private Preferences prefs;
 	
@@ -77,6 +97,7 @@ public class RectangleManager
 	public int[] exRecordHolder;
 	public boolean NewHighScore;
 	public boolean NewIndivScore;
+	public int whichNewIndivScore;
 	public int[] currentScore;
 	public int[] currencyInt;
 	
@@ -90,7 +111,8 @@ public class RectangleManager
 	public float _w;
 	
 	//Font writing
-	public BitmapFont font;
+	public BitmapFont fontBlack;
+	public BitmapFont fontWhite;
 	public String newHighString;
 	public String newIndivString;
 	public String worseString;
@@ -110,6 +132,12 @@ public class RectangleManager
 		createTextures();
 		createButtons();
 		createSounds();
+		
+		size = 68;
+		speedAdd = 1;
+		horizontalSpeed = 600;
+		verticalSpeed = 600;
+		
 		sumRecordHolder = new int[4];
 		squareRecordHolder = new int[4];
 		triangleRecordHolder = new int[4];
@@ -120,17 +148,21 @@ public class RectangleManager
 
 		firstTime = prefs.getBoolean("First");
 		
-		_rOrg = 0/255f;
-		_gOrg = 0/255f;
-		_bOrg = 32f/255f;
+		_rOrg = 1;
+		_gOrg = 1;
+		_bOrg = 1;
 		_r = _rOrg;
 		_g = _gOrg;
 		_b = _bOrg;
 		_w = 0;
 		
-		font = new BitmapFont();
-	    font.setColor(Color.WHITE); //var Color.BLACK
-	    font.setScale(2,2);
+		fontBlack = new BitmapFont();
+	    fontBlack.setColor(Color.BLACK); //var Color.BLACK
+	    fontBlack.setScale(2,2);
+	    
+	    fontWhite = new BitmapFont();
+	    fontWhite.setColor(Color.WHITE); //var Color.BLACK
+	    fontWhite.setScale(2,2);
 	    
 	    newHighString = "Congratulations, new score!";
 	    newIndivString = "You made a new record run!";
@@ -179,7 +211,7 @@ public class RectangleManager
 		squareRecordHolder[2] = prefs.getInteger("SquareRecordCircle");
 		squareRecordHolder[3] = prefs.getInteger("SquareRecordEx");
 		//Triangle
-		triangleRecord = prefs.getInteger("triangleRecord");
+		triangleRecord = prefs.getInteger("TriangleRecord");
 		triangleRecordHolder[0] = prefs.getInteger("TriangleRecordSquare");
 		triangleRecordHolder[1] = prefs.getInteger("TriangleRecord");
 		triangleRecordHolder[2] = prefs.getInteger("TriangleRecordCircle");
@@ -219,7 +251,8 @@ public class RectangleManager
 		for(int i = 0; i < 4; i++)
 		{
 			sum += newScore[i];
-			currencyInt[i] += newScore[i];
+			//currencyInt[i] += newScore[i];
+			currencyInt[i] = 0;
 		}
 		
 		prefs.putInteger("currencySquare", currencyInt[0]);
@@ -247,6 +280,7 @@ public class RectangleManager
 			prefs.putInteger("SquareRecordCircle", newScore[2]);
 			prefs.putInteger("SquareRecordEx", newScore[3]);
 			NewIndivScore = true;
+			whichNewIndivScore = 0;
 		}
 		if(newScore[1] > triangleRecord)
 		{
@@ -256,6 +290,7 @@ public class RectangleManager
 			prefs.putInteger("TriangleRecordCircle", newScore[2]);
 			prefs.putInteger("TriangleRecordEx", newScore[3]);
 			NewIndivScore = true;
+			whichNewIndivScore = 1;
 		}
 		if(newScore[2] > circleRecord)
 		{
@@ -265,6 +300,7 @@ public class RectangleManager
 			prefs.putInteger("CircleRecord", newScore[2]);
 			prefs.putInteger("CircleRecordEx", newScore[3]);
 			NewIndivScore = true;
+			whichNewIndivScore = 2;
 		}
 		if(newScore[3] > exRecord)
 		{
@@ -274,6 +310,7 @@ public class RectangleManager
 			prefs.putInteger("ExRecordCircle", newScore[2]);
 			prefs.putInteger("ExRecord", newScore[3]);
 			NewIndivScore = true;
+			whichNewIndivScore = 3;
 		}
 
 		
@@ -286,22 +323,46 @@ public class RectangleManager
 		prefs.flush();
 		getScores();
 	}
-	public void CopyArray(int[] aArray, int[] aNewArray)
+	private void CopyArray(int[] aArray, int[] aNewArray)
 	{
-		for(int i = 0; i < 4; i++)
-		{
-			aArray[i] = aNewArray[i];
-		}
+		for(int i = 0; i < 4; i++)aArray[i] = aNewArray[i];
 	}
+	
+	public void drawScoreBoard(SpriteBatch batch, int x, int y, String[] aString, boolean showSpecial, int specialPos, BitmapFont font )
+	{
+		
+		batch.draw(square,x+0*size,y);
+		batch.draw(triangle,x+1*size,y);
+		batch.draw(circle,x+2*size,y);
+		batch.draw(ex,x+3*size,y);
+		if(showSpecial && specialPos != -1)batch.draw(newScore, x+specialPos*size, y);
+		for(int i = 0; i < 4; i++)
+	    {
+			if(aString[i].length() == 4)font.draw(batch, aString[i], x+size*i, y+45);
+			else if(aString[i].length() == 3)font.draw(batch, aString[i], x+10+size*i, y+45); 
+    		else if(aString[i].length() == 2)font.draw(batch, aString[i], x+20+size*i, y+45);
+    		else font.draw(batch, aString[i], x+30+size*i, y+45); 	  
+	    }
+	}
+	
 	//When the menu entities have moved down after the animation has completed, they are reset
 	//That way the user can access the menu after the game is finished
 	public void resetMenu()
 	{
 		Menu.y = 700;
+		Menu.x = 480 /2 - Menu.width / 2;
 		EnterPlay.y = 550;
+		EnterPlay.x = 480 /2 - EnterPlay.width / 2;
 		EnterScore.y = 400;
+		EnterScore.x = 480 /2 - EnterScore.width / 2;
 		EnterTut.y = 250;
+		EnterTut.x = 480 /2 - EnterTut.width / 2;
 		EnterStore.y = 100;
+		EnterStore.x = 480 /2 - EnterStore.width / 2;
+		MenuXOffset = 0;
+		MenuYOffset = 0;
+		moveMenu = false;
+		speedAdd = 1;
 	}
 	private void createSounds()
 	{
@@ -336,6 +397,7 @@ public class RectangleManager
 		ui_soundOff = new Texture(Gdx.files.internal("soundOff.png"));
 		pauseBlock = new Texture(Gdx.files.internal("pauseBlock.png"));
 		ScoreBoard = new Texture(Gdx.files.internal("scoreboard.png"));
+		newScore = new Texture(Gdx.files.internal("newScore.png"));
 		Power_Multi = new Texture(Gdx.files.internal("powerMulti.png"));
 		Power_50 = new Texture(Gdx.files.internal("power50.png"));
 		back_1 = new Texture(Gdx.files.internal("background_1.png"));
@@ -389,6 +451,29 @@ public class RectangleManager
 		yHolder = 100; 
 		EnterStore = new RectTex(xHolder,yHolder, width, height, StoreTex);
 		
+		//Play - Pause State
+		
+		Texture ResumeTex = new Texture(Gdx.files.internal("pauseResume.png"));
+		width = StoreTex.getWidth();
+		height = StoreTex.getHeight();
+		xHolder = 480 /2 - width / 2; 
+		yHolder = 400; 
+		PauseResume = new RectTex(xHolder,yHolder, width, height, ResumeTex);
+		
+		Texture RestartTex = new Texture(Gdx.files.internal("pauseRestart.png"));
+		width = StoreTex.getWidth();
+		height = StoreTex.getHeight();
+		xHolder = 480 /2 - width / 2; 
+		yHolder = 250; 
+		PauseRestart = new RectTex(xHolder,yHolder, width, height, RestartTex);
+		
+		Texture QuitTex = new Texture(Gdx.files.internal("pauseQuit.png"));
+		width = StoreTex.getWidth();
+		height = StoreTex.getHeight();
+		xHolder = 480 /2 - width / 2; 
+		yHolder = 100; 
+		PauseQuit = new RectTex(xHolder,yHolder, width, height, QuitTex);
+		
 		//TutorialLogo
 		Texture TutorialLogoTex = new Texture(Gdx.files.internal("logo_tutorial.png"));
 		width = TutorialLogoTex.getWidth();
@@ -435,12 +520,19 @@ public class RectangleManager
 		ScrBar = new RectTex(xHolder, yHolder, width, height, scrTex);
 		
 		//BackButton
-		Texture BackTex = new Texture(Gdx.files.internal("back.png"));
-		width = BackTex.getWidth();
-		height = BackTex.getHeight();
+		Texture BackStoreTex = new Texture(Gdx.files.internal("backStore.png"));
+		width = BackStoreTex.getWidth();
+		height = BackStoreTex.getHeight();
 		xHolder = 480 * 0.75f - width/ 2; 
 		yHolder = 20;
-		Back = new RectTex(xHolder, yHolder, width, height, BackTex);
+		BackStore = new RectTex(xHolder, yHolder, width, height, BackStoreTex);
+		
+		Texture BackScoreTex = new Texture(Gdx.files.internal("backScore.png"));
+		width = BackScoreTex.getWidth();
+		height = BackScoreTex.getHeight();
+		xHolder = 480 * 0.75f - width/ 2; 
+		yHolder = 20;
+		BackScore = new RectTex(xHolder, yHolder, width, height, BackScoreTex);
 		
 		//ScoreLogo  
 		Texture ScoreLogoTex = new Texture(Gdx.files.internal("logo_score.png"));
@@ -471,6 +563,20 @@ public class RectangleManager
 		xHolder = 480 /2 - width / 2; 
 		yHolder = 700;
 		Over = new RectTex(xHolder, yHolder, width, height, OverTex);	
+		
+		Texture ReplayTex = new Texture(Gdx.files.internal("playAgain.png"));
+		width = ReplayTex.getWidth();
+		height = ReplayTex.getHeight();
+		xHolder = 480 * 0.75f - width/ 2; 
+		yHolder = 150;
+		Replay = new RectTex(xHolder, yHolder, width, height, ReplayTex);
+		
+		Texture MainMenuTex = new Texture(Gdx.files.internal("mainMenu.png"));
+		width = MainMenuTex.getWidth();
+		height = MainMenuTex.getHeight();
+		xHolder = 480 * 0.25f - width/ 2; 
+		yHolder = 150;
+		MainMenu = new RectTex(xHolder, yHolder, width, height, MainMenuTex);
 	}
 
 }

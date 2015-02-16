@@ -3,7 +3,6 @@ package states;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //Class by Óttar Guðmundsson
 //Written 30.10.2014
@@ -11,14 +10,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class Tutorialstate extends Gamestate {
 
 	 private RectTex Back;
-	 private RectTex Tutorial;
-	 private RectTex Info;
-	 private RectTex ObjBar;
-	 private RectTex CtrBar;
-	 private RectTex ScrBar;
-	 private int infoDisp;
-	
-	 private Texture[] infoTex;
 	 private RectangleManager R_Man;
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -30,18 +21,10 @@ public class Tutorialstate extends Gamestate {
 	public void init(RectangleManager RectMan)
 	{
 		R_Man = RectMan;
-		Tutorial = R_Man.Tutorial;
-		Info = R_Man.Info;
-		ObjBar = R_Man.ObjBar;
-		CtrBar = R_Man.CtrBar;
-		ScrBar = R_Man.ScrBar;
-		
-		infoTex = R_Man.infoTex;
-		infoDisp = 3;
 		
 		if(!R_Man.firstTime)R_Man.firstDone();
 		
-		Back = R_Man.Back;
+		Back = R_Man.BackStore;
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
@@ -52,20 +35,15 @@ public class Tutorialstate extends Gamestate {
 	public void draw(SpriteBatch batch)
 	{
 		batch.draw(Back.tex,Back.x,Back.y);
-		batch.draw(Tutorial.tex, Tutorial.x, Tutorial.y);
-		batch.draw(ObjBar.tex, ObjBar.x, ObjBar.y);
-		batch.draw(CtrBar.tex, CtrBar.x, CtrBar.y);
-		batch.draw(ScrBar.tex, ScrBar.x, ScrBar.y);
-		batch.draw(infoTex[infoDisp], Info.x, Info.y);
 	}
-	
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
-		if(buttonClick(Back,x,y)) gsm.setState(GameStateManager.MENU);
-		if(buttonClick(ObjBar,x,y)) infoDisp = 0;
-		if(buttonClick(CtrBar,x,y)) infoDisp = 1;
-		if(buttonClick(ScrBar,x,y)) infoDisp = 2;
+		if(buttonClick(Back,x,y))
+		{
+			R_Man.resetMenu();
+			gsm.setState(GameStateManager.MENU);
+		}
 	}
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position

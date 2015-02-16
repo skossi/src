@@ -1,13 +1,11 @@
 package com.blokk.game;
 
-import states.Playstate;
 import managers.GameStateManager;
 import managers.MyInputProcessor;
 import managers.RectangleManager;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -78,7 +76,7 @@ public class BlokkGame implements ApplicationListener {
    */
    @Override
    public void render() {
-	  Gdx.gl.glClearColor(RectMana._r+RectMana._w, RectMana._g, RectMana._b, 1);
+	  Gdx.gl.glClearColor(RectMana._r, RectMana._g, RectMana._b, 1);
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
    
       dy = Gdx.graphics.getDeltaTime()/3;
@@ -121,14 +119,7 @@ public class BlokkGame implements ApplicationListener {
    {
 	 
 	 if (TimeUtils.nanoTime() - lastDropTime > 900000000 && !gsm.introStart) spawnMovable();
-	 		for (int i = 0; i < steps; i++) computeSubStep(dy/steps);
-
-	 if(gsm.introStart)
-	 {
-		 if(RectMana._r > 0) RectMana._r -= 2*dy;
-		 if(RectMana._g > 0) RectMana._g -= 2*dy;
-		 if(RectMana._b > 0) RectMana._b -= 2*dy;
-	 }
+	 for (int i = 0; i < steps; i++) computeSubStep(dy/steps);
 	   
 	   for(int i = 0; i < columns; i++) {
 	    	  for (int j = 0; j < rows; j++) {
@@ -168,7 +159,7 @@ public class BlokkGame implements ApplicationListener {
 		for(Movable[] rows : Movables) {
 	    	  for (Movable m1 : rows) {
 	    		  if(m1 == null) continue;
-	    		  m1.speed = -RectMana.backgroundSpeed;
+	    		  m1.speed = -RectMana.horizontalSpeed;
 	        	  m1.update(dt);
 	        	  if(m1.y <= -size) m1 = null;//m1.y = 850;
 	    	  }
@@ -196,7 +187,7 @@ public class BlokkGame implements ApplicationListener {
 	      }
 	      Movables[movable.col][available_row] = movable;
 	      movable.row = available_row;
-	      movable.x = (size+1)*movable.col;
+	      movable.x = (float) (Math.random()*480-size);//(size+1)*movable.col; 
 	      movable.y = 800;
 	      movable.speed = -600;
 	      movable.width = size;
