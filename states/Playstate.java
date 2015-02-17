@@ -150,7 +150,9 @@ public class Playstate extends Gamestate{
 	      lastDropTime = TimeUtils.nanoTime();
 	      
 	   }
-   //Spawns a new wave of blocks on a fixed interval
+   
+   // Use: spawnWave(speed);
+   // After: A new wave of blocks has been spawned with velocity speed
    private void spawnWave(float speed) {
 	   for(int j = 0; j < columns; j++){
 		   spawnMovable(j, speed);
@@ -181,9 +183,9 @@ public class Playstate extends Gamestate{
 	   }
    }
    
-   
-   //Called when a block is deleted by thrusting it up above the loseCondition line
-   //Deletes the movable, adds scores and plays sound
+   // Use: killBlock(m1);
+   // After: Called when a block is deleted by thrusting it up above the loseCondition line
+   //       Deletes the movable, adds scores and plays sound
    public void killBlock(Movable m1){
 	   if (m1.y > loseCondition && m1.speed > 0){ 
 		   addScore(Movables[m1.col][m1.row].typeOne, Movables[m1.col][m1.row].typeTwo,1);
@@ -245,12 +247,16 @@ public class Playstate extends Gamestate{
 			}
 			return (typeOne ? (typeTwo ? R_Man.square : R_Man.circle) : (typeTwo ? R_Man.triangle : R_Man.ex));
 	}
-	private Texture drawPower(Boolean typeOne, boolean typeTwo) 
-	{
-			if (typeOne == null) return R_Man.black;
-			return (typeOne ? (typeTwo ? R_Man.Power_Multi : R_Man.Power_50) : (typeTwo ? R_Man.triangle : R_Man.ex));
-	}
 	
+//	
+//	private Texture drawPower(Boolean typeOne, boolean typeTwo) 
+//	{
+//			if (typeOne == null) return R_Man.black;
+//			return (typeOne ? (typeTwo ? R_Man.Power_Multi : R_Man.Power_50) : (typeTwo ? R_Man.triangle : R_Man.ex));
+//	}
+	
+	// Use: printMovables();
+	// After: All blocks have been translated to integers from 1-4 and written to the console
 	private void printMovables() {
 		for (int j=rows-1; j > 0; j--) {
 			String log = "";
@@ -261,7 +267,11 @@ public class Playstate extends Gamestate{
 			}
 	    }
 				
-	
+	// Use: int type = translateType(m1);
+	// After: Returns value 1 if m1 has types True/True, 
+	//        value 2 if m1 has types True/False,
+	//        value 3 if m1 has types False/True and
+	//        value 4 if m1 has types False/False
     private int translateType(Movable m) {
     	if (m == null) return 0;
     	
@@ -277,6 +287,8 @@ public class Playstate extends Gamestate{
     	return 0;
     }
     
+    // Use: beginAction()
+    // After: A wave of blocks has been spawned
     public void beginAction() {
  	   spawnWave(2500); // test, var í 2000
     }
@@ -353,6 +365,7 @@ public class Playstate extends Gamestate{
 	      R_Man.drawScoreBoard(batch, 100, (int)UI.y+5, drawSwapScores, false, -1, R_Man.fontWhite);
 
 	}
+	
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
@@ -390,6 +403,8 @@ public class Playstate extends Gamestate{
 		}
 	}
 	
+	// Use: RestartGame();
+	// After: All starting variables have been reset so the game can be played from start
 	private void RestartGame()
 	{
 		for(int i = 0; i < columns; i++)
@@ -464,6 +479,9 @@ public class Playstate extends Gamestate{
       }
 	}
 	
+	// Use: int[] tryType = integerType(i)
+	// After: Returns array [0,0] if i==1, [0,1] if i==2,
+	//        [1,0] if i==3 and [1,1] if i==4
 	public int[] integerType(int i){
 		int[] result = new int[2];
 		switch(i){
@@ -483,10 +501,18 @@ public class Playstate extends Gamestate{
 		return result;
 	}
 
+	// Use: boolean type = toBoolean(i)
+	// After: The boolean variable type is True if i == 1, else False.
 	public boolean toBoolean(int i){
 		return i == 1;
 	}
 	
+	
+	// Use: int[] shootCoordinates = findHorizontalMatches(m1);
+	// After: Returns an array of size 3 if 3 or more blocks of same type are "matched"
+	//        in the same row. The first index returns 1 if there is a match, else 0. 
+	//        The second index returns in what column the first match occurs.
+	//        The third index returns how many blocks are matched.
 	public int[] findHorizontalMatches(Movable m1) {
 		   Boolean typeOne = m1.typeOne;
 		   boolean typeTwo = m1.typeTwo;
@@ -519,17 +545,15 @@ public class Playstate extends Gamestate{
 			   result[2] = count;
 			   return result;
 			   }
-		
 	}
 	
 	
-	public void setUnmatchedType(){
+//	public void setUnmatchedType(){
 		//viljum ad handlematches gefi bara boolean hvort thad se column eda row match
 		//kollum svo a thau foll her:
 		//gongum i gegnum typurnar, gefum kubb lit og gerum svo handlematches
 		//ef thad matchast eitthvad tha profum vid naesta lit
-		
-	}
+//	}
 	
 	/**
    *Checks to see if the player did indeed move a block to a valid position and to find if he added *three or more together
@@ -646,7 +670,8 @@ public class Playstate extends Gamestate{
 	   }
    }
 
-   //This should be fixed. 
+   // Use: addScore(typeOne, typeTwo, pts);
+   // After: The score has been incremented by amount pts
 	private void addScore(Boolean typeOne, boolean typeTwo, int aScore) 
 	{
 		if(typeOne == null) return;
@@ -654,9 +679,11 @@ public class Playstate extends Gamestate{
 		swapScores[swapToAdd] += aScore;
 		drawSwapScores[swapToAdd] = Integer.toString(swapScores[swapToAdd]);
 	}
-   //Gives the 3 or more blocks combined speed that thrusts them up.
-   //Takes in parameters index and row that represents its columns and rows
-   //The parameter isBeingThrusted is used for debugging tools
+	
+   // Use: shootRows(blockIndex, blockCount, blockRow, isBeingThrusted);
+   // After: Thrusts the blocks from row blockRow from index blockIndex to index
+   //        blockIndex+blockCount and all blocks above that.
+   //        The variable isBeingThrusted is not being used currently.
    public void shootRows(int index, int count, int row, boolean isBeingThrusted){
 	   
 	   isSelected = false;
@@ -707,8 +734,10 @@ public class Playstate extends Gamestate{
 	   }
 	   return selected;
    }
-   //Finds the block that player when pressing down.
-   //Takes in parameters world co ordinates x and y
+   
+   // Use: findMovable(x, y);
+   // After: Finds the block that player when pressing down and handles all swipe gestures
+   //        by the user. 
    public void findMovable(float x, float y) {
 	   int col = (int)(selectedX/size);
 	   int row = (int)(selectedY/size)+1;
@@ -770,6 +799,9 @@ public class Playstate extends Gamestate{
 	{
 
 	}
+	
+	// Use: buttonClick(rekt, x, y);
+	// After: Returns true if the button rekt at position x,y is being pressed.
 	public boolean buttonClick(RectTex rekt, float x, float y) {
 		if (x < (rekt.x + rekt.width) && x > rekt.x && y > rekt.y && y < (rekt.y + rekt.height)) return true;
 		return false;
