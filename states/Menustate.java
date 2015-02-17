@@ -101,6 +101,8 @@ public class Menustate extends Gamestate {
 		}
 		
 	}
+	//Moves the menu back to its original position when user switches to Menu state.
+	//Will be moved to the animation class when it has been written.
 	private void EaseMenuBack(float dt)
 	{
 		R_Man.verticalSpeed -= R_Man.speedAdd;

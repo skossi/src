@@ -55,10 +55,11 @@ public class Loststate extends Gamestate{
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		if(R_Man._r < R_Man._rOrg) R_Man._r += dt;
+		/*if(R_Man._r < R_Man._rOrg) R_Man._r += dt;
 		if(R_Man._g < R_Man._gOrg) R_Man._g += dt;
 		if(R_Man._b < R_Man._bOrg) R_Man._b += dt;
 		if(R_Man._w > 0) R_Man._w -= 3*dt;
+		*/
 	}
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	

@@ -74,7 +74,7 @@ public class RectangleManager
 	
 	//Score
 	public RectTex Score;
-	//public RectTex ScoreBoard;
+
 	//Store
 	public RectTex Store;
 	
@@ -260,6 +260,7 @@ public class RectangleManager
 		prefs.putInteger("currencyCircle", currencyInt[2]);
 		prefs.putInteger("currencyEx", currencyInt[3]);
 		
+		//Check if the made a new total high score
 		if(sum > sumRecord) 
 		{
 			CopyArray(sumRecordHolder,newScore);
@@ -323,12 +324,17 @@ public class RectangleManager
 		prefs.flush();
 		getScores();
 	}
+	
+	//Changes an array to take other values. Used to change scores.
 	private void CopyArray(int[] aArray, int[] aNewArray)
 	{
 		for(int i = 0; i < 4; i++)aArray[i] = aNewArray[i];
 	}
 	
-	public void drawScoreBoard(SpriteBatch batch, int x, int y, String[] aString, boolean showSpecial, int specialPos, BitmapFont font )
+	//Draws a scoreboard at given co ordinates. Takes is an array of Strings which represents
+	//high scores, current highscores or the users currency. 
+	//Can also draw a texture at chosen position (to indicate where a new score was made).
+	public void drawScoreBoard(SpriteBatch batch, float x, int y, String[] aString, boolean showSpecial, int specialPos, BitmapFont font )
 	{
 		
 		batch.draw(square,x+0*size,y);
@@ -347,6 +353,7 @@ public class RectangleManager
 	
 	//When the menu entities have moved down after the animation has completed, they are reset
 	//That way the user can access the menu after the game is finished
+	//TODO: change to sub class later.
 	public void resetMenu()
 	{
 		Menu.y = 700;
@@ -364,6 +371,9 @@ public class RectangleManager
 		moveMenu = false;
 		speedAdd = 1;
 	}
+	
+	//Creates all sounds used in the game.
+	//TODO: change to sub class later.
 	private void createSounds()
 	{
 		//Sounds initiated
@@ -380,6 +390,8 @@ public class RectangleManager
 	    Volume = 1;
 	}
 	
+	//Creates all textures used in game. 
+	//TODO: change to sub class later.
 	private void createTextures()
 	{
 		square = new Texture(Gdx.files.internal("square.png"));
@@ -407,6 +419,7 @@ public class RectangleManager
 	
 	//creates all buttons that are used in the game architecture except the blocks in the main game
 	//Each state references to each RectTex to use instead of creating each instance
+	//TODO: change to sub class later.
 	private void createButtons()
 	{
 		//variable float for temp x,y coordinates

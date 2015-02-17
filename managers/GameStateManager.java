@@ -22,10 +22,10 @@ public class GameStateManager{
 	public static final int LOST = 4;
 	public static final int STORE = 5;
 	
-	public int ACTIVESTATE;
+	public int ACTIVESTATE; //Keep track of which state is running. Is not used but might be good for debugging.
 	
 	public boolean introStart;
-	public boolean introEnd = false; //VAR TRUE - BREYTT TIL AÐ SKOÐA PRUFA MENU
+	public boolean introEnd = false; 
 	private RectangleManager RectMana;
 	
 	
