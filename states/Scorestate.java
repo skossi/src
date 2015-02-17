@@ -94,22 +94,22 @@ public class Scorestate extends Gamestate {
 	{
 		batch.draw(Score.tex, Score.x+xOffset, Score.y+10);
 		
-		R_Man.fontBlack.draw(batch,"Your best score is :", 115+xOffset, 695);
-		R_Man.drawScoreBoard(batch, 100+xOffset, 560, drawBestScore, false, -1,R_Man.fontBlack);
+		R_Man.fontBlack.draw(batch,"Your best score is :", 115+xOffset*1.5f, 695);
+		R_Man.drawScoreBoard(batch, 100+xOffset*1.5f, 560, drawBestScore, false, -1,R_Man.fontBlack);
 		
-		R_Man.fontBlack.draw(batch,"Your best individual score is :", 50+xOffset, 550);
+		R_Man.fontBlack.draw(batch,"Your best individual score is :", 50+xOffset*2f, 550);
 		
-		R_Man.fontBlack.draw(batch,"Red Run : ", 10+xOffset, 480);
-		R_Man.drawScoreBoard(batch, 180+xOffset, 435, drawBestSquare, true, 0,R_Man.fontWhite);
+		R_Man.fontBlack.draw(batch,"Red Run : ", 10+xOffset*3f, 480);
+		R_Man.drawScoreBoard(batch, 180+xOffset*3f, 435, drawBestSquare, true, 0,R_Man.fontWhite);
 		
-		R_Man.fontBlack.draw(batch,"Green Run : ", 10+xOffset, 380);
-		R_Man.drawScoreBoard(batch, 180+xOffset, 335, drawBestTriangle, true, 1,R_Man.fontWhite);
+		R_Man.fontBlack.draw(batch,"Green Run : ", 10+xOffset*3.5f, 380);
+		R_Man.drawScoreBoard(batch, 180+xOffset*3.5f, 335, drawBestTriangle, true, 1,R_Man.fontWhite);
 
-		R_Man.fontBlack.draw(batch,"Yellow Run : ", 10+xOffset, 280);
-		R_Man.drawScoreBoard(batch, 180+xOffset, 235, drawBestCircle, true, 2,R_Man.fontWhite);
+		R_Man.fontBlack.draw(batch,"Yellow Run : ", 10+xOffset*4f, 280);
+		R_Man.drawScoreBoard(batch, 180+xOffset*4f, 235, drawBestCircle, true, 2,R_Man.fontWhite);
 
-		R_Man.fontBlack.draw(batch,"Blue Run : ", 10+xOffset, 180);
-		R_Man.drawScoreBoard(batch, 180+xOffset, 135, drawBestEx, true, 3,R_Man.fontWhite);
+		R_Man.fontBlack.draw(batch,"Blue Run : ", 10+xOffset*4.5f, 180);
+		R_Man.drawScoreBoard(batch, 180+xOffset*4.5f, 135, drawBestEx, true, 3,R_Man.fontWhite);
 		
 		batch.draw(Back.tex, Back.x+xOffset, Back.y);
 		
@@ -123,7 +123,6 @@ public class Scorestate extends Gamestate {
 		{
 			screenDir = -1;
 			Animation = true;
-			//gsm.setState(GameStateManager.MENU);
 		}
 	}
 	//Tells if user just pressed a corresponding rectangle

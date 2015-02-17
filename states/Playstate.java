@@ -390,6 +390,7 @@ public class Playstate extends Gamestate{
 		}
 	}
 	
+	//Restarts the game by resetting all of the Playstate values that are directly connected to the gameplay.
 	private void RestartGame()
 	{
 		for(int i = 0; i < columns; i++)
@@ -770,6 +771,8 @@ public class Playstate extends Gamestate{
 	{
 
 	}
+	//Tells if user just pressed a corresponding rectangle
+	//Takes in Rectangle Rekt that and x and y coordinates of world position
 	public boolean buttonClick(RectTex rekt, float x, float y) {
 		if (x < (rekt.x + rekt.width) && x > rekt.x && y > rekt.y && y < (rekt.y + rekt.height)) return true;
 		return false;
