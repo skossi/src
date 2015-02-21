@@ -74,7 +74,7 @@ public class Movable {
  	*/
 	public void update(float dy) {	
 		
-		if(System.currentTimeMillis() - timeThrusted > 5000 && isBeingThrusted){
+		if(System.currentTimeMillis() - timeThrusted > 2000 && isBeingThrusted){
 			speed = -200;
 			//breytum t��pum svo ��etta fari ekki a�� haga s��r illa
 			//semsagt skj��tast upp aftur og aftur
