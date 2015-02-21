@@ -5,6 +5,8 @@ import managers.RectangleManager;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import entities.RectTex;
 //Class by Óttar Guðmundsson
 //Written 25.11.2014
 //Creates a new state when store is viewed. There is no activity here

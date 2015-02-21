@@ -14,7 +14,7 @@ import entities.RectTex;
 //Written 14.11.2014
 //Creates Manager that was originally supposed to take care of all rectangles for the game.
 //Was changed to be also resource manager 18.11.2014
-public class RectangleManager 
+public class DataManager 
 {	
 	public boolean firstTime;
 	public int size;
@@ -65,6 +65,14 @@ public class RectangleManager
 	public RectTex PauseRestart;
 	public RectTex PauseQuit;
 	
+	//Tutorial
+	public RectTex Tutorial;
+	public RectTex Info;
+	public RectTex ObjBar;
+	public RectTex CtrBar;
+	public RectTex ScrBar;
+	public Texture[] infoTex = new Texture[4];
+	
 	//Score
 	public RectTex Score;
 
@@ -112,19 +120,20 @@ public class RectangleManager
 	
 	//Main themesound and audio effects
 	public float Volume;
-	public float FXVolume;
 	public boolean isMuted;
-	private Music[] MusicThemes;
+	private Music themeLevel_1;
+	private Music themeLevel_2;
+	private Music themeLevel_3;
+	private Music themeLevel_4;
 	public Sound swapSound;
 	public Sound collectSound;
 	public Sound shootSound;
 	public Sound pauseSound;
 	public Sound muteSound;
 	public Sound startGame;
-	private int activeMusic;
 	
 	//Creates a resource entity each time the game is opened
-	public RectangleManager()
+	public DataManager()
 	{
 		createTextures();
 		createButtons();
@@ -172,14 +181,12 @@ public class RectangleManager
 		if(!isMuted)
 		{	
 			Volume = 0;
-			FXVolume = 0f;
-			MusicThemes[activeMusic].setVolume(Volume);
+			themeLevel_1.setVolume(Volume);
 		}
 		else
 		{
 			Volume = 1;
-			FXVolume = 0.25f;
-			MusicThemes[activeMusic].setVolume(Volume);
+			themeLevel_1.setVolume(1);
 		}
 		isMuted =! isMuted;
 	}
@@ -335,6 +342,7 @@ public class RectangleManager
 	//Can also draw a texture at chosen position (to indicate where a new score was made).
 	public void drawScoreBoard(SpriteBatch batch, float x, int y, String[] aString, boolean showSpecial, int specialPos, BitmapFont font )
 	{
+		
 		batch.draw(square,x+0*size,y);
 		batch.draw(triangle,x+1*size,y);
 		batch.draw(circle,x+2*size,y);
@@ -375,12 +383,10 @@ public class RectangleManager
 	private void createSounds()
 	{
 		//Sounds initiated
-		MusicThemes = new Music[4];
-		
-		MusicThemes[0] = Gdx.audio.newMusic(Gdx.files.internal("Sounds/ThemeLevel_1.wav"));
-		MusicThemes[1] = Gdx.audio.newMusic(Gdx.files.internal("Sounds/ThemeLevel_2.wav"));
-		MusicThemes[2] = Gdx.audio.newMusic(Gdx.files.internal("Sounds/ThemeLevel_3.wav"));
-		MusicThemes[3] = Gdx.audio.newMusic(Gdx.files.internal("Sounds/ThemeLevel_4.wav"));
+		themeLevel_1 = Gdx.audio.newMusic(Gdx.files.internal("Sounds/ThemeLevel_1.wav"));
+		themeLevel_2 = Gdx.audio.newMusic(Gdx.files.internal("Sounds/ThemeLevel_2.wav"));
+		themeLevel_3 = Gdx.audio.newMusic(Gdx.files.internal("Sounds/ThemeLevel_3.wav"));
+		themeLevel_4 = Gdx.audio.newMusic(Gdx.files.internal("Sounds/ThemeLevel_4.wav"));
 	    collectSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/Collect.wav"));
 	    swapSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/SwapTile.wav"));
 		shootSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/Match.wav"));
@@ -389,32 +395,10 @@ public class RectangleManager
 		startGame = Gdx.audio.newSound(Gdx.files.internal("Sounds/StartGame.wav"));
 
 	    // start the playback of the background music immediately
-		FXVolume = 0.25f;
-		resetThemeMusic();
-		raiseThemeMusic();
-	}
-	
-	public void raiseThemeMusic()
-	{
-		if(activeMusic < MusicThemes.length-1)
-		{
-			MusicThemes[activeMusic].setVolume(0);
-			activeMusic++;
-			MusicThemes[activeMusic].setVolume(Volume);
-		}
-	}
-	
-	public void resetThemeMusic()
-	{
-		for(int i = 0; i < 4; i++)
-		{
-			MusicThemes[i].setLooping(true);
-			MusicThemes[i].play();
-			MusicThemes[i].setVolume(0);
-		}
+		themeLevel_1.setLooping(true);
+		themeLevel_1.play();
+	    
 	    Volume = 1;
-	    MusicThemes[0].setVolume(Volume);
-	    activeMusic = 0;
 	}
 	
 	//Creates all textures used in game. 
@@ -508,6 +492,51 @@ public class RectangleManager
 		xHolder = 480 /2 - width / 2; 
 		yHolder = 100; 
 		PauseQuit = new RectTex(xHolder,yHolder, width, height, QuitTex);
+		
+		//TutorialLogo
+		Texture TutorialLogoTex = new Texture(Gdx.files.internal("logo_tutorial.png"));
+		width = TutorialLogoTex.getWidth();
+		height = TutorialLogoTex.getHeight();
+		xHolder = 480 /2 - width / 2; 
+		yHolder = 700; 
+		Tutorial = new RectTex(xHolder,yHolder, width, height, TutorialLogoTex);
+		
+		//InfoTextureArray
+		infoTex[0] = new Texture(Gdx.files.internal("obj.png"));
+		infoTex[1] = new Texture(Gdx.files.internal("ctr.png"));
+		infoTex[2] = new Texture(Gdx.files.internal("scr.png"));
+		infoTex[3] = new Texture(Gdx.files.internal("orgInfo.png"));
+		
+		//InfoButtonsCreation	
+	    width = infoTex[3].getWidth();
+	    height = infoTex[3].getHeight();
+	    xHolder = 480 /2 - width / 2; 
+	    yHolder = 300; 
+	    Info = new RectTex(xHolder, yHolder, width, height, infoTex[3]);
+	    
+	    Texture objTex = new Texture(Gdx.files.internal("objBarTex.png"));
+		float barWidth = objTex.getWidth();
+		float barHeight = objTex.getHeight();
+		int buttonPos = 1;
+		width = barWidth;
+		height = barHeight;
+		xHolder = (480 / 6)*buttonPos - width/2; buttonPos += 2;
+		yHolder = 150;
+		ObjBar = new RectTex(xHolder, yHolder, width, height, objTex);
+		
+		Texture ctrTex = new Texture(Gdx.files.internal("ctrBarTex.png"));
+		width = barWidth;
+		height = barHeight;
+		xHolder = (480 / 6)*buttonPos - width/2; buttonPos +=2;
+		yHolder = 150;
+		CtrBar = new RectTex(xHolder, yHolder, width, height, ctrTex);
+		
+		Texture scrTex = new Texture(Gdx.files.internal("scrBarTex.png"));
+		width = barWidth;
+		height = barHeight;
+		xHolder = (480 / 6)*buttonPos - width/2;
+		yHolder = 150;
+		ScrBar = new RectTex(xHolder, yHolder, width, height, scrTex);
 		
 		//BackButton
 		Texture BackStoreTex = new Texture(Gdx.files.internal("backStore.png"));

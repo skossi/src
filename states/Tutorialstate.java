@@ -4,6 +4,8 @@ import managers.GameStateManager;
 import managers.RectangleManager;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import entities.RectTex;
 //Class by Óttar Guðmundsson
 //Written 30.10.2014
 //Creates a new state when tutorial is viewed

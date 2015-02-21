@@ -6,6 +6,8 @@ import managers.RectangleManager;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import entities.RectTex;
+
 //import com.badlogic.gdx.audio.Sound;
 //Class by Óttar Guðmundsson
 //Written 14.11.2014
@@ -50,32 +52,27 @@ public class Loststate extends Gamestate{
 		
 		Replay = R_Man.Replay;
 		MainMenu = R_Man.MainMenu;
+		R_Man.resetThemeMusic();
 		
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		/*if(R_Man._r < R_Man._rOrg) R_Man._r += dt;
-		if(R_Man._g < R_Man._gOrg) R_Man._g += dt;
-		if(R_Man._b < R_Man._bOrg) R_Man._b += dt;
-		if(R_Man._w > 0) R_Man._w -= 3*dt;
-		*/
 	}
+	
 	//See abstrakt class Gamestate draw(SpriteBatch b);
-	
-	
 	public void draw(SpriteBatch batch)
 	{
 		batch.draw(GameOver.tex, GameOver.x, GameOver.y);
-		if(R_Man.NewHighScore)R_Man.fontBlack.draw(batch,newHigh , 60, 675);
-		else if (R_Man.NewIndivScore)R_Man.fontBlack.draw(batch,newIndiv , 60, 675);
-		else R_Man.fontBlack.draw(batch,worse , 45, 675);
+		if(R_Man.NewHighScore)R_Man.fontWhite.draw(batch,newHigh , 60, 675);
+		else if (R_Man.NewIndivScore)R_Man.fontWhite.draw(batch,newIndiv , 60, 675);
+		else R_Man.fontWhite.draw(batch,worse , 45, 675);
 		
-		R_Man.fontBlack.draw(batch,"Your score was :", 135, 630);
-		R_Man.drawScoreBoard(batch, 100, 530, scoreMade, R_Man.NewIndivScore, R_Man.whichNewIndivScore, R_Man.fontBlack );
+		R_Man.fontWhite.draw(batch,"Your score was :", 135, 630);
+		R_Man.drawScoreBoard(batch, 100, 530, scoreMade, R_Man.NewIndivScore, R_Man.whichNewIndivScore, R_Man.fontWhite );
 	
-		R_Man.fontBlack.draw(batch,"Your best score is :", 115, 470);
-		R_Man.drawScoreBoard(batch, 100, 370, drawBestScore, false, -1, R_Man.fontBlack);
+		R_Man.fontWhite.draw(batch,"Your best score is :", 115, 470);
+		R_Man.drawScoreBoard(batch, 100, 370, drawBestScore, false, -1, R_Man.fontWhite);
 
 		batch.draw(Replay.tex, Replay.x, Replay.y);
 		batch.draw(MainMenu.tex, MainMenu.x, MainMenu.y);

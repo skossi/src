@@ -8,6 +8,8 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //import com.badlogic.gdx.audio.Sound;
 
+import entities.RectTex;
+
 //Class by Óttar Guðmundsson
 //Written 30.10.2014
 //Creates a new state when user is viewing the menu
@@ -26,8 +28,6 @@ public class Menustate extends Gamestate {
 	 private boolean toPlay;
 	 private int stateDir;
 	 private boolean moveMenu;
-	 
-	 private Sound gameSound;
 	   
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -47,15 +47,15 @@ public class Menustate extends Gamestate {
 		MenuArray[2] = R_Man.EnterScore;
 		MenuArray[3] = R_Man.EnterTut;
 		MenuArray[4] = R_Man.EnterStore;
-		R_Man._r = R_Man._rOrg;
-		R_Man._g = R_Man._gOrg;
-		R_Man._b = R_Man._bOrg;
+		//R_Man._r = R_Man._rOrg;
+		//R_Man._g = R_Man._gOrg;
+		//R_Man._b = R_Man._bOrg;
 		
 		//R_Man.horizontalSpeed = 600;
 		//if(R_Man.moveFromSides) speedAdd = 65;
 		//else speedAdd = 1;
 		moveMenu = false;
-		gameSound = Gdx.audio.newSound(Gdx.files.internal("startup.wav"));
+		
 		
 	}
 	//See abstrakt class Gamestate update(float dt);
@@ -86,13 +86,16 @@ public class Menustate extends Gamestate {
 		if(R_Man.moveFromSides)EaseMenuBack(dt);
 		if(R_Man.isMenuDown)
 		{
+			if(R_Man._r < R_Man._rOrg) R_Man._r += 6*dt;
+			if(R_Man._g < R_Man._gOrg) R_Man._g += 6*dt;
+			if(R_Man._b < R_Man._bOrg) R_Man._b += 6*dt;
+			
 			R_Man.horizontalSpeed -= R_Man.speedAdd;
 			R_Man.MenuYOffset += R_Man.horizontalSpeed*dt;
 			R_Man.speedAdd -= 2;
 			if(R_Man.MenuYOffset >= 0)
 			{
 				R_Man.resetMenu();
-				System.out.println("TOKST AD RESETTA");
 				R_Man.MenuYOffset = 0;
 				R_Man.horizontalSpeed = 600;
 				gsm.introEnd = false;
@@ -134,7 +137,7 @@ public class Menustate extends Gamestate {
 		{
 			TransitionToState(true,-1);
 			gsm.introStart = true; 
-			gameSound.play(R_Man.Volume);
+			R_Man.startGame.play(R_Man.FXVolume);
 		}
 		if(buttonClick(MenuArray[3],x,y))
 		{

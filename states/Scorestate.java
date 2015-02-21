@@ -5,6 +5,8 @@ import managers.RectangleManager;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import entities.RectTex;
 //import com.badlogic.gdx.audio.Sound;
 //Class by Óttar Guðmundsson
 //Written 30.10.2014
