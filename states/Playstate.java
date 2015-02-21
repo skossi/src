@@ -1,7 +1,7 @@
 package states;
 
 import java.util.Random;
-
+import com.blokk.game.Utils;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.blokk.game.Movable;
 import com.blokk.game.UI;
+import com.blokk.game.Utils;
  
 
 //Class by �ttar, Hlynur and �orsteinn. 
@@ -92,73 +93,65 @@ public class Playstate extends Gamestate{
    *
    * @return            a new cube of some sort is created and placed in the grid
    */
-   private void spawnMovable(int col, float speed) {
-		  Movable movable;
+	   private void spawnMovable(int col, float speed) {
+			  Movable m1;
 
-		  movable = new Movable(true);
-	      movable.col = col;
-		  movable.type = createType(movable.typeOne, movable.typeTwo);
-		  
-		  if (Movables[movable.col][rows-1] != null) return;
-		  
-	      int available_row = 0;
-	      for (int i = 0; i < rows; i++) {
-	    	  if (Movables[movable.col][i] == null) {
-	    		  available_row = i;
-	    		  break;
-	    	  }
-	      }
-	      
-	      double givePower = Math.random();
-	      if(givePower < 0.15)
-	      {
-	    	  movable.isPower = true;
-	    	  double whichPower = Math.random();
-	    	  if(whichPower < 0.3)
-	    	  {
-	    		  movable.power = "50";
-	    		  movable.typePowerOne = true;
-	    		  movable.typePowerTwo = false;
-	    	  }
-	    	  else
-	    	  {
-	    		  movable.power = "2x";
-	    		  movable.typePowerOne = true;
-	    		  movable.typePowerTwo = true;
-	    	  }
-	      }
-	      else movable.isPower = false;
-	      movable.row = available_row;
-	      movable.x = (size+1)*movable.col;
-	      movable.y = 800;
-	      movable.speed = -speed;
-	      movable.width = size;
-	      movable.height = size;
-	      movable.isBeingThrusted = false;
-	      
-//	      warning[movable.col] +=1;
-		  Movables[movable.col][available_row] = movable;
-		  
-		  
-		  // tilraunastarfsemi
-//		  while (checkRowMatches(movable) == true) {
-//			  movable.typeOne = movable.randomizeType();
-//			  movable.typeOne = movable.randomizeType();
-//			  Movables[movable.col][available_row] = movable;
-//		  }
-		  
-	      lastDropTime = TimeUtils.nanoTime();
-	      
-	   }
+			  m1 = new Movable(true);
+		      m1.col = col;
+			  m1.type = createType(m1.typeOne, m1.typeTwo);
+			  
+			  if (Movables[m1.col][rows-1] != null) return;
+			  
+		      int available_row = 0;
+		      for (int i = 0; i < rows; i++) {
+		    	  if (Movables[m1.col][i] == null) {
+		    		  available_row = i;
+		    		  break;
+		    	  }
+		      }
+		      
+		      double givePower = Math.random();
+		      if(givePower < 0.15)
+		      {
+		    	  m1.isPower = true;
+		    	  double whichPower = Math.random();
+		    	  if(whichPower < 0.3)
+		    	  {
+		    		  m1.power = "50";
+		    		  m1.typePowerOne = true;
+		    		  m1.typePowerTwo = false;
+		    	  }
+		    	  else
+		    	  {
+		    		  m1.power = "2x";
+		    		  m1.typePowerOne = true;
+		    		  m1.typePowerTwo = true;
+		    	  }
+		      }
+		      else m1.isPower = false;
+		      m1.row = available_row;
+		      m1.x = (size+1)*m1.col;
+		      m1.y = 800;
+		      m1.speed = -speed;
+		      m1.width = size;
+		      m1.height = size;
+		      m1.isBeingThrusted = false;
+		      
+//		      warning[m1.col] +=1;
+			  
+			  Movables[m1.col][available_row] = m1;
+			  giveLegalType(m1);
+			  
+		      lastDropTime = System.currentTimeMillis();
+		      
+		   }
    
    // Use: spawnWave(speed);
    // After: A new wave of blocks has been spawned with velocity speed
    private void spawnWave(float speed) {
 	   for(int j = 0; j < columns; j++){
 		   spawnMovable(j, speed);
-//		   warning[j] +=1;
 	   }
-//	   dangerColumn();
    }
 	 /**
    * Prepares the Movables matrix by adding a row of immovable blocks below the screen for collision purposes    
@@ -306,8 +299,7 @@ public class Playstate extends Gamestate{
 		}
 		if(isTesting) return;
 		if (isPaused) {
-			System.out.println("csvCat");
-			printMovables();
+//			printMovables();
 //			isTesting = true;
 			return;
 		}
@@ -316,7 +308,7 @@ public class Playstate extends Gamestate{
 			spawnWave((float)((1+(1-difficulty))*defaultSpeed));
 			if(difficulty > 0.45) difficulty -= 0.03;
 			
-		} else if (actions == startingRows && TimeUtils.nanoTime() - lastDropTime > 900000000*difficulty) spawnMovable(MathUtils.random(0, 6), (float)((1+(1-difficulty))*defaultSpeed));
+		} else if (actions == startingRows && System.currentTimeMillis() - lastDropTime > 900*difficulty) spawnMovable(MathUtils.random(0, 6), (float)((1+(1-difficulty))*defaultSpeed));
 		
 		for (int i = 0; i < steps; i++) computeSubStep(dt/steps);
 	}
@@ -345,8 +337,8 @@ public class Playstate extends Gamestate{
 	      
 	      batch.draw(R_Man.redline, 0, loseCondition);
 	      if(isSelected && selectedM != null) {
-	    	  if (selectedM.speed == 0) 
-	    		  batch.draw(R_Man.selected, selectedX-size/2, selectedY-size/2);
+	    	  if (selectedM.speed == 0 || selectedM.isBeingThrusted) 
+	    		  batch.draw(R_Man.selected, selectedM.x, selectedM.y);
 	      }
 	      if(isPaused && !isTesting)
 	      {
@@ -382,14 +374,13 @@ public class Playstate extends Gamestate{
 			R_Man.muteSound.play();
 		}
 		
-		int row = (int)(y/size);
-		int column = (int)(x/size);
-		  
-		selectedX = column*(size+1) + size/2;
-		selectedY = row*(size+1) + size/2;
-		
 		isSelected = true;
 		selectedM = locateMovable(x, y);
+		
+		if (selectedM != null) {
+			selectedX = selectedM.x + size/2;
+			selectedY = selectedM.y + size/2;
+		}
 		
 		if(isPaused)
 		{
@@ -431,6 +422,11 @@ public class Playstate extends Gamestate{
 	{		
 		if(isPaused) return;
 	    if (isSelected) findMovable(x, y);
+	    
+	    if (selectedM != null) {
+			selectedX = selectedM.x + size/2;
+			selectedY = selectedM.y + size/2;
+		}
 	}
 	
 	 /**
@@ -446,8 +442,9 @@ public class Playstate extends Gamestate{
 				  if (Movables[m1.col][m1.row-1] != null && m1 != Movables[m1.col][m1.row-1] && m1.intersects(Movables[m1.col][m1.row-1])) {
 					  Movable m2 = Movables[m1.col][m1.row-1];
 					  m1.speed = m2.speed;
+					  m1.timeThrusted = m2.timeThrusted;
+					  m1.isBeingThrusted = m2.isBeingThrusted;
 					  if (m1.y < m2.y+size) m1.y = m2.y+size;
-//				      dangerColumn();
 					  if(m1.row == 11) gameLost();
 					  if(m1.speed>0){
 	    				  m1.isBeingThrusted = true;
@@ -456,22 +453,9 @@ public class Playstate extends Gamestate{
 	    			  handleMatches(m1);
 				  }
     		  }
-    		  // this happens when block can be unblacked
+    		  // this happens when block can be unblacked/afsvertist
     		  if(m1.movableCheck()){
-    			  Random ran = new Random();
-    			  int x = ran.nextInt(4);
-    			  for(int i = 0; i<4; i++){
-    				  int[] tryType = integerType(((x+i)%4)+1);
-    				  System.out.println(((x+i)%4)+1);
-    				  boolean tryOne = toBoolean(tryType[0]);
-    				  boolean tryTwo = toBoolean(tryType[1]);
-    				  m1.setType(tryOne, tryTwo);
-    				  int[] matchResults = findHorizontalMatches(m1);
-    				  if(matchResults[0] == 0)
-    					  break;
-    			  }    				  
-    			  
-    			  
+    			  giveLegalType(m1);
     		  }
         	  m1.update(dy);
         	  killBlock(m1);
@@ -479,32 +463,20 @@ public class Playstate extends Gamestate{
       }
 	}
 	
-	// Use: int[] tryType = integerType(i)
-	// After: Returns array [0,0] if i==1, [0,1] if i==2,
-	//        [1,0] if i==3 and [1,1] if i==4
-	public int[] integerType(int i){
-		int[] result = new int[2];
-		switch(i){
-		case 1: 
-			return result;
-		case 2:
-			result[1] = 1;
-			return result;
-		case 3: 
-			result[0] = 1;
-			return result;
-		case 4:
-			result[0] = 1;
-			result[1] = 1;
-			return result;
-		}
-		return result;
-	}
-
-	// Use: boolean type = toBoolean(i)
-	// After: The boolean variable type is True if i == 1, else False.
-	public boolean toBoolean(int i){
-		return i == 1;
+	public void giveLegalType(Movable m1){
+		Random ran = new Random();
+		  int x = ran.nextInt(4);
+		  for(int i = 0; i<4; i++){
+			  int[] tryType = Utils.integerType(((x+i)%4)+1);
+			  boolean tryOne = Utils.toBoolean(tryType[0]);
+			  boolean tryTwo = Utils.toBoolean(tryType[1]);
+			  m1.setType(tryOne, tryTwo);
+			  boolean thrustCase = false;
+			  int[] resultsHorizontal = findHorizontalMatches(m1, thrustCase);
+			  int[] resultsVertical = findVerticalMatches(m1, thrustCase);
+			  if(resultsHorizontal[0] == 0 && resultsVertical[0] == 0)
+				  break;
+		  }    
 	}
 	
 	
@@ -513,18 +485,20 @@ public class Playstate extends Gamestate{
 	//        in the same row. The first index returns 1 if there is a match, else 0. 
 	//        The second index returns in what column the first match occurs.
 	//        The third index returns how many blocks are matched.
-	public int[] findHorizontalMatches(Movable m1) {
-		   Boolean typeOne = m1.typeOne;
-		   boolean typeTwo = m1.typeTwo;
+	public int[] findHorizontalMatches(Movable m1, boolean thrustCase) {
 		   int count = 0;
 		   int row = m1.row;
 		   int index = -1;
 		   for(int j = 0; j < columns; j++){
 			   for(int i = j;  i< columns; i++){
 				   if( isSameType(Movables[i][row], m1)){
-					   if(Movables[i][row].speed == 0){
-						   count++;   
-					   }   
+					   if(thrustCase){
+						   if(Movables[i][row].speed == 0 ){
+							   count++;   
+						   }      
+					   } else
+						   count++;
+					   
 				   } else{
 					   break;
 				   }
@@ -547,6 +521,46 @@ public class Playstate extends Gamestate{
 			   }
 	}
 	
+	// Use: int[] shootCoordinates = findVerticalMatches(m1);
+	// After: Returns an array of size 3 if 3 or more blocks of same type are "matched"
+	//        in the same column. The first index returns 1 if there is a match, else 0. 
+	//        The second index returns in what column the first match occurs.
+	//        The third index returns how many blocks are matched.
+	public int[] findVerticalMatches(Movable m1, boolean thrustCase) {
+		int count = 0;
+		int index = -1;
+		int col = m1.col;
+		for(int j = 0; j < rows; j++){
+		   for(int i = j;  i< rows; i++){
+			   if( isSameType(Movables[col][i], m1)){
+				   if (thrustCase) {
+					   if(Movables[col][i].speed == 0){
+						   count++;   
+					   }
+				   }
+				   else 
+					   count++;
+			   } else{
+				   break;
+			   }
+		   }
+		   if(count >= 3){
+			   index = j;
+			   break;
+		   }
+		   count = 0;
+	    }
+		int[] result = new int[3];
+	    if(count==0) {
+		    return result;
+		    }
+	    else {
+	 	    result[0] = 1;
+	 	    result[1] = index;
+		    result[2] = count;
+		    return result;
+		    }
+	}
 	
 //	public void setUnmatchedType(){
 		//viljum ad handlematches gefi bara boolean hvort thad se column eda row match
@@ -561,9 +575,10 @@ public class Playstate extends Gamestate{
    */
 	public void handleMatches(Movable m1)
 	{
-	   if (m1.typeOne == null) return;
-	   checkRowMatches(m1);
-	   checkColMatches(m1);
+	   boolean thrustCase = true;
+	   if (m1 == null || m1.typeOne == null) return;
+	   checkRowMatches(m1, thrustCase);
+	   checkColMatches(m1, thrustCase);
 	   return;
 	}
 	   
@@ -571,28 +586,29 @@ public class Playstate extends Gamestate{
    *Checks out if anyone is linked to the moved Movable in the Column
    * @param m1 A moved Movable block by the user
    */ 
-   public void checkColMatches(Movable m1){
+   public void checkColMatches(Movable m1, boolean thrustCase){
+	   int col = m1.col;
 	   Boolean typeOne = m1.typeOne;
 	   boolean typeTwo = m1.typeTwo;
-	   int count = 0;
-	   int col = m1.col;
-	   int index = -1;
-	   for(int j = 0; j < rows; j++){
-		   for(int i = j;  i< rows; i++){
-			   if( isSameType(Movables[col][i], m1)){
-				   if(Movables[col][i].speed == 0){
-					   count++;   
-				   }   
-			   } else{
-				   break;
-			   }
-		   }
-		   if(count >= 3){
-			   index = j;
-			   break;
-		   }
-		   count = 0;
-	   }
+//	   for(int j = 0; j < rows; j++){
+//		   for(int i = j;  i< rows; i++){
+//			   if( isSameType(Movables[col][i], m1)){
+//				   if(Movables[col][i].speed == 0){
+//					   count++;   
+//				   }   
+//			   } else{
+//				   break;
+//			   }
+//		   }
+//		   if(count >= 3){
+//			   index = j;
+//			   break;
+//		   }
+//		   count = 0;
+//	   }
+	   int[] shootCoordinates = findVerticalMatches(m1, thrustCase);
+	   int index = shootCoordinates[1];
+	   int count = shootCoordinates[2];
 	   if(count > 2){
 		   int scoreToAdd = count;
 		   int multiplier = 1;
@@ -622,7 +638,7 @@ public class Playstate extends Gamestate{
    *Checks out if anyone is linked to the moved Movable in the Row. This one is bugged and needs *refactoring
    * @param m1 A moved Movable block by the user
    */
-   public void checkRowMatches(Movable m1){
+   public void checkRowMatches(Movable m1, boolean thrustCase){
 	   int row = m1.row;
 	   Boolean typeOne = m1.typeOne;
 	   boolean typeTwo = m1.typeTwo;
@@ -644,7 +660,7 @@ public class Playstate extends Gamestate{
 //		   }
 //		   count = 0;
 //	   }
-	   int[] shootCoordinates = findHorizontalMatches(m1);
+	   int[] shootCoordinates = findHorizontalMatches(m1, thrustCase);
 	   int index = shootCoordinates[1];
 	   int count = shootCoordinates[2];
 	   if(count > 2){
@@ -739,36 +755,30 @@ public class Playstate extends Gamestate{
    // After: Finds the block that player when pressing down and handles all swipe gestures
    //        by the user. 
    public void findMovable(float x, float y) {
-	   int col = (int)(selectedX/size);
-	   int row = (int)(selectedY/size)+1;
-	   
-	   if (row < 0 || row > rows-1 || col < 0 || col > columns-1) return;
-	   
-	   if(selectedM != null) {
-		 if (selectedM.speed != 0) return;
-		   if (y > selectedY + size) {
-			   if (Movables[col][row+1] == null) return;
-			   Movable targetM = new Movable(Movables[col][row+1]);
-			   if (targetM.typeOne == null || targetM.speed != selectedM.speed) return;
-			   swapMovables(targetM, selectedM.y, col, row, 1);
-			   handleMatches(Movables[col][row]);
-			   handleMatches(Movables[col][row+1]);
-			   selectedY += size;
+	   if(selectedM == null) return;
+	   int col = selectedM.col;
+	   int row = selectedM.row;
+	   if (row < 0 || row > rows-1 || col < 0 || col > columns-1) return;	   
+	   if (selectedM.speed != 0 && !selectedM.isBeingThrusted) return;
+		   if (y > selectedY + size/2) {
+			   handleSwap(col, row, 1);
 			   return;
 		   }
 		   
-		   if (y < selectedY - size) {
-			   if (Movables[col][row-1] == null) return;
-			   Movable targetM = new Movable(Movables[col][row-1]);
-			   if (targetM.typeOne == null || targetM.speed != selectedM.speed) return;
-			   swapMovables(targetM, selectedM.y, col, row, -1);
-			   handleMatches(Movables[col][row]);
-			   handleMatches(Movables[col][row-1]);
-			   selectedY -= size;
+		   if (y < selectedY - size/2) {
+			   handleSwap(col, row, -1);
 			   return;
 		   }
-		   
-	   }
+   }
+   
+   public void handleSwap(int col, int row, int direction){
+	   if (Movables[col][row+direction] == null) return;
+	   Movable targetM = Movables[col][row+direction];
+	   if (targetM == null || targetM.typeOne == null || targetM.speed != selectedM.speed) return;
+	   swapTypes(selectedM, targetM);
+	   handleMatches(Movables[col][row]);
+	   handleMatches(Movables[col][row+direction]);
+	   selectedY += direction*size;
    }
 	   
    /**
@@ -779,20 +789,15 @@ public class Playstate extends Gamestate{
    * @param row the row of the moved cube
    * @param add integer that decides if we are swapping upwards or downwards
    */
-   public void swapMovables(Movable m2, float y, int col, int row, int add) {
-	   Movable temp1 = new Movable(selectedM);
-	   Movable temp2 = new Movable(m2);
+   public void swapTypes(Movable m1, Movable m2) {
+	   Boolean tempOne = m1.typeOne;
+	   boolean tempTwo = m1.typeTwo;
+	   m1.typeOne = m2.typeOne;
+	   m1.typeTwo = m2.typeTwo;
+	   m2.typeOne = tempOne;
+	   m2.typeTwo = tempTwo;
 	   
-	   Movables[col][row] = temp2;
-	   Movables[col][row+add] = temp1;
-	   
-	   Movables[col][row].row = row;
-	   Movables[col][row+add].row = row+add;
-	   
-	   Movables[col][row].y = y;
-	   Movables[col][row+add].y = y+size*add;
-	   
-	   selectedM = Movables[col][row+add];
+	   selectedM = m2;	   
    }
 	 //See abstrakt class Gamestate dispose();
 	public void dispose()

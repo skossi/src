@@ -1,9 +1,8 @@
 package com.blokk.game;
-
 import states.Playstate;
 
+
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.MathUtils;
 
 /**
  * @author     Ottar og �orsteinn. Edit by Hlynur
@@ -37,8 +36,8 @@ public class Movable {
 	public Movable(boolean isMovable) {
 		timeBlacked = Long.MAX_VALUE;
 		if (isMovable) {
-			typeOne = randomizeType();//false;
-			typeTwo = randomizeType();//true;
+			typeOne = randomizeType();
+			typeTwo = randomizeType();
 		}
 		else {
 			typeOne = null;
@@ -75,9 +74,8 @@ public class Movable {
  	*/
 	public void update(float dy) {	
 		
-		if(System.currentTimeMillis() - timeThrusted > 2000 && isBeingThrusted){
-			isBeingThrusted = false;
-			speed = -600;
+		if(System.currentTimeMillis() - timeThrusted > 5000 && isBeingThrusted){
+			speed = -200;
 			//breytum t��pum svo ��etta fari ekki a�� haga s��r illa
 			//semsagt skj��tast upp aftur og aftur
 //			typeTwo = randomizeType();
@@ -88,6 +86,8 @@ public class Movable {
 		
 		return;
 	}
+	
+	
 	//This function checks whether a movable was unmovable and whether its time
 	//for it to become movable
 	public boolean movableCheck() {
@@ -147,12 +147,5 @@ public class Movable {
 		if (Math.random() < 0.5) type = true;
 		
 		return type;
-	}
-	
-	/**
- 	* A function for randomizing the column where the Movable block should be spawned
- 	*/
-	private int randomizeSlot() {
-		return MathUtils.random(0, 6);
 	}
 }
