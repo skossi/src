@@ -2,13 +2,14 @@ package states;
 
 import java.util.Random;
 import com.blokk.game.Utils;
+
+import managers.AudioManager;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.TimeUtils;
 
 import entities.Movable;
 import entities.RectTex;
@@ -52,7 +53,6 @@ public class Playstate extends Gamestate{
 	   private int musicThreshold;
 	   
 	   //chosen background
-	   private Texture Background;
 	   
 	   private boolean isTesting;
 	   
@@ -94,13 +94,10 @@ public class Playstate extends Gamestate{
 		gameLost = false;
 		loseSpeed = 20;
 		prepareMatrix();
-		double back = Math.random();
-		if(back < 0.5) Background = R_Man.back_1;
-		else Background = R_Man.back_2;
 		
 		isTesting = false;
 		
-		R_Man.raiseThemeMusic();
+		R_Man.AudioM.raiseThemeMusic();
 		swapAnimation = false;
 		musicThreshold = 0;
 		R_Man._r = R_Man._rOrg;
@@ -199,7 +196,7 @@ public class Playstate extends Gamestate{
 				   Movables[m1.col][i] = null;
 			   }
 		   }
-		   R_Man.collectSound.play(R_Man.FXVolume);
+		   R_Man.PlaySoundEffect(AudioManager.COLLECT);
 	   }	   
    }
    /**
@@ -214,11 +211,12 @@ public class Playstate extends Gamestate{
 			if (typeOne == null)
 			{
 				if(!typeTwo)
-					return R_Man.black;
+					return R_Man.TextureM.black;
 				else
-					return R_Man.blinkBlack;
+					return R_Man.TextureM.blinkBlack;
 			}
-			return (typeOne ? (typeTwo ? R_Man.square : R_Man.circle) : (typeTwo ? R_Man.triangle : R_Man.ex));
+			return (typeOne ? (typeTwo ? R_Man.TextureM.square : R_Man.TextureM.circle) 
+					: (typeTwo ? R_Man.TextureM.triangle : R_Man.TextureM.ex));
 	}
 	
 	// Use: printMovables();
@@ -291,7 +289,7 @@ public class Playstate extends Gamestate{
 					if(musicThreshold == 4)
 					{
 						musicThreshold = 0;
-						R_Man.raiseThemeMusic();
+						R_Man.AudioM.raiseThemeMusic();
 					}	
 				}
 
@@ -354,32 +352,25 @@ public class Playstate extends Gamestate{
 	    		  }
 	    	  }
 	      }
-	      if(swapAnimation)
-	      {
-	    	  batch.draw(createType(movableChosenSwap.typeOne,movableChosenSwap.typeTwo), movableChosenSwap.x, movableChosenSwap.y); 
-	    	  batch.draw(createType(movableOtherSwap.typeOne,movableOtherSwap.typeTwo), movableOtherSwap.x, movableOtherSwap.y); 
-		    	 
-	    	  if(false)swapMovablesDone(swapY,swapCol,swapRow,swapAdd);
-	      }
 	      
-	      batch.draw(R_Man.redline, 0, loseCondition);
+	      batch.draw(R_Man.TextureM.redline, 0, loseCondition);
 	      if(isSelected && selectedM != null) {
 	    	  if (selectedM.speed == 0 || selectedM.isBeingThrusted) 
-	    		  batch.draw(R_Man.selected, selectedM.x, selectedM.y);
+	    		  batch.draw(R_Man.TextureM.selected, selectedM.x, selectedM.y);
 	      }
 	      if(isPaused && !isTesting)
 	      {
-	    	  batch.draw(R_Man.pauseBlock,0,0,480,800);
-	    	  batch.draw(R_Man.PauseResume.tex, R_Man.PauseResume.x, R_Man.PauseResume.y);
-	    	  batch.draw(R_Man.PauseRestart.tex, R_Man.PauseRestart.x, R_Man.PauseRestart.y);
-	    	  batch.draw(R_Man.PauseQuit.tex, R_Man.PauseQuit.x, R_Man.PauseQuit.y);
+	    	  batch.draw(R_Man.TextureM.pauseBlock,0,0,480,800);
+	    	  batch.draw(R_Man.ButtonM.PauseResume.tex, R_Man.ButtonM.PauseResume.x, R_Man.ButtonM.PauseResume.y);
+	    	  batch.draw(R_Man.ButtonM.PauseRestart.tex, R_Man.ButtonM.PauseRestart.x, R_Man.ButtonM.PauseRestart.y);
+	    	  batch.draw(R_Man.ButtonM.PauseQuit.tex, R_Man.ButtonM.PauseQuit.x, R_Man.ButtonM.PauseQuit.y);
 	      }
-	      batch.draw(R_Man.ui_bg, UI.x, UI.y, UI.width, UI.height);
-	      if(!isPaused)batch.draw(R_Man.ui_pauseOn,UI.x,UI.y+5,64,64);
-	      else batch.draw(R_Man.ui_pauseOff,UI.x,UI.y+5,64,64);
+	      batch.draw(R_Man.TextureM.ui_bg, UI.x, UI.y, UI.width, UI.height);
+	      if(!isPaused)batch.draw(R_Man.TextureM.ui_pauseOn,UI.x,UI.y+5,64,64);
+	      else batch.draw(R_Man.TextureM.ui_pauseOff,UI.x,UI.y+5,64,64);
 	     
-	      if(R_Man.isMuted) batch.draw(R_Man.ui_soundOff,416,UI.y+10,64,64);
-	      else batch.draw(R_Man.ui_soundOn,416,UI.y+10,64,64);
+	      if(R_Man.isMuted) batch.draw(R_Man.TextureM.ui_soundOff,416,UI.y+10,64,64);
+	      else batch.draw(R_Man.TextureM.ui_soundOn,416,UI.y+10,64,64);
 	      
 	      R_Man.drawScoreBoard(batch, 100, (int)UI.y+5, drawSwapScores, false, -1, R_Man.fontWhite);
 
@@ -393,12 +384,12 @@ public class Playstate extends Gamestate{
 		if(barPress == 1) 
 		{
 			isPaused =! isPaused;
-			R_Man.pauseSound.play(R_Man.FXVolume);
+			R_Man.PlaySoundEffect(AudioManager.PAUSE);
 		}
 		if(barPress == 4)
 		{
 			R_Man.soundMute();
-			R_Man.muteSound.play();
+			R_Man.PlaySoundEffect(AudioManager.MUTE);
 		}
 		
 		isSelected = true;
@@ -411,11 +402,12 @@ public class Playstate extends Gamestate{
 		
 		if(isPaused)
 		{
-			if(buttonClick(R_Man.PauseResume,x,y)) isPaused = false;
-			if(buttonClick(R_Man.PauseRestart,x,y)) RestartGame();
-			if(buttonClick(R_Man.PauseQuit,x,y))
+			if(buttonClick(R_Man.ButtonM.PauseResume,x,y)) isPaused = false;
+			if(buttonClick(R_Man.ButtonM.PauseRestart,x,y)) RestartGame();
+			if(buttonClick(R_Man.ButtonM.PauseQuit,x,y))
 			{
 				isPaused = false;
+				R_Man.AudioM.resetThemeMusic();
 				gsm.setState(GameStateManager.MENU);		
 			}
 		}
@@ -442,6 +434,8 @@ public class Playstate extends Gamestate{
 		prepareMatrix();
 		actions = 0;
 		actionTime = System.currentTimeMillis()-500;
+		R_Man.AudioM.resetThemeMusic();
+		R_Man.AudioM.raiseThemeMusic();
 	}
 	
 	//See abstrakt class Gamestate isTouched(x,y);
@@ -472,7 +466,8 @@ public class Playstate extends Gamestate{
 					  m1.timeThrusted = m2.timeThrusted;
 					  m1.isBeingThrusted = m2.isBeingThrusted;
 					  if (m1.y < m2.y+size) m1.y = m2.y+size;
-					  if(m1.row == 11) endGameAnimation();
+					  //if(m1.row == 11) endGameAnimation();
+					  if(m1.row == 11 && m1.speed == 0) endGameAnimation();
 					  if(m1.speed>0){
 	    				  m1.isBeingThrusted = true;
 	    				  m1.timeThrusted = m2.timeThrusted;
@@ -636,7 +631,7 @@ public class Playstate extends Gamestate{
 		   //TODO: Lata fallid gera miklu minna
 		   //af hverju er shootrows herna inni
 		   shootRows(m1.col, 1, index, false);
-		   R_Man.shootSound.play(R_Man.FXVolume);
+		   R_Man.PlaySoundEffect(AudioManager.MATCH);
 	   }
    }
 	   
@@ -679,7 +674,7 @@ public class Playstate extends Gamestate{
 				Movables[j][row].timeBlacked = System.currentTimeMillis();
 		   }
 		   shootRows(index, count, row, false);
-		   R_Man.shootSound.play(R_Man.FXVolume);
+		   R_Man.PlaySoundEffect(AudioManager.MATCH);
 	   }
    }
 
@@ -796,29 +791,7 @@ public class Playstate extends Gamestate{
 	   m2.typeTwo = tempTwo;
 	   
 	   selectedM = m2;	   
-   }
-   
-   private void swapMovablesDone(float y, int col, int row, int add) {
-	  
-	   movableChosenSwap.isBeingSwapped = false;
-	   movableOtherSwap.isBeingSwapped = false;
-	   swapAnimation = false;
-	   
-	   Movables[col][row] = movableOtherSwap;
-	   Movables[col][row+add] = movableChosenSwap;
-	   
-	   Movables[col][row].row = row;
-	   Movables[col][row+add].row = row+add;
-	   
-	   Movables[col][row].y = y;
-	   Movables[col][row+add].y = y+size*add;
-	   
-	   selectedM = Movables[col][row+add];
-	   
-   }
-   
-   
-   
+   }  
 	 //See abstrakt class Gamestate dispose();
 	public void dispose()
 	{
@@ -840,7 +813,7 @@ public class Playstate extends Gamestate{
 	//Saves current score and sets the state to Lost. Called when game is lost
 	private void gameOver()
 	{
-		R_Man.checkScore(swapScores);
+		R_Man.ScoreM.checkScore(swapScores);
 		gsm.setState(GameStateManager.LOST);
 	}	
 }

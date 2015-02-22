@@ -24,9 +24,9 @@ public class Tutorialstate extends Gamestate {
 	{
 		R_Man = RectMan;
 		
-		if(!R_Man.firstTime)R_Man.firstDone();
+		if(!R_Man.ScoreM.firstTime)R_Man.ScoreM.firstDone();
 		
-		Back = R_Man.BackStore;
+		Back = R_Man.ButtonM.BackStore;
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
@@ -43,7 +43,7 @@ public class Tutorialstate extends Gamestate {
 	{
 		if(buttonClick(Back,x,y))
 		{
-			R_Man.resetMenu();
+			//R_Man.resetMenu();
 			gsm.setState(GameStateManager.MENU);
 		}
 	}

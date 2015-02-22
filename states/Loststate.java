@@ -3,7 +3,6 @@ package states;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import entities.RectTex;
@@ -37,22 +36,22 @@ public class Loststate extends Gamestate{
 	public void init(RectangleManager RectMan)
 	{
 		R_Man = RectMan;
-		GameOver = R_Man.Over;
+		GameOver = R_Man.ButtonM.Over;
 		scoreMade = new String[4];
 		drawBestScore = new String[4];
 		for(int i = 0; i < 4; i++)
 		{
-			scoreMade[i] = Integer.toString(R_Man.currentScore[i]);
-			drawBestScore[i] = Integer.toString(R_Man.sumRecordHolder[i]);
+			scoreMade[i] = Integer.toString(R_Man.ScoreM.currentScore[i+1]);
+			drawBestScore[i] = Integer.toString(R_Man.ScoreM.scoreHolder[0][i+1]);
 		}
 		
 		newHigh = R_Man.newHighString;
 		newIndiv = R_Man.newIndivString;
 		worse = R_Man.worseString;
 		
-		Replay = R_Man.Replay;
-		MainMenu = R_Man.MainMenu;
-		R_Man.resetThemeMusic();
+		Replay = R_Man.ButtonM.Replay;
+		MainMenu = R_Man.ButtonM.MainMenu;
+		R_Man.AudioM.resetThemeMusic();
 		
 	}
 	//See abstrakt class Gamestate update(float dt);
@@ -64,12 +63,12 @@ public class Loststate extends Gamestate{
 	public void draw(SpriteBatch batch)
 	{
 		batch.draw(GameOver.tex, GameOver.x, GameOver.y);
-		if(R_Man.NewHighScore)R_Man.fontWhite.draw(batch,newHigh , 60, 675);
-		else if (R_Man.NewIndivScore)R_Man.fontWhite.draw(batch,newIndiv , 60, 675);
+		if(R_Man.ScoreM.NewHighScore)R_Man.fontWhite.draw(batch,newHigh , 60, 675);
+		else if (R_Man.ScoreM.NewIndivScore)R_Man.fontWhite.draw(batch,newIndiv , 60, 675);
 		else R_Man.fontWhite.draw(batch,worse , 45, 675);
 		
 		R_Man.fontWhite.draw(batch,"Your score was :", 135, 630);
-		R_Man.drawScoreBoard(batch, 100, 530, scoreMade, R_Man.NewIndivScore, R_Man.whichNewIndivScore, R_Man.fontWhite );
+		R_Man.drawScoreBoard(batch, 100, 530, scoreMade, R_Man.ScoreM.NewIndivScore, R_Man.ScoreM.whichNewIndivScore, R_Man.fontWhite );
 	
 		R_Man.fontWhite.draw(batch,"Your best score is :", 115, 470);
 		R_Man.drawScoreBoard(batch, 100, 370, drawBestScore, false, -1, R_Man.fontWhite);
@@ -81,7 +80,7 @@ public class Loststate extends Gamestate{
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
-		if(buttonClick(Replay,x,y)) gsm.setState(GameStateManager.PLAY);
+		if(buttonClick(Replay,x,y))gsm.setState(GameStateManager.PLAY);
 		if(buttonClick(MainMenu,x,y)) gsm.setState(GameStateManager.MENU);
 	}
 	//Tells if user just pressed a corresponding rectangle

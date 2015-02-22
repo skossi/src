@@ -34,7 +34,7 @@ public class GameStateManager{
 	public GameStateManager(RectangleManager rsm)
 	{
 		RectMana = rsm;
-		if(rsm.firstTime)setState(MENU);
+		if(rsm.ScoreM.firstTime)setState(MENU);
 		else setState(TUTORIAL);
 		
 	}

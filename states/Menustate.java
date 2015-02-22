@@ -1,10 +1,9 @@
 package states;
 
+import managers.AudioManager;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //import com.badlogic.gdx.audio.Sound;
 
@@ -42,11 +41,11 @@ public class Menustate extends Gamestate {
 		
 		R_Man = RectMan;
 
-		MenuArray[0] = R_Man.Menu;
-		MenuArray[1] = R_Man.EnterPlay;
-		MenuArray[2] = R_Man.EnterScore;
-		MenuArray[3] = R_Man.EnterTut;
-		MenuArray[4] = R_Man.EnterStore;
+		MenuArray[0] = R_Man.ButtonM.Menu;
+		MenuArray[1] = R_Man.ButtonM.EnterPlay;
+		MenuArray[2] = R_Man.ButtonM.EnterScore;
+		MenuArray[3] = R_Man.ButtonM.EnterTut;
+		MenuArray[4] = R_Man.ButtonM.EnterStore;
 		//R_Man._r = R_Man._rOrg;
 		//R_Man._g = R_Man._gOrg;
 		//R_Man._b = R_Man._bOrg;
@@ -95,7 +94,7 @@ public class Menustate extends Gamestate {
 			R_Man.speedAdd -= 2;
 			if(R_Man.MenuYOffset >= 0)
 			{
-				R_Man.resetMenu();
+				//R_Man.resetMenu();
 				R_Man.MenuYOffset = 0;
 				R_Man.horizontalSpeed = 600;
 				gsm.introEnd = false;
@@ -133,22 +132,27 @@ public class Menustate extends Gamestate {
 	public void justTouched(float x, float y)
 	{
 		if(moveMenu || R_Man.moveFromSides ) return; //|| !R_Man.isMenuDown
+		//Play
 		if(buttonClick(MenuArray[1],x,y)) 
 		{
 			TransitionToState(true,-1);
 			gsm.introStart = true; 
-			R_Man.startGame.play(R_Man.FXVolume);
+			R_Man.PlaySoundEffect(AudioManager.START);
 		}
+		//Tutorial
 		if(buttonClick(MenuArray[3],x,y))
 		{
-			TransitionToState(true,1);
-			gsm.introStart = true; 
+			//TODO:Implement what the tutorial state will hold.
+			//Dont delete the next two lines here below, they are transition to the tutorial state.
+			//TransitionToState(true,1);
+			//gsm.introStart = true; 
 		}
+		//Scores
 		if(buttonClick(MenuArray[2],x,y))
 		{
 			TransitionToState(false,1);
 		}
-		
+		//Store
 		if(buttonClick(MenuArray[4],x,y))
 		{
 			TransitionToState(false,-1);

@@ -3,7 +3,6 @@ package states;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import entities.RectTex;
@@ -39,15 +38,15 @@ public class Storestate extends Gamestate {
 		drawCurrency = new String[4];
 		for(int i = 0; i < 4; i++)
 		{
-			drawCurrency[i] = Integer.toString(R_Man.currencyInt[i]);
+			drawCurrency[i] = Integer.toString(R_Man.ScoreM.currencyInt[i]);
 		}
 		
 		Animation = true;
 		xOffset = 480;
 		screenDir = -1;
 		
-		Store = R_Man.Store;
-		Back = R_Man.BackStore;
+		Store = R_Man.ButtonM.Store;
+		Back = R_Man.ButtonM.BackStore;
 	      
 	}
 	

@@ -28,7 +28,7 @@ public class BlokkGame implements ApplicationListener {
    private float dy;
    
    private GameStateManager gsm;
-   private RectangleManager RectMana;
+   private RectangleManager R_Man;
 
    //BACKGROUND
    private Movable[][] Movables;
@@ -36,12 +36,6 @@ public class BlokkGame implements ApplicationListener {
    private int rows;
    private int columns;
    private int size;
-   private Texture square;
-   private Texture triangle;
-   private Texture circle;
-   private Texture ex;
-   private Texture black;
-   private Texture blinkBlack;
    private int steps;
    
    
@@ -55,8 +49,8 @@ public class BlokkGame implements ApplicationListener {
       camera = new OrthographicCamera();
       camera.setToOrtho(false, 480, 800);
       batch = new SpriteBatch();
-      RectMana = new RectangleManager();
-      gsm = new GameStateManager(RectMana);
+      R_Man = new RectangleManager();
+      gsm = new GameStateManager(R_Man);
       Gdx.input.setCatchBackKey(true);
       
       size = 68;
@@ -64,11 +58,6 @@ public class BlokkGame implements ApplicationListener {
       columns = 7;
       rows = 13;
       Movables = new Movable[columns][rows];
-	  square = RectMana.square;
-	  triangle = RectMana.triangle;
-	  circle = RectMana.circle;
-	  ex = RectMana.ex;
-	  black = RectMana.black;
 	  lastDropTime = TimeUtils.nanoTime();
    }
    
@@ -78,7 +67,7 @@ public class BlokkGame implements ApplicationListener {
    */
    @Override
    public void render() {
-	  Gdx.gl.glClearColor(RectMana._r, RectMana._g, RectMana._b, 1);
+	  Gdx.gl.glClearColor(R_Man._r, R_Man._g, R_Man._b, 1);
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
    
       dy = Gdx.graphics.getDeltaTime()/3;
@@ -142,15 +131,17 @@ public class BlokkGame implements ApplicationListener {
     * @param typeTwo boolean that decides what kind of color the cube is
     * @return            returns Texture corresponding to it�s boolean structure
     */
-	private Texture createType(Boolean typeOne, boolean typeTwo) 
+   private Texture createType(Boolean typeOne, boolean typeTwo) 
 	{
 			if (typeOne == null)
 			{
 				if(!typeTwo)
-					return black;
-				else return blinkBlack;
+					return R_Man.TextureM.black;
+				else
+					return R_Man.TextureM.blinkBlack;
 			}
-			return (typeOne ? (typeTwo ? square : circle) : (typeTwo ? triangle : ex));
+			return (typeOne ? (typeTwo ? R_Man.TextureM.square : R_Man.TextureM.circle) 
+					: (typeTwo ? R_Man.TextureM.triangle : R_Man.TextureM.ex));
 	}
 	
 	/**
@@ -161,7 +152,7 @@ public class BlokkGame implements ApplicationListener {
 		for(Movable[] rows : Movables) {
 	    	  for (Movable m1 : rows) {
 	    		  if(m1 == null) continue;
-	    		  m1.speed = -RectMana.horizontalSpeed;
+	    		  m1.speed = -R_Man.horizontalSpeed;
 	        	  m1.update(dt);
 	        	  if(m1.y <= -size) m1 = null;//m1.y = 850;
 	    	  }

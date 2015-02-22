@@ -2,8 +2,6 @@ package states;
 
 import managers.GameStateManager;
 import managers.RectangleManager;
-
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import entities.RectTex;
@@ -39,8 +37,8 @@ public class Scorestate extends Gamestate {
 	{
 		R_Man = RectMan;
 
-		Score = R_Man.Score;
-		Back = R_Man.BackScore;
+		Score = R_Man.ButtonM.Score;
+		Back = R_Man.ButtonM.BackScore;
 		
 		drawBestScore = new String[4];
 		drawBestSquare = new String[4];
@@ -49,11 +47,12 @@ public class Scorestate extends Gamestate {
 		drawBestEx = new String[4];
 		for(int i = 0; i < 4; i++)
 		{
-			drawBestScore[i] = Integer.toString(R_Man.sumRecordHolder[i]);
-			drawBestSquare[i] = Integer.toString(R_Man.squareRecordHolder[i]);
-			drawBestTriangle[i] = Integer.toString(R_Man.triangleRecordHolder[i]);
-			drawBestCircle[i] = Integer.toString(R_Man.circleRecordHolder[i]);
-			drawBestEx[i] = Integer.toString(R_Man.exRecordHolder[i]);
+			drawBestScore[i] = Integer.toString(R_Man.ScoreM.scoreHolder[0][i+1]);
+			drawBestSquare[i] = Integer.toString(R_Man.ScoreM.scoreHolder[1][i+1]);
+			drawBestTriangle[i] = Integer.toString(R_Man.ScoreM.scoreHolder[2][i+1]);
+			drawBestCircle[i] = Integer.toString(R_Man.ScoreM.scoreHolder[3][i+1]);
+			drawBestEx[i] = Integer.toString(R_Man.ScoreM.scoreHolder[4][i+1]);
+
 		}
 		Animation = true;
 		xOffset = -480;
