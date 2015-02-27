@@ -254,7 +254,7 @@ public class Playstate extends Gamestate{
     // Use: beginAction()
     // After: A wave of blocks has been spawned
     public void beginAction() {
- 	   spawnWave(2500); // test, var í 2000
+ 	   spawnWave(2500); // test, var ï¿½ 2000
     }
     
 	//See abstrakt class Gamestate update(float dt);
@@ -265,6 +265,8 @@ public class Playstate extends Gamestate{
 		if (isPaused) {
 //			printMovables();
 //			isTesting = true;
+			System.out.println("Entering delay");
+			delayMovableTimers(dt);
 			return;
 		}
 		if(!gameLost)
@@ -450,6 +452,26 @@ public class Playstate extends Gamestate{
 		}
 	}
 	
+	public void delayMovableTimers(float dt)
+	{
+		System.out.println(dt);
+		System.out.println("Inside delay");
+		for(Movable[] row : Movables)
+			for(Movable m1 : row)
+			{
+				if(m1==null || m1.row ==0) continue;
+				if(m1.timeBlacked!=Long.MAX_VALUE)
+				{
+					m1.timeBlacked=m1.timeBlacked+(long) (3000*dt);
+					System.out.println("Delaying black");
+				}
+				if(m1.isBeingThrusted)
+				{
+					m1.timeThrusted=m1.timeThrusted+(long)(3000*dt);
+					System.out.println("Delaying thrust");
+				}
+			}
+	}
 	 /**
    *Breaks the entities update into smaller steps so it wont render out of bounds.
    * @param dy is the delta time of each frame rendered

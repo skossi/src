@@ -1,5 +1,9 @@
 package states;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import managers.AudioManager;
 import managers.GameStateManager;
 import managers.RectangleManager;
@@ -9,7 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import entities.RectTex;
 
-//Class by Óttar Guðmundsson
+//Class by ï¿½ttar Guï¿½mundsson
 //Written 30.10.2014
 //Creates a new state when user is viewing the menu
 public class Menustate extends Gamestate {
@@ -27,6 +31,9 @@ public class Menustate extends Gamestate {
 	 private boolean toPlay;
 	 private int stateDir;
 	 private boolean moveMenu;
+	 
+	 private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+	 
 	   
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -161,9 +168,42 @@ public class Menustate extends Gamestate {
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position
 	public boolean buttonClick(RectTex rekt, float x, float y) {
-		if (x < (rekt.x + rekt.width) && x > rekt.x && y > rekt.y && y < (rekt.y + rekt.height)) return true;
+		if (x < (rekt.x + rekt.width) && x > rekt.x && y > rekt.y && y < (rekt.y + rekt.height))
+		{
+			int adjustment=5;
+			rekt.x=rekt.x+adjustment;
+			rekt.y=rekt.y+adjustment;
+			resetButton(rekt,adjustment);
+			return true;
+		}
 		return false;
 	}
+	
+	public void resetButton(RectTex rekt, int adjustment)
+	{
+		ResetThread resetter=new ResetThread(adjustment,rekt);
+		scheduler.schedule(resetter, 35, TimeUnit.MILLISECONDS);
+		
+	}
+	
+	private class ResetThread extends Thread
+	{
+		int adjustment;
+		RectTex rekt;
+		public ResetThread(int ad,RectTex r)
+		{
+			super();
+			this.adjustment=ad;
+			this.rekt=r;
+		}
+		
+		public void run()
+		{
+			rekt.x=rekt.x-adjustment;
+			rekt.y=rekt.y-adjustment;
+		}
+	}
+	
 	//calls the main game loop to stop rendering the background with introend and tells the state machine manager to set the next state to playing state since the intro is finished
 	private void setPlayState(int aState)
 	{
