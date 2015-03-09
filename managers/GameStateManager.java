@@ -15,6 +15,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class GameStateManager{
 	private Gamestate gameState;
 	
+	public static GameStateManager main;
+	
 	public static final int MENU = 0;
 	public static final int PLAY = 1;
 	public static final int SCORE = 2;
@@ -28,15 +30,13 @@ public class GameStateManager{
 	public boolean introEnd = false; 
 	private RectangleManager RectMana;
 	
-	
-	
 	//initation of the gamestate manager. Called when a new manager is created and sets to starting state
 	public GameStateManager(RectangleManager rsm)
 	{
+		
 		RectMana = rsm;
 		if(rsm.ScoreM.firstTime)setState(MENU);
 		else setState(TUTORIAL);
-		
 	}
 	//Takes in parameter static final int state which stands for each 
 	public void setState(int state)
@@ -55,7 +55,7 @@ public class GameStateManager{
 	//update each state with parameter float dt which is passed from the main game screen
 	public void update(float dt)
 	{
-		//System.out.println(RectMana.MenuXOffset);
+		//System.out.println(RectMana.speedAdd);
 		gameState.update(dt);
 	}
 

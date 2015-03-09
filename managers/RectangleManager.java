@@ -13,6 +13,7 @@ public class RectangleManager
 	public int size;
 	
 	private String _Asset = "Asset_1/";
+	public int activeTheme;
 	
 	private static final String _Sounds = "Sounds/";
 	private static final String _Buttons = "Buttons/";
@@ -22,19 +23,11 @@ public class RectangleManager
 	public ButtonManager ButtonM;
 	public AudioManager AudioM;
 	public ScoreManager ScoreM;
+	public AnimationManager AnimationM;
+	
+	public GameStateManager gsm;
 	
 	public boolean isMuted;
-	
-	//Animation
-	public int MenuXOffset;
-	public int MenuYOffset;
-	public int horizontalSpeed;
-	public int verticalSpeed;
-	public int speedAdd;
-	public boolean moveMenu;
-	public boolean moveFromSides;
-	public int sideDir;
-	public boolean isMenuDown;
 
 	//RGB values
 	public float _rOrg;
@@ -47,11 +40,10 @@ public class RectangleManager
 	//Font writing
 	public BitmapFont fontBlack;
 	public BitmapFont fontWhite;
+	public BitmapFont fontfff60;
 	public String newHighString;
 	public String newIndivString;
 	public String worseString;
-	
-	
 	
 	//Creates a resource entity each time the game is opened
 	public RectangleManager()
@@ -61,10 +53,9 @@ public class RectangleManager
 		AudioM = new AudioManager(_Asset,_Sounds);
 		ScoreM = new ScoreManager();
 		
+		activeTheme = 0;
+		
 		size = 68;
-		speedAdd = 1;
-		horizontalSpeed = 600;
-		verticalSpeed = 600;
 		
 		_rOrg = 1;
 		_gOrg = 1;
@@ -81,20 +72,60 @@ public class RectangleManager
 	    fontWhite.setColor(Color.WHITE); //var Color.BLACK
 	    fontWhite.setScale(2,2);
 	    
+	    fontfff60 = new BitmapFont();
+	    fontfff60.setColor(153f/255,153f/255,153f/255,1); //var Color.BLACK
+	    fontfff60.setScale(2,2);
+	    
 	    newHighString = "Congratulations, new score!";
 	    newIndivString = "You made a new record run!";
 	    worseString = "Sorry, no high score was made.";
 	    
 	}
+	
+	//Loads in a new asset file and resets all buttons and textures.
+	public void setTheme(int aTheme)
+	{
+		if(aTheme == 0)
+		{
+			_Asset = "Asset_1/";
+			TextureM = new TextureManager(_Asset,_Textures);
+			ButtonM = new ButtonManager(_Asset,_Buttons);
+			_rOrg = 1;
+			_gOrg = 1;
+			_bOrg = 1;
+			activeTheme = aTheme;
+		}
+		if(aTheme == 1)
+		{
+			_Asset = "Asset_2/";
+			TextureM = new TextureManager(_Asset,_Textures);
+			ButtonM = new ButtonManager(_Asset,_Buttons);
+			_rOrg = 73f/255;
+			_gOrg = 10f/255;
+			_bOrg = 61f/255;
+			activeTheme = aTheme;
+		}
+		_r = _rOrg;
+		_g = _gOrg;
+		_b = _bOrg;
+	}
+	
+	//Gives the animation manager acces to the state machine
+	public void assignAnimation()
+	{
+		AnimationM = new AnimationManager(gsm);
+	}
+	
 	//Mutes or unmutes the maintheme of the game
 	public void soundMute()
 	{
-		isMuted = AudioM.Mute(isMuted);
+		isMuted = AudioM.mute(isMuted);
 	}
 	
-	public void PlaySoundEffect(int aSound)
+	//Sends request to the audio manager to play chosen sound
+	public void playSoundEffect(int aSound)
 	{
-		AudioM.SoundEffect(aSound);
+		AudioM.soundEffect(aSound);
 	}
 	
 	//Draws a scoreboard at given co ordinates. Takes is an array of Strings which represents

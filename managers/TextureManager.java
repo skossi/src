@@ -2,7 +2,9 @@ package managers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-
+//Class by Ottar Gudmundsson
+//Written 21.2.2015
+//Texture manager that creates and hold all textures of the game.
 
 public class TextureManager {
 
@@ -30,6 +32,10 @@ public class TextureManager {
 	public Texture logo_Score;
 	public Texture logo_Store;
 	public Texture logo_Over;
+	public Texture storeTabSelect;
+	public Texture scoreTabSelect;
+	public Texture swapTheme;
+	public Texture scoreBack;
 	
 	public TextureManager(String aAsset, String aLoc)
 	{
@@ -38,6 +44,7 @@ public class TextureManager {
 		createTextures();
 	}
 	
+	//Loads all textures into the game by the chosen asset/theme.
 	private void createTextures()
 	{
 		square = new Texture(Gdx.files.internal(asset+location+"square.png"));
@@ -55,5 +62,9 @@ public class TextureManager {
 		ui_soundOff = new Texture(Gdx.files.internal(asset+location+"soundOff.png"));
 		pauseBlock = new Texture(Gdx.files.internal(asset+location+"pauseBlock.png"));
 		newScore = new Texture(Gdx.files.internal(asset+location+"newScore.png"));
+		storeTabSelect = new Texture(Gdx.files.internal(asset+location+"storeBar.png"));
+		scoreTabSelect = new Texture(Gdx.files.internal(asset+location+"scoreBar.png"));
+		swapTheme = new Texture(Gdx.files.internal("MutualAssets/SwapTheme.png"));
+		scoreBack = new Texture(Gdx.files.internal("MutualAssets/scoreBack.png"));
 	}
 }

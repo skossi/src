@@ -29,4 +29,5 @@ public abstract class Gamestate {
 	public abstract void isTouched(float x, float y);
 	//called each time a state is exited and a new state is called. Disposes batches and parameters which arent used.
 	public abstract void dispose();
+	
 }

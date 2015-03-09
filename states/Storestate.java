@@ -13,15 +13,29 @@ import entities.RectTex;
 public class Storestate extends Gamestate {
 
 	   private RectTex Back;
-	   private RectTex Store;
-	   private RectangleManager R_Man;
+	   private RectTex StoreMain;
+	   private RectangleManager Man;
 
 	   private String[] drawCurrency;
-	   
-	   private boolean Animation;
-	   
-	   private int xOffset;
 	   private int screenDir;
+	   
+	   private RectTex[] tabs;
+	   private RectTex[][] Store;
+	   private String[] tabText;
+	   private int selectTab;
+	   
+	   //Animation for changing themes
+	   private boolean swapThemeAni;
+	   private int themeOffsetX;
+	   private int themeOffsetY;
+	   private boolean moveX;
+	   private boolean moveY;
+	   private int themeToSet;
+	   	//Speed variables
+	   	private int themeSpeed;
+	   	private int themeAdd;
+	   	private int xDir;
+	   	private int yDir;
 	   
 	   
 	//Constructor
@@ -33,73 +47,168 @@ public class Storestate extends Gamestate {
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
-		R_Man = RectMan;
+		Man = RectMan;
 		
 		drawCurrency = new String[4];
+		tabs = new RectTex[4];
+		tabText = new String[4];
+		
+		selectTab = 0;
+		
+		tabs[0] = Man.ButtonM.TabPowers;
+		tabs[1] = Man.ButtonM.TabLevels;
+		tabs[2] = Man.ButtonM.TabThemes;
+		tabs[3] = Man.ButtonM.TabExtras;
+		tabText[0] = "Powers";
+		tabText[1] = "Levels";
+		tabText[2] = "Themes";
+		tabText[3] = "Extras";
+		
+		swapThemeAni = false;
+		themeOffsetX = 0;
+		themeOffsetY = -800;
+		moveX = false;
+		moveY = false;
+		themeSpeed = 2600;
+		themeAdd = 70;
+		xDir = 1;
+		yDir = 1;
+		
+		themeToSet = Man.activeTheme;
+		
 		for(int i = 0; i < 4; i++)
 		{
-			drawCurrency[i] = Integer.toString(R_Man.ScoreM.currencyInt[i]);
+			drawCurrency[i] = Integer.toString(Man.ScoreM.scoreHolder[5][i]);
 		}
 		
-		Animation = true;
-		xOffset = 480;
+		Man.AnimationM.SideAnimation = true;
+		Man.AnimationM.SideXOffset = 480;
 		screenDir = -1;
 		
-		Store = R_Man.ButtonM.Store;
-		Back = R_Man.ButtonM.BackStore;
+		StoreMain = Man.ButtonM.Store;
+		Back = Man.ButtonM.BackStore;
 	      
 	}
 	
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		if(Animation)
+		if(Man.AnimationM.SideAnimation)
 		{
-			if(xOffset > 0 && screenDir < 0)
-			{
-				R_Man.verticalSpeed -= R_Man.speedAdd;//speedMin;
-				xOffset += R_Man.verticalSpeed*dt*screenDir;
-				R_Man.speedAdd--;
-				if(xOffset <= 0) 
-				{
-					xOffset = 0;
-					Animation = false;	
-				}
-			}
-			else
-			{
-				R_Man.verticalSpeed += R_Man.speedAdd;
-				xOffset += R_Man.verticalSpeed*dt*screenDir;
-				R_Man.speedAdd++;
-				if(xOffset >= 480)
-				{
-					R_Man.moveFromSides = true;
-					R_Man.sideDir = 1;
-					R_Man.MenuXOffset = -480;
-					gsm.setState(GameStateManager.MENU);
-				}
-			}
+			if(Man.AnimationM.SideXOffset > 0 && screenDir < 0)Man.AnimationM.SideToMenu(dt,screenDir,true);
+			else Man.AnimationM.SideToMenu(dt,screenDir,false);
+		}
+		
+		if(swapThemeAni)
+		{
+			if(moveY)animateYChange(dt);
+			if(moveX)animateXChange(dt);
 		}
 	}
+	
+	
+	
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		batch.draw(Store.tex, Store.x+xOffset, Store.y);
-		R_Man.fontBlack.draw(batch, "Your currency : ", 10+xOffset, 650);
-		R_Man.drawScoreBoard(batch, 210+xOffset, 590, drawCurrency,false, -1, R_Man.fontBlack);
+		int xOffset = Man.AnimationM.SideXOffset;
+		
+		batch.draw(StoreMain.tex, StoreMain.x+xOffset, StoreMain.y);
+		
+		for(int i = 0; i < 4; i++)
+		{
+			batch.draw(tabs[i].tex,tabs[i].x+xOffset,tabs[i].y);
+			if(i == selectTab)Man.fontWhite.draw(batch, tabText[i], 15+120*i+xOffset, 690);
+			else Man.fontfff60.draw(batch, tabText[i], 15+120*i+xOffset, 690);
+		}
+		
+		Man.fontBlack.draw(batch, "Your currency : ", 10+xOffset, 600);
+		Man.drawScoreBoard(batch, 210+xOffset, 555, drawCurrency,false, -1, Man.fontBlack);
+		
+		batch.draw(Man.TextureM.storeTabSelect,120*selectTab+xOffset,625);
+		
+		
+		if(selectTab == 2)
+		{
+			batch.draw(Man.ButtonM.ThemeOne.tex,Man.ButtonM.ThemeOne.x+xOffset, Man.ButtonM.ThemeOne.y);
+			batch.draw(Man.ButtonM.ThemeTwo.tex,Man.ButtonM.ThemeTwo.x+xOffset, Man.ButtonM.ThemeTwo.y);
+		}
 		
 		batch.draw(Back.tex, Back.x+xOffset, Back.y);
+		if(swapThemeAni)
+		{
+			batch.draw(Man.TextureM.swapTheme,0,themeOffsetY);
+			
+			int x = 100+themeOffsetX;
+			int y = 430+themeOffsetY;
+			
+			batch.draw(Man.TextureM.square,x+0*68,y);
+			batch.draw(Man.TextureM.triangle,x+1*68,y);
+			batch.draw(Man.TextureM.circle,x+2*68,y);
+			batch.draw(Man.TextureM.ex,x+3*68,y);
+		}
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
+		if(swapThemeAni || Man.AnimationM.SideAnimation) return;
+		if(buttonClick(tabs[0],x,y)) selectTab = 0;
+		if(buttonClick(tabs[1],x,y)) selectTab = 1;
+		if(buttonClick(tabs[2],x,y)) selectTab = 2;
+		if(buttonClick(tabs[3],x,y)) selectTab = 3;
+		
+		if(buttonClick(Man.ButtonM.ThemeOne,x,y))
+		{
+			canChangeTheme(0);
+		}
+		if(buttonClick(Man.ButtonM.ThemeTwo,x,y))
+		{
+			canChangeTheme(1);
+		}
+		
 		if(buttonClick(Back,x,y))
 		{
 			screenDir = 1;
-			Animation = true;
+			Man.AnimationM.SideAnimation = true;
 		}
 	}
+	
+	//Checks if chosen theme to change is not the same as the one active.
+	//If the action is legal, starts the theme changing animation
+	private void canChangeTheme(int toTheme)
+	{
+		if(toTheme == Man.activeTheme)return;
+		themeToSet = toTheme;
+		xDir = 1;
+		yDir = 1;
+		moveY = true;
+		swapThemeAni = true;
+	}
+	
+	//Sets the chosen theme. 
+	private void callThemeChange(int aTheme)
+	{
+		Man.setTheme(aTheme);
+		resetStore();
+	}
+	
+	//Resets the store textures. Redraws the store so it will fit the corresponding theme.
+	private void resetStore()
+	{
+		tabs[0] = Man.ButtonM.TabPowers;
+		tabs[1] = Man.ButtonM.TabLevels;
+		tabs[2] = Man.ButtonM.TabThemes;
+		tabs[3] = Man.ButtonM.TabExtras;
+		tabText[0] = "Powers";
+		tabText[1] = "Levels";
+		tabText[2] = "Themes";
+		tabText[3] = "Extras";
+		StoreMain = Man.ButtonM.Store;
+		Back = Man.ButtonM.BackStore;
+	      
+	}
+	
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position
 	public boolean buttonClick(RectTex rekt, float x, float y) {
@@ -111,6 +220,75 @@ public class Storestate extends Gamestate {
 	{
 		
 	}
+	//TODO : Simplify this in one function
+	//Changes the yOffset of theme changing animation.
+	private void animateYChange(float dt)
+	{
+		{
+			if(yDir > 0)
+			{
+				themeSpeed -= themeAdd*yDir;
+				themeOffsetY += themeSpeed*dt*yDir;
+				themeAdd -= Man.AnimationM.accel*yDir;
+				if(themeOffsetY > 0)
+				{
+					themeOffsetY = 0;
+					yDir = -1;
+					moveY = false;
+					moveX = true;
+					themeSpeed = 0;
+					themeAdd = 0;
+				}
+			}
+			else
+			{
+				themeSpeed -= themeAdd*yDir;
+				themeOffsetY += themeSpeed*dt*yDir;
+				themeAdd += Man.AnimationM.accel;
+				if(themeOffsetY < -800)
+				{
+					moveY = false;
+					themeOffsetY = -800;
+					themeSpeed = 2600;
+					themeAdd = 70;
+					swapThemeAni = false;
+				}
+			}
+		}
+	}
+	//Changes the xOffset of theme changing animation.
+	private void animateXChange(float dt)
+	{
+		if(xDir > 0)
+		{
+			themeSpeed -= themeAdd*xDir;
+			themeOffsetX += themeSpeed*dt*xDir;
+			themeAdd -= Man.AnimationM.accel*xDir;
+			if(themeOffsetX > 480)
+			{
+				callThemeChange(themeToSet);
+				themeOffsetX *= -1;
+				themeOffsetX -= 300;
+				xDir = -1;
+			}
+		}
+		else
+		{
+			themeSpeed += themeAdd*xDir;
+			themeOffsetX += themeSpeed*dt;
+			themeAdd -= Man.AnimationM.accel;
+			if(themeOffsetX > 0)
+			{
+				themeOffsetX = 0;
+				xDir = -1;
+				themeSpeed = 0;
+				themeAdd = 0;
+				moveX = false;
+				moveY = true;
+			}
+		}
+	}
+	
 	//See abstrakt class Gamestate dispose();
 	public void dispose()
 	{

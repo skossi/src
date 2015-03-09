@@ -4,6 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 
+//Class by Ottar Gudmundsson
+//Written 25.2.2015
+//Audio manager that controls all sounds of the game.
 public class AudioManager {
 
 	private String location;
@@ -30,6 +33,7 @@ public class AudioManager {
 		createSounds();
 	}
 	
+	//Loads in proper sound effects and themeSongs
 	private void createSounds()
 	{
 		//Sounds initiated
@@ -54,13 +58,16 @@ public class AudioManager {
 		resetThemeMusic();
 	}
 	
-	public void SoundEffect(int i)
+	//Plays requested sound effect
+	public void soundEffect(int i)
 	{
 		SoundEffects[i].play(FXVolume);
 	}
 	
+	//Raises the chosen themes intensity. 
 	public void raiseThemeMusic()
 	{
+		if(activeMusic > 2) return;
 		MusicThemes[activeMusic].setLooping(false);
 		MusicThemes[activeMusic].setOnCompletionListener(new Music.OnCompletionListener()
 		{
@@ -75,7 +82,7 @@ public class AudioManager {
 	    });
 	}
 	
-	
+	//Sets the theme music back to the basic beat of the game.
 	public void resetThemeMusic()
 	{
 		//gameOverSound.play();
@@ -87,7 +94,8 @@ public class AudioManager {
 	    
 	}
 	
-	public boolean Mute(boolean aMute)
+	//Mutes all active theme music/sound effects.
+	public boolean mute(boolean aMute)
 	{
 		if(!aMute)
 		{	

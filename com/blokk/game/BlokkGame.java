@@ -38,8 +38,6 @@ public class BlokkGame implements ApplicationListener {
    private int size;
    private int steps;
    
-   
-
    /**
    * Starts the gameloop by opening components from badlogic pack and sets the orthogonal projection of the camera.
    *
@@ -51,6 +49,8 @@ public class BlokkGame implements ApplicationListener {
       batch = new SpriteBatch();
       R_Man = new RectangleManager();
       gsm = new GameStateManager(R_Man);
+      R_Man.gsm = gsm;
+      R_Man.assignAnimation();
       Gdx.input.setCatchBackKey(true);
       
       size = 68;
@@ -108,20 +108,20 @@ public class BlokkGame implements ApplicationListener {
     */
    public void spawnBackground()
    {
-	 
-	 if (TimeUtils.nanoTime() - lastDropTime > 900000000 && !gsm.introStart) spawnMovable();
-	 for (int i = 0; i < steps; i++) computeSubStep(dy/steps);
-	   
-	   for(int i = 0; i < columns; i++) {
-	    	  for (int j = 0; j < rows; j++) {
-	    		  Movable m = Movables[i][j];
-	    		  if (m != null)
-	    		  {
-	    			  if(m.y < 0-size)Movables[m.col][m.row] = null;
-	    			  batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
-	    		  }
-	    	  }
-	      }
+		if (TimeUtils.nanoTime() - lastDropTime > 900000000 && !gsm.introStart) spawnMovable();
+		for (int i = 0; i < steps; i++) computeSubStep(dy/steps);
+		for(int i = 0; i < columns; i++) 
+		{
+			for (int j = 0; j < rows; j++) 
+			{
+				Movable m = Movables[i][j];
+				if (m != null)
+				{
+				if(m.y < 0-size)Movables[m.col][m.row] = null;
+				batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
+				}
+			}
+		}
    }
    
    /**
@@ -152,7 +152,9 @@ public class BlokkGame implements ApplicationListener {
 		for(Movable[] rows : Movables) {
 	    	  for (Movable m1 : rows) {
 	    		  if(m1 == null) continue;
-	    		  m1.speed = -R_Man.horizontalSpeed;
+	    		  
+	    		  if(gsm.introStart)m1.speed = -R_Man.AnimationM.verticalSpeed;
+	    		  else m1.speed = -600;
 	        	  m1.update(dt);
 	        	  if(m1.y <= -size) m1 = null;//m1.y = 850;
 	    	  }
