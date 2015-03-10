@@ -23,6 +23,7 @@ public class Movable {
 	public boolean isMovable;
 	public long timeThrusted;
 	public long timeBlacked;
+	//private long blinkInterval=1000;
 	public boolean isBeingThrusted;
 	public boolean isPower;
 	public String power;
@@ -73,7 +74,12 @@ public class Movable {
  	* @param dy is the delta time of each frame rendered
  	*/
 	public void update(float dy) {	
-		
+		/*
+		if (Playstate.isPaused)
+		{
+			this.timeThrusted+=3*dy;
+			this.timeBlacked+=3*dy;
+		}*/
 		if(System.currentTimeMillis() - timeThrusted > 2000 && isBeingThrusted){
 			speed = -200;
 			//breytum t��pum svo ��etta fari ekki a�� haga s��r illa
@@ -95,7 +101,9 @@ public class Movable {
 		//than the one in the lower if statement
 		if(System.currentTimeMillis() - timeBlacked > 12000*Playstate.difficulty)
 		{
+			//if(System.currentTimeMillis%blinkInterval<blinkInterval/2)
 			if(System.currentTimeMillis()%1000<500)
+				//this.blinkInterval*=0.75;
 				this.typeTwo=true;
 			else
 				this.typeTwo=false;

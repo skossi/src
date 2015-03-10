@@ -13,7 +13,11 @@ public class Scorestate extends Gamestate {
 
 	   private RectTex Back;
 	   private RectTex Score;
-	   private RectangleManager R_Man;
+	   private RectangleManager Man;
+	   
+	   private int selectTab;
+	   private RectTex[] tabs;
+	   private String[] tabText;
 	   
 	   private String[] drawBestScore;
 	   private String[] drawBestSquare;
@@ -21,8 +25,7 @@ public class Scorestate extends Gamestate {
 	   private String[] drawBestCircle;
 	   private String[] drawBestEx;
 	   
-	   private boolean Animation;
-	   private int xOffset;
+	  // private int xOffset;
 	   private int screenDir;
 	   
 	   
@@ -35,10 +38,20 @@ public class Scorestate extends Gamestate {
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
-		R_Man = RectMan;
+		Man = RectMan;
 
-		Score = R_Man.ButtonM.Score;
-		Back = R_Man.ButtonM.BackScore;
+		Score = Man.ButtonM.Score;
+		tabs = new RectTex[4];
+		tabText = new String[3];
+		
+		selectTab = 0;
+		
+		tabs[0] = Man.ButtonM.TabBest;
+		tabs[1] = Man.ButtonM.TabStats;
+		tabs[2] = Man.ButtonM.TabAbout;
+		tabText[0] = "Best";
+		tabText[1] = "Stats";
+		tabText[2] = "About";
 		
 		drawBestScore = new String[4];
 		drawBestSquare = new String[4];
@@ -47,83 +60,86 @@ public class Scorestate extends Gamestate {
 		drawBestEx = new String[4];
 		for(int i = 0; i < 4; i++)
 		{
-			drawBestScore[i] = Integer.toString(R_Man.ScoreM.scoreHolder[0][i+1]);
-			drawBestSquare[i] = Integer.toString(R_Man.ScoreM.scoreHolder[1][i+1]);
-			drawBestTriangle[i] = Integer.toString(R_Man.ScoreM.scoreHolder[2][i+1]);
-			drawBestCircle[i] = Integer.toString(R_Man.ScoreM.scoreHolder[3][i+1]);
-			drawBestEx[i] = Integer.toString(R_Man.ScoreM.scoreHolder[4][i+1]);
-
+			drawBestScore[i] = Integer.toString(Man.ScoreM.scoreHolder[0][i+1]);
+			drawBestSquare[i] = Integer.toString(Man.ScoreM.scoreHolder[1][i+1]);
+			drawBestTriangle[i] = Integer.toString(Man.ScoreM.scoreHolder[2][i+1]);
+			drawBestCircle[i] = Integer.toString(Man.ScoreM.scoreHolder[3][i+1]);
+			drawBestEx[i] = Integer.toString(Man.ScoreM.scoreHolder[4][i+1]);
 		}
-		Animation = true;
-		xOffset = -480;
+		
+		Man.AnimationM.SideAnimation = true;
+		Man.AnimationM.SideXOffset = -480;
 		screenDir = 1;
+		
+		Back = Man.ButtonM.BackScore;
 	      
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		if(Animation)
+		if(Man.AnimationM.SideAnimation)
 		{
-			if(xOffset < 0 && screenDir > 0)
+			if(Man.AnimationM.SideXOffset < 0 && screenDir > 0)
 			{
-				R_Man.verticalSpeed -= R_Man.speedAdd;
-				xOffset += R_Man.verticalSpeed*dt*screenDir;
-				R_Man.speedAdd--;
-				if(xOffset >= 0) 
-				{
-					xOffset = 0;
-					Animation = false;	
-				}
+				Man.AnimationM.SideToMenu(dt,screenDir,true);
 			}
 			else
 			{
-				R_Man.verticalSpeed += R_Man.speedAdd;
-				xOffset += R_Man.verticalSpeed*dt*screenDir;
-				R_Man.speedAdd++;
-				if(xOffset < -480)
-				{
-					R_Man.moveFromSides = true;
-					R_Man.sideDir = -1;
-					R_Man.MenuXOffset = 480;
-					gsm.setState(GameStateManager.MENU);
-				}
+				Man.AnimationM.SideToMenu(dt,screenDir,false);
 			}
 		}
 	}
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		batch.draw(Score.tex, Score.x+xOffset, Score.y+10);
+		int xOffset = Man.AnimationM.SideXOffset;
+		batch.draw(Score.tex, Score.x+xOffset, Score.y);
 		
-		R_Man.fontBlack.draw(batch,"Your best score is :", 115+xOffset*1.5f, 695);
-		R_Man.drawScoreBoard(batch, 100+xOffset*1.5f, 560, drawBestScore, false, -1,R_Man.fontBlack);
-		
-		R_Man.fontBlack.draw(batch,"Your best individual score is :", 50+xOffset*2f, 550);
-		
-		R_Man.fontBlack.draw(batch,"Red Run : ", 10+xOffset*3f, 480);
-		R_Man.drawScoreBoard(batch, 180+xOffset*3f, 435, drawBestSquare, true, 0,R_Man.fontWhite);
-		
-		R_Man.fontBlack.draw(batch,"Green Run : ", 10+xOffset*3.5f, 380);
-		R_Man.drawScoreBoard(batch, 180+xOffset*3.5f, 335, drawBestTriangle, true, 1,R_Man.fontWhite);
+		for(int i = 0 ; i < 3; i++)
+		{
+			batch.draw(tabs[i].tex,tabs[i].x+xOffset,tabs[i].y);
+			if(i == selectTab)Man.fontWhite.draw(batch, tabText[i], 30+160*i+xOffset, 690);
+			else Man.fontfff60.draw(batch, tabText[i], 30+160*i+xOffset, 690);
 
-		R_Man.fontBlack.draw(batch,"Yellow Run : ", 10+xOffset*4f, 280);
-		R_Man.drawScoreBoard(batch, 180+xOffset*4f, 235, drawBestCircle, true, 2,R_Man.fontWhite);
-
-		R_Man.fontBlack.draw(batch,"Blue Run : ", 10+xOffset*4.5f, 180);
-		R_Man.drawScoreBoard(batch, 180+xOffset*4.5f, 135, drawBestEx, true, 3,R_Man.fontWhite);
+		}
+		batch.draw(Man.TextureM.scoreTabSelect,selectTab*160+xOffset,625);
+		
+		batch.draw(Man.TextureM.scoreBack,20+xOffset,150);
+		
+		if(selectTab == 0)
+		{
+			//Man.fontBlack.draw(batch,"Your best score is :", 115+xOffset, 695);
+			//Man.drawScoreBoard(batch, 100+xOffset, 560, drawBestScore, false, -1,Man.fontBlack);
+			
+			Man.fontBlack.draw(batch,"Your best individual score is :", 50+xOffset, 550);
+			
+			Man.fontBlack.draw(batch,"Red Run : ", 10+xOffset, 480);
+			Man.drawScoreBoard(batch, 180+xOffset, 435, drawBestSquare, true, 0,Man.fontWhite);
+			
+			Man.fontBlack.draw(batch,"Green Run : ", 10+xOffset, 380);
+			Man.drawScoreBoard(batch, 180+xOffset, 335, drawBestTriangle, true, 1,Man.fontWhite);
+	
+			Man.fontBlack.draw(batch,"Yellow Run : ", 10+xOffset, 280);
+			Man.drawScoreBoard(batch, 180+xOffset, 235, drawBestCircle, true, 2,Man.fontWhite);
+	
+			Man.fontBlack.draw(batch,"Blue Run : ", 10+xOffset, 180);
+			Man.drawScoreBoard(batch, 180+xOffset, 135, drawBestEx, true, 3,Man.fontWhite);
+		}
 		
 		batch.draw(Back.tex, Back.x+xOffset, Back.y);
-		
-		
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
+		if(Man.AnimationM.SideAnimation) return;
+		if(buttonClick(tabs[0],x,y)) selectTab = 0;
+		if(buttonClick(tabs[1],x,y)) selectTab = 1;
+		if(buttonClick(tabs[2],x,y)) selectTab = 2;
 		if(buttonClick(Back,x,y))
 		{
 			screenDir = -1;
-			Animation = true;
+			Man.AnimationM.SideAnimation= true;
 		}
 	}
 	//Tells if user just pressed a corresponding rectangle

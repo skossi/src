@@ -43,12 +43,18 @@ public class Playstate extends Gamestate{
 	   private Movable selectedM;
 	   private long lastWave;
 	   private int loseCondition;
-	   private boolean gameLost;
+	   private int loseConditionOffset;
+	   private int losePos;
+	   private boolean canPlay;
 	   private float loseSpeed;
 	   private float defaultSpeed;
 	   private long actionTime;
 	   private int actions;
 	   private int IDs;
+	   private boolean startAnimation;
+	   private int scoreBoardPos;
+	   private int introSpeed;
+	   
 	   // public for global access
 	   public static boolean isSelected;
 	   public static double difficulty;
@@ -57,14 +63,7 @@ public class Playstate extends Gamestate{
 	   //chosen background
 	   
 	   private boolean isTesting;
-	   
-	   private boolean swapAnimation;
-	   private Movable movableChosenSwap;
-	   private Movable movableOtherSwap;
-	   private float swapY; 
-	   private int swapCol; 
-	   private int swapRow; 
-	   private int swapAdd;
+
 	   
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -79,7 +78,7 @@ public class Playstate extends Gamestate{
 		actionTime = System.currentTimeMillis()-500;
 		R_Man = RectMan;
 		isPaused = false;
-		R_Man.isMenuDown = true;
+		R_Man.AnimationM.isMenuDown = true;
 		size = 68;
 		steps = size; //pixel perfect updating
 		columns = 7;
@@ -89,13 +88,16 @@ public class Playstate extends Gamestate{
 		IDs = 1;
 		Movables = new Movable[columns][rows];
 		lastWave = 0;
-		UI = new UI(0, 800-size, 480, size);
+		UI = new UI(0, 800, 480, size);
 		difficulty = 1.0;
 		defaultSpeed = 600;
-		loseCondition = 720-size;
+		loseCondition = 840;
+		losePos = 1;
 		swapScores = new int[4];
 		drawSwapScores = new String[]{"0","0","0","0"};
-		gameLost = false;
+		canPlay = false;
+		startAnimation = true;
+		introSpeed = 300;
 		loseSpeed = 20;
 		superSpeed = 2000;
 		prepareMatrix();
@@ -103,7 +105,6 @@ public class Playstate extends Gamestate{
 		isTesting = false;
 		
 		R_Man.AudioM.raiseThemeMusic();
-		swapAnimation = false;
 		musicThreshold = 0;
 		R_Man._r = R_Man._rOrg;
 		R_Man._g = R_Man._gOrg;
@@ -205,7 +206,7 @@ public class Playstate extends Gamestate{
 				   Movables[m1.col][i] = null;
 			   }
 		   }
-		   R_Man.PlaySoundEffect(AudioManager.COLLECT);
+		   R_Man.playSoundEffect(AudioManager.COLLECT);
 	   }	   
    }
    /**
@@ -263,8 +264,9 @@ public class Playstate extends Gamestate{
     // Use: beginAction()
     // After: A wave of blocks has been spawned
     public void beginAction() {
- 	   spawnWave(2500); // test, var í 2000
+ 	   spawnWave(2500); // test, var ï¿½ 2000
     }
+
     
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
@@ -274,9 +276,11 @@ public class Playstate extends Gamestate{
 		if (isPaused) {
 //			printMovables();
 //			isTesting = true;
+			System.out.println("Entering delay");
+			delayMovableTimers(dt);
 			return;
 		}
-		if(!gameLost)
+		if(canPlay)
 		{
 			if(actions < startingRows){
 				if(System.currentTimeMillis() - actionTime > 1000) { // testing, var 1000
@@ -301,17 +305,38 @@ public class Playstate extends Gamestate{
 						R_Man.AudioM.raiseThemeMusic();
 					}	
 				}
-
 			} 
 			else if (actions == startingRows && System.currentTimeMillis() - lastDropTime > 900*difficulty) spawnMovable(MathUtils.random(0, 6), (float)((1+(1-difficulty))*defaultSpeed));
 		}
-		else  blackMovableAnimation(dt);
+		else if (startAnimation) playIntro(dt,-1);
+		else blackMovableAnimation(dt);
 		for (int i = 0; i < steps; i++) computeSubStep(dt/steps);
 	}
-	
+
+	private void playIntro(float dt, int dir)
+	{
+		introSpeed += dir;
+		
+		if(UI.y > 800-size) UI.y += introSpeed * dt * dir;
+		else UI.y = 800-size;
+		if(dir < 0)
+		{
+			scoreBoardPos = (int)UI.y+5;
+			loseCondition += introSpeed * dt * dir;
+			
+			if(loseCondition < 670)
+			{
+				loseCondition = 670;//720-size;
+				canPlay = true;
+				startAnimation = false;
+				//introSpeed = 200;
+			}	
+		}	
+	}
 	
 	private void blackMovableAnimation(float dt)
 	{
+		playIntro(dt,1);
 		if(R_Man._r >= 0) R_Man._r -= dt*4;
 		if(R_Man._g >= 0) R_Man._g -= dt*4;
 		if(R_Man._b >= 0) R_Man._b -= dt*4;
@@ -332,7 +357,7 @@ public class Playstate extends Gamestate{
 					{
 						m.y -= loseSpeed*dt;
 						loseSpeed += 2;
-						if(m.row == 11 && m.y + size <= 0)gameOver();
+						if(m.row == 11 && m.y + size*4 <= 0)gameOver();
 					}
 				}
 			}
@@ -340,30 +365,48 @@ public class Playstate extends Gamestate{
 		
 	}
 	
+	private void checkLoseOffset(boolean aMethod)
+	{
+		if(aMethod)
+		{
+			losePos *= -1;
+			loseConditionOffset = 0;
+		}
+		else
+		{
+			loseConditionOffset -= 8;
+			if(loseConditionOffset < 0) loseConditionOffset = 0;
+			else loseConditionOffset *= losePos;
+		}
+	}
+	
 	//See abstract class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
+		//TODO: this should not be here!!!! just for demo atm
+		checkLoseOffset(true);
+		
 		//batch.draw(Background, 0, 0);
 	      for(int i = 0; i < columns; i++) {
 	    	  for (int j = 0; j < rows; j++) {
 	    		  Movable m = Movables[i][j];
 	    		  if (m != null)
 	    		  {		
-	    			  if(!m.isBeingSwapped)batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
+	    			//TODO: this should also not be here!!!! just for demo atm
+	    			  if(m.row > loseConditionOffset) loseConditionOffset = m.row;
+	    			  batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
 		    		  if(m.isPower)
 		    		  {
-		    			  //The function to draw images did not work. We need to change this
-		    			  //if(m.power == "2x") batch.draw(R_Man.Power_Multi, m.x, m.y);
-		    			  //if(m.power == "50") batch.draw(R_Man.Power_50, m.x, m.y);
-		    			  //batch.draw(drawPower(m.typePowerOne,m.typePowerTwo), m.x, m.y);
-		    			 // R_Man.fontBlack.draw(batch, m.power, m.x+size/4, m.y+size-15);//just seeing how it looks
 		    		  }
 	    			  
 	    		  }
 	    	  }
 	      }
 	      
-	      batch.draw(R_Man.TextureM.redline, 0, loseCondition);
+	      checkLoseOffset(false);
+	      
+	      batch.draw(R_Man.TextureM.redline, 0, loseCondition+loseConditionOffset);
+	      
 	      if(isSelected && selectedM != null) {
 	    	  if (!selectedM.justSpawned) 
 	    		  batch.draw(R_Man.TextureM.selected, selectedM.x, selectedM.y);
@@ -382,7 +425,7 @@ public class Playstate extends Gamestate{
 	      if(R_Man.isMuted) batch.draw(R_Man.TextureM.ui_soundOff,416,UI.y+10,64,64);
 	      else batch.draw(R_Man.TextureM.ui_soundOn,416,UI.y+10,64,64);
 	      
-	      R_Man.drawScoreBoard(batch, 100, (int)UI.y+5, drawSwapScores, false, -1, R_Man.fontWhite);
+	      R_Man.drawScoreBoard(batch, 100, scoreBoardPos, drawSwapScores, false, -1, R_Man.fontWhite);
 
 	}
 	
@@ -394,12 +437,12 @@ public class Playstate extends Gamestate{
 		if(barPress == 1) 
 		{
 			isPaused =! isPaused;
-			R_Man.PlaySoundEffect(AudioManager.PAUSE);
+			R_Man.playSoundEffect(AudioManager.PAUSE);
 		}
 		if(barPress == 4)
 		{
 			R_Man.soundMute();
-			R_Man.PlaySoundEffect(AudioManager.MUTE);
+			R_Man.playSoundEffect(AudioManager.MUTE);
 		}
 		
 		isSelected = true;
@@ -460,6 +503,26 @@ public class Playstate extends Gamestate{
 		}
 	}
 	
+	public void delayMovableTimers(float dt)
+	{
+		System.out.println(dt);
+		System.out.println("Inside delay");
+		for(Movable[] row : Movables)
+			for(Movable m1 : row)
+			{
+				if(m1==null || m1.row ==0) continue;
+				if(m1.timeBlacked!=Long.MAX_VALUE)
+				{
+					m1.timeBlacked=m1.timeBlacked+(long) (3000*dt);
+					System.out.println("Delaying black");
+				}
+				if(m1.isBeingThrusted)
+				{
+					m1.timeThrusted=m1.timeThrusted+(long)(3000*dt);
+					System.out.println("Delaying thrust");
+				}
+			}
+	}
 	 /**
    *Breaks the entities update into smaller steps so it wont render out of bounds.
    * @param dy is the delta time of each frame rendered
@@ -636,7 +699,6 @@ public class Playstate extends Gamestate{
 	   int index = shootCoordinates[1];
 	   int count = shootCoordinates[2];
 	   if(count > 2){
-		   
 		Movable m3 = Movables[col][index];	   
 		m3.typeOne = null;
 		m3.typeTwo = false;
@@ -830,7 +892,8 @@ public class Playstate extends Gamestate{
 	
 	private void endGameAnimation()
 	{
-		gameLost = true;
+		canPlay = false;
+		UI.y += 1;
 	}
 	
 	//Saves current score and sets the state to Lost. Called when game is lost

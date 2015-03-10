@@ -6,6 +6,7 @@ import managers.RectangleManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import entities.RectTex;
+import entities.UI;
 
 //import com.badlogic.gdx.audio.Sound;
 //Class by Óttar Guðmundsson
@@ -16,15 +17,27 @@ public class Loststate extends Gamestate{
 	private RectTex GameOver;
 	private RectTex Replay;
 	private RectTex MainMenu;
-	private RectangleManager R_Man;
+	private RectangleManager Man;
 	
-	private String[] scoreMade;
-			
+	private String[] scoreMade;			
 	private String[] drawBestScore;
 	
 	private String newHigh;
 	private String newIndiv;
 	private String worse;
+	
+	
+	private boolean Animation;
+	private boolean lowerAnimation;
+	private boolean gameEnd;
+	private int yOffset;
+	private int lowerOffset;
+	private int lowerSpeed;
+	private int lowerSpeedAdd;
+	private int scoreOffset;
+	private int screenDir;
+	private int speedAdd;
+	
 	
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -32,57 +45,138 @@ public class Loststate extends Gamestate{
 	{	
 		super(gsm);
 	}
+	
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
-		R_Man = RectMan;
-		GameOver = R_Man.ButtonM.Over;
+		Man = RectMan;
+		GameOver = Man.ButtonM.Over;
 		scoreMade = new String[4];
 		drawBestScore = new String[4];
 		for(int i = 0; i < 4; i++)
 		{
-			scoreMade[i] = Integer.toString(R_Man.ScoreM.currentScore[i+1]);
-			drawBestScore[i] = Integer.toString(R_Man.ScoreM.scoreHolder[0][i+1]);
+			scoreMade[i] = Integer.toString(Man.ScoreM.currentScore[i+1]);
+			drawBestScore[i] = Integer.toString(Man.ScoreM.scoreHolder[0][i+1]);
 		}
 		
-		newHigh = R_Man.newHighString;
-		newIndiv = R_Man.newIndivString;
-		worse = R_Man.worseString;
+		newHigh = Man.newHighString;
+		newIndiv = Man.newIndivString;
+		worse = Man.worseString;
 		
-		Replay = R_Man.ButtonM.Replay;
-		MainMenu = R_Man.ButtonM.MainMenu;
-		R_Man.AudioM.resetThemeMusic();
+		Replay = Man.ButtonM.Replay;
+		MainMenu = Man.ButtonM.MainMenu;
+		Man.AudioM.resetThemeMusic();
+		
+		Animation = true;
+		gameEnd = true;
+		lowerAnimation = false;
+		yOffset = 800;
+		lowerOffset = -800;
+		lowerSpeed = 2400;
+		lowerSpeedAdd = 70;
+		scoreOffset = 207;
+		screenDir = -1;
 		
 	}
+	
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
+		if(Animation)
+		{
+			if(gameEnd)
+			{
+				Man.AnimationM.verticalSpeed-= Man.AnimationM.speedAdd;
+				yOffset += Man.AnimationM.verticalSpeed*dt*screenDir;
+				if(scoreOffset > 0)scoreOffset += Man.AnimationM.verticalSpeed*dt*screenDir;
+				else scoreOffset = 0;
+				Man.AnimationM.speedAdd -= Man.AnimationM.accel;
+				if(yOffset <= 300) lowerAnimation = true;
+				if(yOffset <= 0) 
+				{
+					yOffset = 0;
+					scoreOffset = 0;
+					Man.AnimationM.speedAdd = 0;
+					lowerAnimation = true;
+				}
+				if(lowerAnimation)
+				{
+					lowerSpeed -= lowerSpeedAdd;
+					lowerOffset += lowerSpeed*dt;
+					lowerSpeedAdd -= Man.AnimationM.accel;
+					if(lowerOffset >= 0)
+					{
+						lowerOffset = 0;
+						Animation = false;
+						gameEnd = false;
+					}
+				}
+			}
+			else
+			{
+				if(Man._r < Man._rOrg) Man._r += 4*dt;
+				if(Man._g < Man._gOrg) Man._g += 4*dt;
+				if(Man._b < Man._bOrg) Man._b += 4*dt;
+				
+				Man.AnimationM.verticalSpeed += Man.AnimationM.speedAdd;
+				yOffset += Man.AnimationM.verticalSpeed*dt*screenDir;
+				scoreOffset += Man.AnimationM.verticalSpeed*dt*screenDir;
+				Man.AnimationM.speedAdd += Man.AnimationM.accel;
+				if(yOffset < -800)gsm.setState(GameStateManager.PLAY);
+				if(yOffset > 800) gsm.setState(GameStateManager.MENU);
+			}
+		}
 	}
 	
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		batch.draw(GameOver.tex, GameOver.x, GameOver.y);
-		if(R_Man.ScoreM.NewHighScore)R_Man.fontWhite.draw(batch,newHigh , 60, 675);
-		else if (R_Man.ScoreM.NewIndivScore)R_Man.fontWhite.draw(batch,newIndiv , 60, 675);
-		else R_Man.fontWhite.draw(batch,worse , 45, 675);
+		batch.draw(GameOver.tex, GameOver.x, GameOver.y+yOffset);
+		if(Man.ScoreM.NewHighScore)Man.fontWhite.draw(batch,newHigh , 60, 675+yOffset);
+		else if (Man.ScoreM.NewIndivScore)Man.fontWhite.draw(batch,newIndiv , 60, 675+yOffset);
+		else Man.fontWhite.draw(batch,worse , 45, 675+yOffset);
 		
-		R_Man.fontWhite.draw(batch,"Your score was :", 135, 630);
-		R_Man.drawScoreBoard(batch, 100, 530, scoreMade, R_Man.ScoreM.NewIndivScore, R_Man.ScoreM.whichNewIndivScore, R_Man.fontWhite );
+		Man.fontWhite.draw(batch,"Your score was :", 135, 630+yOffset);
+		Man.drawScoreBoard(batch, 100, 530 +scoreOffset, scoreMade, Man.ScoreM.NewIndivScore, Man.ScoreM.whichNewIndivScore, Man.fontWhite );
 	
-		R_Man.fontWhite.draw(batch,"Your best score is :", 115, 470);
-		R_Man.drawScoreBoard(batch, 100, 370, drawBestScore, false, -1, R_Man.fontWhite);
-
-		batch.draw(Replay.tex, Replay.x, Replay.y);
-		batch.draw(MainMenu.tex, MainMenu.x, MainMenu.y);
+		if(gameEnd)
+		{
+			batch.draw(Man.TextureM.redline, 0, 670-800+yOffset);
+			
+			Man.fontWhite.draw(batch,"Your best score is :", 115, 470+lowerOffset);
+			Man.drawScoreBoard(batch, 100, 370+lowerOffset, drawBestScore, false, -1, Man.fontWhite);
+	
+			batch.draw(Replay.tex, Replay.x, Replay.y+lowerOffset);
+			batch.draw(MainMenu.tex, MainMenu.x, MainMenu.y+lowerOffset);
+		}
+		else 
+		{
+			Man.fontWhite.draw(batch,"Your best score is :", 115, 470+yOffset);
+			Man.drawScoreBoard(batch, 100, 370+yOffset, drawBestScore, false, -1, Man.fontWhite);
+	
+			batch.draw(Replay.tex, Replay.x, Replay.y+yOffset);
+			batch.draw(MainMenu.tex, MainMenu.x, MainMenu.y+yOffset);
+		}
+		Man.drawScoreBoard(batch, 100, 530 +scoreOffset, scoreMade, Man.ScoreM.NewIndivScore, Man.ScoreM.whichNewIndivScore, Man.fontWhite );
+		
+		
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
-		if(buttonClick(Replay,x,y))gsm.setState(GameStateManager.PLAY);
-		if(buttonClick(MainMenu,x,y)) gsm.setState(GameStateManager.MENU);
+		if(buttonClick(Replay,x,y))
+		{
+			screenDir = -1;
+			Animation = true;
+		}
+		if(buttonClick(MainMenu,x,y))
+		{
+			screenDir = 1;
+			Animation = true;
+		}
 	}
+	
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position
 	public boolean buttonClick(RectTex rekt, float x, float y) {

@@ -23,9 +23,7 @@ public class Tutorialstate extends Gamestate {
 	public void init(RectangleManager RectMan)
 	{
 		R_Man = RectMan;
-		
 		if(!R_Man.ScoreM.firstTime)R_Man.ScoreM.firstDone();
-		
 		Back = R_Man.ButtonM.BackStore;
 	}
 	//See abstrakt class Gamestate update(float dt);
