@@ -3,7 +3,6 @@ package entities;
 import states.Playstate;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.MathUtils;
 
 /**
  * @author     Ottar og �orsteinn. Edit by Hlynur
@@ -27,6 +26,8 @@ public class Movable {
 	public boolean isBeingThrusted;
 	public boolean isPower;
 	public boolean isBeingSwapped;
+	public boolean justSpawned;
+	public int ID;
 	
 	/**	
 	*Constructs ablock, i.e. Movable
@@ -57,9 +58,11 @@ public class Movable {
 		speed = m.speed;
 		x = m.x;
 		y = m.y;
+		ID = m.ID;
 		width = m.width;
 		height = m.height;
 		isMovable = m.isMovable;
+		justSpawned = m.justSpawned;
 		timeThrusted = m.timeThrusted;
 		isBeingThrusted = m.isBeingThrusted;
 		timeBlacked = Long.MAX_VALUE;
@@ -72,7 +75,7 @@ public class Movable {
  	*/
 	public void update(float dy) {	
 		
-		if(System.currentTimeMillis() - timeThrusted > 2000 && isBeingThrusted){
+		if(System.currentTimeMillis() - timeThrusted > 3500 && isBeingThrusted){
 			isBeingThrusted = false;
 			speed = -600;
 		}
@@ -140,12 +143,5 @@ public class Movable {
 		if (Math.random() < 0.5) type = true;
 		
 		return type;
-	}
-	
-	/**
- 	* A function for randomizing the column where the Movable block should be spawned
- 	*/
-	private int randomizeSlot() {
-		return MathUtils.random(0, 6);
 	}
 }
