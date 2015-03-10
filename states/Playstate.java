@@ -334,6 +334,9 @@ public class Playstate extends Gamestate{
 		}	
 	}
 	
+	// Use: blackMovableAnimation(dt);
+	// After: Starts the losing animation when game is lost. 
+	//        Blacks every Movable on the screen as they fall down
 	private void blackMovableAnimation(float dt)
 	{
 		playIntro(dt,1);
@@ -707,7 +710,7 @@ public class Playstate extends Gamestate{
 	   //TODO: skoda
 	   if(m1.ID != -1) shootByID(m1.ID, superSpeed);
 	   else shootRows(m1.col, 1, index, takeoffSpeed, false, thrustID);
-	   R_Man.PlaySoundEffect(AudioManager.MATCH);
+	   R_Man.playSoundEffect(AudioManager.MATCH);
 	   }
    }
 	   
@@ -735,7 +738,7 @@ public class Playstate extends Gamestate{
 		   //TODO: skoda
 		   if(m1.ID != -1) shootByID(m1.ID, superSpeed);
 		   else shootRows(index, count, row, takeoffSpeed, false, thrustID);
-		   R_Man.PlaySoundEffect(AudioManager.MATCH);
+		   R_Man.playSoundEffect(AudioManager.MATCH);
 	   }
    }
 
