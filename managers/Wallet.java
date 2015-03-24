@@ -36,14 +36,13 @@ public class Wallet {
 	{
 		owned[selected][item] = true;
 		prefs.putBoolean(storeTabs[selected]+itemsAvailable[item], true);
+		prefs.flush();
 		return price[selected][item];
 	}
 	
 	private void checkOwnedItems()
 	{
-		for(int i = 0; i < 4; i++)for(int j = 0; j < 4; j++)owned[i][j] = 
-				prefs.getBoolean(
-						storeTabs[i]
-								+itemsAvailable[j]);		
+		for(int i = 0; i < 4; i++)for(int j = 0; j < 4; j++)
+			owned[i][j] =prefs.getBoolean(storeTabs[i]+itemsAvailable[j]);		
 	}
 }
