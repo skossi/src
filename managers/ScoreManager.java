@@ -33,6 +33,7 @@ public class ScoreManager {
 		firstDone();
 	}
 	
+	//Gives other states access to the wallet to gain info on prices and if they are available.
 	public Wallet accesWallet()
 	{
 		return wallet;
@@ -57,6 +58,7 @@ public class ScoreManager {
 		for(int i = 0; i < 5; i++)for(int j = 0; j < 5; j++)scoreHolder[i][j] = prefs.getInteger(Type[i]+Type[j]);			
 	}
 	
+	//Reduces the players currency by amount of price item bought.
 	public void payForAsset(int price)
 	{
 		currency -= price;

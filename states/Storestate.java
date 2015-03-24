@@ -189,7 +189,7 @@ public class Storestate extends Gamestate {
 			Man.AnimationM.SideAnimation = true;
 		}
 	}
-	
+	//Handles users input given in which store tab is active
 	//Glorified switch/case instead of ugly else ifses
 	//ToBe finished!
 	private void storeItemClick(int aTab,float x, float y)
@@ -228,12 +228,14 @@ public class Storestate extends Gamestate {
 		}
 	}
 	
+	//Sends request to wallet if user has enough currency to buy item.
 	private void checkCapital(int selected, int item)
 	{
 		if(wallet.canBuy(selected, item,currency)) handlePayment(selected, item);
 		else denyUser(); //Display error message
 	}
 	
+	//Handles the payment, updates the score and updates the manager.
 	private void handlePayment(int selected, int item)
 	{
 		Man.ScoreM.payForAsset(wallet.aquireAsset(selected, item)); 
@@ -241,6 +243,8 @@ public class Storestate extends Gamestate {
 		drawCurrency = Integer.toString(currency);
 	}
 	
+	//TODO:Give error feedback
+	//Lets user know that he has not enough currency to buy chosen item.
 	private void denyUser()
 	{
 		//Some kind of warning sound should be played here!! argarg
