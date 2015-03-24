@@ -414,12 +414,8 @@ public class Playstate extends Gamestate{
 	      
 	      if(isSelected && selectedM != null) {
 	    	  if (!selectedM.justSpawned) 
-<<<<<<< HEAD
-	    		  batch.draw(Man.TextureM.selected, selectedM.x, selectedM.y);
-=======
 	    		  // -3 offset since picture is 70x70
-	    		  batch.draw(R_Man.TextureM.selected, selectedM.x-3, selectedM.y-3);
->>>>>>> 0857dab423c4306f8b6649949f9984494e28c92e
+	    		  batch.draw(Man.TextureM.selected, selectedM.x-3, selectedM.y-3);
 	      }
 	      if(isPaused && !isTesting)
 	      {
