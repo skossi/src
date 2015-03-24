@@ -39,9 +39,11 @@ public class ButtonManager {
 	public RectTex TabThemes;
 	public RectTex TabExtras;
 	
-	public RectTex ThemeOne;
-	public RectTex ThemeTwo;
-	//public RectTex[][] StoreSelect;
+	public RectTex[] StorePowers;
+	public RectTex[] StoreLevels;
+	public RectTex[] StoreThemes;
+	public RectTex[] StoreExtras;
+	public RectTex[][] StoreSelect = new RectTex[][]{StorePowers,StoreLevels,StoreThemes,StoreExtras};
 	
 	
 	//BackButton and GameOver
@@ -165,47 +167,170 @@ public class ButtonManager {
 		yHolder = 625;
 		TabAbout = new RectTex(xHolder, yHolder, width, height, ScoreTab);
 		
-		//ScoreLogo  
+		//STORELOGO
 		Texture StoreLogoTex = new Texture(Gdx.files.internal(asset+location+"logo_store.png"));
 		width = StoreLogoTex.getWidth();
 		height = StoreLogoTex.getHeight();
 		xHolder = 480 /2 - width / 2; 
-		yHolder = 700;
+		yHolder = 725;// Was 700
 		Store = new RectTex(xHolder, yHolder, width, height, StoreLogoTex);
+		
+		//STORETABS
 		
 		Texture StoreTab = new Texture(Gdx.files.internal(asset+location+"storeTab.png"));
 		width = StoreTab.getWidth();
 		height = StoreTab.getHeight();
 		
 		xHolder = 0; 
-		yHolder = 625;
+		yHolder = 650;
 		TabPowers = new RectTex(xHolder, yHolder, width, height, StoreTab);
 		
 		xHolder = 120; 
-		yHolder = 625;
+		yHolder = 650;
 		TabLevels = new RectTex(xHolder, yHolder, width, height, StoreTab);
 		
 		xHolder = 240; 
-		yHolder = 625;
+		yHolder = 650;
 		TabThemes = new RectTex(xHolder, yHolder, width, height, StoreTab);
 		
 		xHolder = 360; 
-		yHolder = 625;
+		yHolder = 650;
 		TabExtras = new RectTex(xHolder, yHolder, width, height, StoreTab);
+		
+		//STORE ARRAYS CREATED
+		
+		//THEMES
+		StoreThemes = new RectTex[4];
 		
 		Texture ThemeOneTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeOne.png"));
 		width = ThemeOneTex.getWidth();
 		height = ThemeOneTex.getHeight();
-		xHolder = 480 /2 - width / 2; 
-		yHolder = 250;
-		ThemeOne = new RectTex(xHolder, yHolder, width, height, ThemeOneTex);
+		xHolder = 480 /4 - width / 2; 
+		yHolder = 440;
+		StoreThemes[0] = new RectTex(xHolder, yHolder, width, height, ThemeOneTex);
 		
 		Texture ThemeTwoTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeTwo.png"));
 		width = ThemeTwoTex.getWidth();
 		height = ThemeTwoTex.getHeight();
-		xHolder = 480 /2 - width / 2; 
-		yHolder = 400;
-		ThemeTwo = new RectTex(xHolder, yHolder, width, height, ThemeTwoTex);	
+		xHolder = 480 /4 - width / 2; 
+		yHolder = 220;
+		StoreThemes[1] = new RectTex(xHolder, yHolder, width, height, ThemeTwoTex);
+		
+		Texture ThemeThreeTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeThree.png"));
+		width = ThemeTwoTex.getWidth();
+		height = ThemeTwoTex.getHeight();
+		xHolder = 3*480 /4 - width / 2; 
+		yHolder = 440;
+		StoreThemes[2] = new RectTex(xHolder, yHolder, width, height, ThemeThreeTex);
+		
+		Texture ThemeFourTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeFour.png"));
+		width = ThemeTwoTex.getWidth();
+		height = ThemeTwoTex.getHeight();
+		xHolder = 3*480 /4 - width / 2; 
+		yHolder = 220;
+		StoreThemes[3] = new RectTex(xHolder, yHolder, width, height, ThemeFourTex);
+		
+		StoreSelect[2] = StoreThemes;
+		
+		//POWERS
+		StorePowers = new RectTex[4];
+
+		//Texture ThemeOneTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeOne.png"));
+		width = ThemeOneTex.getWidth();
+		height = ThemeOneTex.getHeight();
+		xHolder = 480 /4 - width / 2; 
+		yHolder = 440;
+		StorePowers[0] = new RectTex(xHolder, yHolder, width, height, ThemeOneTex);
+		
+//		Texture ThemeTwoTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeTwo.png"));
+		width = ThemeTwoTex.getWidth();
+		height = ThemeTwoTex.getHeight();
+		xHolder = 480 /4 - width / 2; 
+		yHolder = 220;
+		StorePowers[1] = new RectTex(xHolder, yHolder, width, height, ThemeTwoTex);
+		
+//		Texture ThemeThreeTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeThree.png"));
+		width = ThemeTwoTex.getWidth();
+		height = ThemeTwoTex.getHeight();
+		xHolder = 3*480 /4 - width / 2; 
+		yHolder = 440;
+		StorePowers[2] = new RectTex(xHolder, yHolder, width, height, ThemeThreeTex);
+		
+//		Texture ThemeFourTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeFour.png"));
+		width = ThemeTwoTex.getWidth();
+		height = ThemeTwoTex.getHeight();
+		xHolder = 3*480 /4 - width / 2; 
+		yHolder = 220;
+		StorePowers[3] = new RectTex(xHolder, yHolder, width, height, ThemeFourTex);
+		
+		StoreSelect[0] = StorePowers;
+		
+		//LEVELS
+		StoreLevels = new RectTex[4];
+			
+//		Texture ThemeOneTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeOne.png"));
+		width = ThemeOneTex.getWidth();
+		height = ThemeOneTex.getHeight();
+		xHolder = 480 /4 - width / 2; 
+		yHolder = 440;
+		StoreLevels[0] = new RectTex(xHolder, yHolder, width, height, ThemeOneTex);
+		
+//		Texture ThemeTwoTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeTwo.png"));
+		width = ThemeTwoTex.getWidth();
+		height = ThemeTwoTex.getHeight();
+		xHolder = 480 /4 - width / 2; 
+		yHolder = 220;
+		StoreLevels[1] = new RectTex(xHolder, yHolder, width, height, ThemeTwoTex);
+		
+//		Texture ThemeThreeTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeThree.png"));
+		width = ThemeTwoTex.getWidth();
+		height = ThemeTwoTex.getHeight();
+		xHolder = 3*480 /4 - width / 2; 
+		yHolder = 440;
+		StoreLevels[2] = new RectTex(xHolder, yHolder, width, height, ThemeThreeTex);
+		
+//		Texture ThemeFourTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeFour.png"));
+		width = ThemeTwoTex.getWidth();
+		height = ThemeTwoTex.getHeight();
+		xHolder = 3*480 /4 - width / 2; 
+		yHolder = 220;
+		StoreLevels[3] = new RectTex(xHolder, yHolder, width, height, ThemeFourTex);
+			
+		StoreSelect[1] = StoreLevels;
+		
+		
+		StoreExtras = new RectTex[4];
+
+		//Texture ThemeOneTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeOne.png"));
+		width = ThemeOneTex.getWidth();
+		height = ThemeOneTex.getHeight();
+		xHolder = 480 /4 - width / 2; 
+		yHolder = 440;
+		StoreExtras[0] = new RectTex(xHolder, yHolder, width, height, ThemeOneTex);
+		
+		//Texture ThemeTwoTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeTwo.png"));
+		width = ThemeTwoTex.getWidth();
+		height = ThemeTwoTex.getHeight();
+		xHolder = 480 /4 - width / 2; 
+		yHolder = 220;
+		StoreExtras[1] = new RectTex(xHolder, yHolder, width, height, ThemeTwoTex);
+		
+		//Texture ThemeThreeTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeThree.png"));
+		width = ThemeTwoTex.getWidth();
+		height = ThemeTwoTex.getHeight();
+		xHolder = 3*480 /4 - width / 2; 
+		yHolder = 440;
+		StoreExtras[2] = new RectTex(xHolder, yHolder, width, height, ThemeThreeTex);
+		
+		//Texture ThemeFourTex = new Texture(Gdx.files.internal("MutualAssets/"+"themeFour.png"));
+		width = ThemeTwoTex.getWidth();
+		height = ThemeTwoTex.getHeight();
+		xHolder = 3*480 /4 - width / 2; 
+		yHolder = 220;
+		StoreExtras[3] = new RectTex(xHolder, yHolder, width, height, ThemeFourTex);
+		
+		StoreSelect[3] = StoreExtras;
+	
 		
 		//Game Over Logo
 		Texture OverTex = new Texture(Gdx.files.internal(asset+location+"logo_over.png"));

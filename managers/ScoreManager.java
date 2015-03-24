@@ -9,6 +9,8 @@ import com.badlogic.gdx.Preferences;
 public class ScoreManager {
 
 	//preferences
+	private Wallet wallet;
+	
 	private Preferences prefs;
 	public boolean NewHighScore;
 	public boolean NewIndivScore;
@@ -17,11 +19,23 @@ public class ScoreManager {
 	private static String[] Type = new String[]{"Best","Square","Triangle","Circle","Ex","Currency"};
 	public int[][] scoreHolder = new int[6][5];
 	public int[] currentScore = new int[5];
+	public int currency;
+	public int newestScore;
 	
 	public ScoreManager()
 	{
 		getScores();
 		firstTime = prefs.getBoolean("First");
+		
+		wallet = new Wallet(prefs);
+		
+		//Just for debugging - should be taken out before release or build
+		firstDone();
+	}
+	
+	public Wallet accesWallet()
+	{
+		return wallet;
 	}
 	
 	//If user opens the game for the first time, the tutorial screen is set. 
@@ -30,6 +44,8 @@ public class ScoreManager {
 	{
 		firstTime = true;
 		prefs.putBoolean("First",true);
+		
+		wallet.owned[2][0] = true;
 		prefs.flush();
 		prefs = Gdx.app.getPreferences("My Preferences");
 	}
@@ -37,12 +53,21 @@ public class ScoreManager {
 	private void getScores()
 	{
 		prefs = Gdx.app.getPreferences("My Preferences");
+		currency = prefs.getInteger("CurrencyForStore");
 		for(int i = 0; i < 5; i++)for(int j = 0; j < 5; j++)scoreHolder[i][j] = prefs.getInteger(Type[i]+Type[j]);			
 	}
+	
+	public void payForAsset(int price)
+	{
+		currency -= price;
+		prefs.putInteger("CurrencyForStore", currency);
+		prefs.flush();
+	}
+	
 	//Takes in parameter newScore that is players score when game is lost. 
 	//Gets preferences and checks if a new high score was made
 	//if so, it saves it and refreshes the preferences.
-	public void checkScore(int[] newScore)
+	public void checkScore(int[] newScore, int score)
 	{
 		NewHighScore = false;
 		NewIndivScore = false;
@@ -57,6 +82,10 @@ public class ScoreManager {
 			//currencyInt[k-1] = 0;
 		}
 		currentScore[0] = sum;
+		
+		newestScore = score;
+		currency += score;
+		prefs.putInteger("CurrencyForStore", currency);
 
 		for(int i = 0; i < 5; i++)
 		{
@@ -68,7 +97,6 @@ public class ScoreManager {
 					if(i == 0)NewHighScore = true;
 					else
 					{
-						NewIndivScore = true;
 						whichNewIndivScore = i-1;
 					}
 				}

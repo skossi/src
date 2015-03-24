@@ -2,6 +2,7 @@ package states;
 
 import managers.GameStateManager;
 import managers.RectangleManager;
+import managers.Wallet;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -16,7 +17,12 @@ public class Storestate extends Gamestate {
 	   private RectTex StoreMain;
 	   private RectangleManager Man;
 
-	   private String[] drawCurrency;
+	   private Wallet wallet;
+	   
+	  // private String[] drawCurrency;
+	   
+	   private String drawCurrency;
+	   private int currency;
 	   private int screenDir;
 	   
 	   private RectTex[] tabs;
@@ -48,8 +54,9 @@ public class Storestate extends Gamestate {
 	public void init(RectangleManager RectMan)
 	{
 		Man = RectMan;
+		wallet = Man.ScoreM.accesWallet();
 		
-		drawCurrency = new String[4];
+		//drawCurrency = new String[4];
 		tabs = new RectTex[4];
 		tabText = new String[4];
 		
@@ -78,8 +85,10 @@ public class Storestate extends Gamestate {
 		
 		for(int i = 0; i < 4; i++)
 		{
-			drawCurrency[i] = Integer.toString(Man.ScoreM.scoreHolder[5][i]);
+			//drawCurrency[i] = Integer.toString(Man.ScoreM.scoreHolder[5][i]);
 		}
+		currency = Man.ScoreM.currency;
+		drawCurrency = Integer.toString(currency);
 		
 		Man.AnimationM.SideAnimation = true;
 		Man.AnimationM.SideXOffset = 480;
@@ -118,23 +127,37 @@ public class Storestate extends Gamestate {
 		for(int i = 0; i < 4; i++)
 		{
 			batch.draw(tabs[i].tex,tabs[i].x+xOffset,tabs[i].y);
-			if(i == selectTab)Man.fontWhite.draw(batch, tabText[i], 15+120*i+xOffset, 690);
-			else Man.fontfff60.draw(batch, tabText[i], 15+120*i+xOffset, 690);
+			if(i == selectTab)Man.fontWhite.draw(batch, tabText[i], 15+120*i+xOffset, 715);
+			else Man.fontfff60.draw(batch, tabText[i], 15+120*i+xOffset, 715);
 		}
 		
-		Man.fontBlack.draw(batch, "Your currency : ", 10+xOffset, 600);
-		Man.drawScoreBoard(batch, 210+xOffset, 555, drawCurrency,false, -1, Man.fontBlack);
+		Man.fontBlack.draw(batch, "Your currency : ", 10+xOffset, 625);
+		//Man.drawScoreBoard(batch, 210+xOffset, 580, drawCurrency,false, -1, Man.fontBlack);
 		
-		batch.draw(Man.TextureM.storeTabSelect,120*selectTab+xOffset,625);
+		Man.fontBlack.draw(batch,drawCurrency,210+xOffset, 625);
+		
+		batch.draw(Man.TextureM.storeTabSelect,120*selectTab+xOffset,650);
 		
 		
-		if(selectTab == 2)
+		//DRAW ACTIVE STORE 
+		for(int i = 0; i < 4; i++)
 		{
-			batch.draw(Man.ButtonM.ThemeOne.tex,Man.ButtonM.ThemeOne.x+xOffset, Man.ButtonM.ThemeOne.y);
-			batch.draw(Man.ButtonM.ThemeTwo.tex,Man.ButtonM.ThemeTwo.x+xOffset, Man.ButtonM.ThemeTwo.y);
+			float itemX =  Man.ButtonM.StoreSelect[selectTab][i].x+xOffset;
+			float itemY =  Man.ButtonM.StoreSelect[selectTab][i].y;
+			batch.draw(Man.ButtonM.StoreSelect[selectTab][i].tex,
+					  itemX,
+					  itemY);
+			if(!wallet.owned[selectTab][i])
+			{
+				batch.draw(Man.TextureM.lockedItem,itemX,itemY);
+				batch.draw(Man.TextureM.priceHolder,itemX,itemY-64);
+				Man.fontBlack.draw(batch,Integer.toString(wallet.price[selectTab][i]),itemX+40,itemY-10);
+			}
+			//else batch.draw unlocked
 		}
 		
 		batch.draw(Back.tex, Back.x+xOffset, Back.y);
+		
 		if(swapThemeAni)
 		{
 			batch.draw(Man.TextureM.swapTheme,0,themeOffsetY);
@@ -158,20 +181,69 @@ public class Storestate extends Gamestate {
 		if(buttonClick(tabs[2],x,y)) selectTab = 2;
 		if(buttonClick(tabs[3],x,y)) selectTab = 3;
 		
-		if(buttonClick(Man.ButtonM.ThemeOne,x,y))
-		{
-			canChangeTheme(0);
-		}
-		if(buttonClick(Man.ButtonM.ThemeTwo,x,y))
-		{
-			canChangeTheme(1);
-		}
+		storeItemClick(selectTab,x,y);
 		
 		if(buttonClick(Back,x,y))
 		{
 			screenDir = 1;
 			Man.AnimationM.SideAnimation = true;
 		}
+	}
+	
+	//Glorified switch/case instead of ugly else ifses
+	//ToBe finished!
+	private void storeItemClick(int aTab,float x, float y)
+	{
+		switch (aTab){
+			case 0 :
+			{
+				
+				break;
+			}
+			case 1 : 
+			{
+				
+				break;
+			}
+			case 2 : 
+			{
+				if(buttonClick(Man.ButtonM.StoreSelect[selectTab][0],x,y))
+				{
+					if(wallet.owned[selectTab][0])canChangeTheme(0);
+					else checkCapital(selectTab,0);
+					
+				}
+				if(buttonClick(Man.ButtonM.StoreSelect[selectTab][1],x,y))
+				{
+					if(wallet.owned[selectTab][1])canChangeTheme(1);
+					else checkCapital(selectTab,1);
+				}
+				break;
+			}
+			case 3 : 
+			{
+				
+				break;
+			}
+		}
+	}
+	
+	private void checkCapital(int selected, int item)
+	{
+		if(wallet.canBuy(selected, item,currency)) handlePayment(selected, item);
+		else denyUser(); //Display error message
+	}
+	
+	private void handlePayment(int selected, int item)
+	{
+		Man.ScoreM.payForAsset(wallet.aquireAsset(selected, item)); 
+		currency = Man.ScoreM.currency;
+		drawCurrency = Integer.toString(currency);
+	}
+	
+	private void denyUser()
+	{
+		//Some kind of warning sound should be played here!! argarg
 	}
 	
 	//Checks if chosen theme to change is not the same as the one active.
@@ -215,6 +287,7 @@ public class Storestate extends Gamestate {
 		if (x < (rekt.x + rekt.width) && x > rekt.x && y > rekt.y && y < (rekt.y + rekt.height)) return true;
 		return false;
 	}
+	
 	//See abstrakt class Gamestate isTouched(x,y);
 	public void isTouched(float x, float y)
 	{

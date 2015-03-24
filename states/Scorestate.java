@@ -113,17 +113,17 @@ public class Scorestate extends Gamestate {
 			
 			Man.fontBlack.draw(batch,"Your best individual score is :", 50+xOffset, 550);
 			
-			Man.fontBlack.draw(batch,"Red Run : ", 10+xOffset, 480);
-			Man.drawScoreBoard(batch, 180+xOffset, 435, drawBestSquare, true, 0,Man.fontWhite);
+			Man.fontBlack.draw(batch,"Red Run : ", 20+xOffset, 510);
+			Man.drawScoreBoard(batch, 190+xOffset, 465, drawBestSquare, true, 0,Man.fontWhite);
 			
-			Man.fontBlack.draw(batch,"Green Run : ", 10+xOffset, 380);
-			Man.drawScoreBoard(batch, 180+xOffset, 335, drawBestTriangle, true, 1,Man.fontWhite);
+			Man.fontBlack.draw(batch,"Green Run : ", 20+xOffset, 410);
+			Man.drawScoreBoard(batch, 190+xOffset, 365, drawBestTriangle, true, 1,Man.fontWhite);
 	
-			Man.fontBlack.draw(batch,"Yellow Run : ", 10+xOffset, 280);
-			Man.drawScoreBoard(batch, 180+xOffset, 235, drawBestCircle, true, 2,Man.fontWhite);
+			Man.fontBlack.draw(batch,"Yellow Run : ", 20+xOffset, 310);
+			Man.drawScoreBoard(batch, 190+xOffset, 265, drawBestCircle, true, 2,Man.fontWhite);
 	
-			Man.fontBlack.draw(batch,"Blue Run : ", 10+xOffset, 180);
-			Man.drawScoreBoard(batch, 180+xOffset, 135, drawBestEx, true, 3,Man.fontWhite);
+			Man.fontBlack.draw(batch,"Blue Run : ", 20+xOffset, 210);
+			Man.drawScoreBoard(batch, 190+xOffset, 165, drawBestEx, true, 3,Man.fontWhite);
 		}
 		
 		batch.draw(Back.tex, Back.x+xOffset, Back.y);

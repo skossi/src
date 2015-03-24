@@ -38,7 +38,7 @@ public class Playstate extends Gamestate{
 	   private String[] drawSwapScores;
 	   private int steps;
 	   private int startingRows;
-	   private RectangleManager R_Man;
+	   private RectangleManager Man;
 	   private UI UI;
 	   private Movable selectedM;
 	   private long lastWave;
@@ -53,6 +53,7 @@ public class Playstate extends Gamestate{
 	   private int IDs;
 	   private boolean startAnimation;
 	   private int scoreBoardPos;
+	   private int score;
 	   private int introSpeed;
 	   
 	   // public for global access
@@ -76,9 +77,9 @@ public class Playstate extends Gamestate{
 	{
 		actions = 0;
 		actionTime = System.currentTimeMillis()-500;
-		R_Man = RectMan;
+		Man = RectMan;
 		isPaused = false;
-		R_Man.AnimationM.isMenuDown = true;
+		Man.AnimationM.isMenuDown = true;
 		size = 68;
 		steps = size; //pixel perfect updating
 		columns = 7;
@@ -100,15 +101,16 @@ public class Playstate extends Gamestate{
 		introSpeed = 300;
 		loseSpeed = 20;
 		superSpeed = 2000;
+		score = 0;
 		prepareMatrix();
 		
 		isTesting = false;
 		
-		R_Man.AudioM.raiseThemeMusic();
+		Man.AudioM.raiseThemeMusic();
 		musicThreshold = 0;
-		R_Man._r = R_Man._rOrg;
-		R_Man._g = R_Man._gOrg;
-		R_Man._b = R_Man._bOrg;
+		Man._r = Man._rOrg;
+		Man._g = Man._gOrg;
+		Man._b = Man._bOrg;
 	}
 	/**
    * Creates a new cube on a timed interval. It���s type is randomed. This method is a temporary solution for spawning cubes in debugging mode
@@ -206,7 +208,7 @@ public class Playstate extends Gamestate{
 				   Movables[m1.col][i] = null;
 			   }
 		   }
-		   R_Man.playSoundEffect(AudioManager.COLLECT);
+		   Man.playSoundEffect(AudioManager.COLLECT);
 	   }	   
    }
    /**
@@ -221,12 +223,12 @@ public class Playstate extends Gamestate{
 			if (typeOne == null)
 			{
 				if(!typeTwo)
-					return R_Man.TextureM.black;
+					return Man.TextureM.black;
 				else
-					return R_Man.TextureM.blinkBlack;
+					return Man.TextureM.blinkBlack;
 			}
-			return (typeOne ? (typeTwo ? R_Man.TextureM.square : R_Man.TextureM.circle) 
-					: (typeTwo ? R_Man.TextureM.triangle : R_Man.TextureM.ex));
+			return (typeOne ? (typeTwo ? Man.TextureM.square : Man.TextureM.circle) 
+					: (typeTwo ? Man.TextureM.triangle : Man.TextureM.ex));
 	}
 	
 	// Use: printMovables();
@@ -302,7 +304,7 @@ public class Playstate extends Gamestate{
 					if(musicThreshold == 4)
 					{
 						musicThreshold = 0;
-						R_Man.AudioM.raiseThemeMusic();
+						Man.AudioM.raiseThemeMusic();
 					}	
 				}
 			} 
@@ -340,9 +342,9 @@ public class Playstate extends Gamestate{
 	private void blackMovableAnimation(float dt)
 	{
 		playIntro(dt,1);
-		if(R_Man._r >= 0) R_Man._r -= dt*4;
-		if(R_Man._g >= 0) R_Man._g -= dt*4;
-		if(R_Man._b >= 0) R_Man._b -= dt*4;
+		if(Man._r >= 0) Man._r -= dt*4;
+		if(Man._g >= 0) Man._g -= dt*4;
+		if(Man._b >= 0) Man._b -= dt*4;
 		for(int i = 0; i < rows; i++) 
 		{
 			for (int j = 0; j < columns; j++) 
@@ -408,28 +410,28 @@ public class Playstate extends Gamestate{
 	      
 	      checkLoseOffset(false);
 	      
-	      batch.draw(R_Man.TextureM.redline, 0, loseCondition+loseConditionOffset);
+	      batch.draw(Man.TextureM.redline, 0, loseCondition+loseConditionOffset);
 	      
 	      if(isSelected && selectedM != null) {
 	    	  if (!selectedM.justSpawned) 
-	    		  batch.draw(R_Man.TextureM.selected, selectedM.x, selectedM.y);
+	    		  batch.draw(Man.TextureM.selected, selectedM.x, selectedM.y);
 	      }
 	      if(isPaused && !isTesting)
 	      {
-	    	  batch.draw(R_Man.TextureM.pauseBlock,0,0,480,800);
-	    	  batch.draw(R_Man.ButtonM.PauseResume.tex, R_Man.ButtonM.PauseResume.x, R_Man.ButtonM.PauseResume.y);
-	    	  batch.draw(R_Man.ButtonM.PauseRestart.tex, R_Man.ButtonM.PauseRestart.x, R_Man.ButtonM.PauseRestart.y);
-	    	  batch.draw(R_Man.ButtonM.PauseQuit.tex, R_Man.ButtonM.PauseQuit.x, R_Man.ButtonM.PauseQuit.y);
+	    	  batch.draw(Man.TextureM.pauseBlock,0,0,480,800);
+	    	  batch.draw(Man.ButtonM.PauseResume.tex, Man.ButtonM.PauseResume.x, Man.ButtonM.PauseResume.y);
+	    	  batch.draw(Man.ButtonM.PauseRestart.tex, Man.ButtonM.PauseRestart.x, Man.ButtonM.PauseRestart.y);
+	    	  batch.draw(Man.ButtonM.PauseQuit.tex, Man.ButtonM.PauseQuit.x, Man.ButtonM.PauseQuit.y);
 	      }
-	      batch.draw(R_Man.TextureM.ui_bg, UI.x, UI.y, UI.width, UI.height);
-	      if(!isPaused)batch.draw(R_Man.TextureM.ui_pauseOn,UI.x,UI.y+5,64,64);
-	      else batch.draw(R_Man.TextureM.ui_pauseOff,UI.x,UI.y+5,64,64);
+	      batch.draw(Man.TextureM.ui_bg, UI.x, UI.y, UI.width, UI.height);
+	      if(!isPaused)batch.draw(Man.TextureM.ui_pauseOn,UI.x,UI.y+5,64,64);
+	      else batch.draw(Man.TextureM.ui_pauseOff,UI.x,UI.y+5,64,64);
 	     
-	      if(R_Man.isMuted) batch.draw(R_Man.TextureM.ui_soundOff,416,UI.y+10,64,64);
-	      else batch.draw(R_Man.TextureM.ui_soundOn,416,UI.y+10,64,64);
+	      if(Man.isMuted) batch.draw(Man.TextureM.ui_soundOff,416,UI.y+10,64,64);
+	      else batch.draw(Man.TextureM.ui_soundOn,416,UI.y+10,64,64);
 	      
-	      R_Man.drawScoreBoard(batch, 100, scoreBoardPos, drawSwapScores, false, -1, R_Man.fontWhite);
-
+	      //Man.drawScoreBoard(batch, 100, scoreBoardPos, drawSwapScores, false, -1, Man.fontWhite);
+	      Man.fontWhite.draw(batch, Integer.toString(score), 100, scoreBoardPos);
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
@@ -440,12 +442,12 @@ public class Playstate extends Gamestate{
 		if(barPress == 1) 
 		{
 			isPaused =! isPaused;
-			R_Man.playSoundEffect(AudioManager.PAUSE);
+			Man.playSoundEffect(AudioManager.PAUSE);
 		}
 		if(barPress == 4)
 		{
-			R_Man.soundMute();
-			R_Man.playSoundEffect(AudioManager.MUTE);
+			Man.soundMute();
+			Man.playSoundEffect(AudioManager.MUTE);
 		}
 		
 		isSelected = true;
@@ -458,12 +460,12 @@ public class Playstate extends Gamestate{
 		
 		if(isPaused)
 		{
-			if(buttonClick(R_Man.ButtonM.PauseResume,x,y)) isPaused = false;
-			if(buttonClick(R_Man.ButtonM.PauseRestart,x,y)) RestartGame();
-			if(buttonClick(R_Man.ButtonM.PauseQuit,x,y))
+			if(buttonClick(Man.ButtonM.PauseResume,x,y)) isPaused = false;
+			if(buttonClick(Man.ButtonM.PauseRestart,x,y)) RestartGame();
+			if(buttonClick(Man.ButtonM.PauseQuit,x,y))
 			{
 				isPaused = false;
-				R_Man.AudioM.resetThemeMusic();
+				Man.AudioM.resetThemeMusic();
 				gsm.setState(GameStateManager.MENU);		
 			}
 		}
@@ -490,8 +492,8 @@ public class Playstate extends Gamestate{
 		prepareMatrix();
 		actions = 0;
 		actionTime = System.currentTimeMillis()-500;
-		R_Man.AudioM.resetThemeMusic();
-		R_Man.AudioM.raiseThemeMusic();
+		Man.AudioM.resetThemeMusic();
+		Man.AudioM.raiseThemeMusic();
 	}
 	
 	//See abstrakt class Gamestate isTouched(x,y);
@@ -710,7 +712,7 @@ public class Playstate extends Gamestate{
 	   //TODO: skoda
 	   if(m1.ID != -1) shootByID(m1.ID, superSpeed);
 	   else shootRows(m1.col, 1, index, takeoffSpeed, false, thrustID);
-	   R_Man.playSoundEffect(AudioManager.MATCH);
+	   Man.playSoundEffect(AudioManager.MATCH);
 	   }
    }
 	   
@@ -738,7 +740,7 @@ public class Playstate extends Gamestate{
 		   //TODO: skoda
 		   if(m1.ID != -1) shootByID(m1.ID, superSpeed);
 		   else shootRows(index, count, row, takeoffSpeed, false, thrustID);
-		   R_Man.playSoundEffect(AudioManager.MATCH);
+		   Man.playSoundEffect(AudioManager.MATCH);
 	   }
    }
 
@@ -746,6 +748,7 @@ public class Playstate extends Gamestate{
    // After: The score has been incremented by amount pts
 	private void addScore(Boolean typeOne, boolean typeTwo, int aScore) 
 	{
+		score++;
 		if(typeOne == null) return;
 		int swapToAdd = typeOne ? (typeTwo ? 0 : 2) : (typeTwo ? 1 : 3);
 		swapScores[swapToAdd] += aScore;
@@ -760,6 +763,7 @@ public class Playstate extends Gamestate{
 	   isSelected = false;
 	   if(isBeingThrusted){
 		   //TODO: Resevered for thrustage
+		   //Stop reserving space. We must save space for powerups!
 	   }
 	   for(int j = index; j < index+count; j++){
 		   for (int i = row; i < rows; i++){
@@ -902,7 +906,7 @@ public class Playstate extends Gamestate{
 	//Saves current score and sets the state to Lost. Called when game is lost
 	private void gameOver()
 	{
-		R_Man.ScoreM.checkScore(swapScores);
+		Man.ScoreM.checkScore(swapScores,score);
 		gsm.setState(GameStateManager.LOST);
 	}	
 }
