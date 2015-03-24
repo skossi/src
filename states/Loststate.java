@@ -136,7 +136,7 @@ public class Loststate extends Gamestate{
 		Man.fontWhite.draw(batch,"Your score was :", 135, 630+yOffset);
 		
 		//Man.drawScoreBoard(batch, 100, 530 +scoreOffset, scoreMade, Man.ScoreM.NewIndivScore, Man.ScoreM.whichNewIndivScore, Man.fontWhite );
-		Man.fontWhite.draw(batch,currencyToDisplay,100, 530+scoreOffset);
+		Man.fontWhite.draw(batch,"         "+currencyToDisplay,100, 530+scoreOffset);
 		
 		if(gameEnd)
 		{

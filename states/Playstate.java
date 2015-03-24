@@ -55,6 +55,7 @@ public class Playstate extends Gamestate{
 	   private int scoreBoardPos;
 	   private int score;
 	   private int introSpeed;
+	   private int lvlDisp;
 	   
 	   // public for global access
 	   public static boolean isSelected;
@@ -103,6 +104,7 @@ public class Playstate extends Gamestate{
 		superSpeed = 2000;
 		score = 0;
 		prepareMatrix();
+		lvlDisp = 1;
 		
 		isTesting = false;
 		
@@ -298,11 +300,13 @@ public class Playstate extends Gamestate{
 				spawnWave((float)((1+(1-difficulty))*defaultSpeed));
 				if(difficulty > 0.45)
 				{
+					
 					difficulty -= 0.03;
 					musicThreshold++;
 					//TODO:This is just a placeholder. Will be fixed
 					if(musicThreshold == 4)
 					{
+						lvlDisp++;
 						musicThreshold = 0;
 						Man.AudioM.raiseThemeMusic();
 					}	
@@ -323,7 +327,7 @@ public class Playstate extends Gamestate{
 		else UI.y = 800-size;
 		if(dir < 0)
 		{
-			scoreBoardPos = (int)UI.y+5;
+			scoreBoardPos = (int)UI.y+45;
 			loseCondition += introSpeed * dt * dir;
 			
 			if(loseCondition < 670)
@@ -331,7 +335,6 @@ public class Playstate extends Gamestate{
 				loseCondition = 670;//720-size;
 				canPlay = true;
 				startAnimation = false;
-				//introSpeed = 200;
 			}	
 		}	
 	}
@@ -414,12 +417,8 @@ public class Playstate extends Gamestate{
 	      
 	      if(isSelected && selectedM != null) {
 	    	  if (!selectedM.justSpawned) 
-<<<<<<< HEAD
-	    		  batch.draw(Man.TextureM.selected, selectedM.x, selectedM.y);
-=======
 	    		  // -3 offset since picture is 70x70
-	    		  batch.draw(R_Man.TextureM.selected, selectedM.x-3, selectedM.y-3);
->>>>>>> 0857dab423c4306f8b6649949f9984494e28c92e
+	    		  batch.draw(Man.TextureM.selected, selectedM.x-3, selectedM.y-3);
 	      }
 	      if(isPaused && !isTesting)
 	      {
@@ -436,7 +435,8 @@ public class Playstate extends Gamestate{
 	      else batch.draw(Man.TextureM.ui_soundOn,416,UI.y+10,64,64);
 	      
 	      //Man.drawScoreBoard(batch, 100, scoreBoardPos, drawSwapScores, false, -1, Man.fontWhite);
-	      Man.fontWhite.draw(batch, Integer.toString(score), 100, scoreBoardPos);
+	      Man.fontWhite.draw(batch, "LVL : " + Integer.toString(lvlDisp), 300, scoreBoardPos);
+	      Man.fontWhite.draw(batch, "BLOCKS : " + Integer.toString(score), 100, scoreBoardPos);
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
