@@ -83,7 +83,7 @@ public class Playstate extends Gamestate{
 		steps = size; //pixel perfect updating
 		columns = 7;
 		rows = 13;
-		takeoffSpeed = 300;
+		takeoffSpeed = 600;
 		startingRows = 3;
 		IDs = 1;
 		Movables = new Movable[columns][rows];
@@ -412,7 +412,8 @@ public class Playstate extends Gamestate{
 	      
 	      if(isSelected && selectedM != null) {
 	    	  if (!selectedM.justSpawned) 
-	    		  batch.draw(R_Man.TextureM.selected, selectedM.x, selectedM.y);
+	    		  // -3 offset since picture is 70x70
+	    		  batch.draw(R_Man.TextureM.selected, selectedM.x-3, selectedM.y-3);
 	      }
 	      if(isPaused && !isTesting)
 	      {
@@ -847,8 +848,9 @@ public class Playstate extends Gamestate{
    public void handleSwap(int col, int row, int direction){
 	   if (Movables[col][row+direction] == null) return;
 	   Movable targetM = Movables[col][row+direction];
-	   //TODO: see if checking for same speed has any meaning
-	   if (targetM == null || targetM.typeOne == null || targetM.speed != selectedM.speed) return;
+	   //TODO: see if checking for same speed has any meaning: targetM.speed != selectedM.speed
+	   // removed when gravity was added
+	   if (targetM == null || targetM.typeOne == null) return;
 	   swapTypes(selectedM, targetM);
 	   IDs++;
 	   //DOUBLE SWAP CASES, DOUBLESWAP, SUPERSWAP

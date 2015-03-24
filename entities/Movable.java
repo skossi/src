@@ -28,6 +28,7 @@ public class Movable {
 	public boolean isBeingSwapped;
 	public boolean justSpawned;
 	public int ID;
+	public double gravity = 0.075;
 	
 	/**	
 	*Constructs ablock, i.e. Movable
@@ -75,9 +76,18 @@ public class Movable {
  	*/
 	public void update(float dy) {	
 		
-		if(System.currentTimeMillis() - timeThrusted > 3500 && isBeingThrusted){
-			isBeingThrusted = false;
-			speed = -600;
+		// UNCOMMENT THIS TO REMOVE GRAVITY
+//		if(System.currentTimeMillis() - timeThrusted > 3500 && isBeingThrusted){
+//			isBeingThrusted = false;
+//			speed = -600;
+//		}
+		
+		// no need to update the invisible bottom row or static blocks
+		if (row == 0 || speed == 0) return;
+		
+		if (!justSpawned) {
+			if (speed < 0) isBeingThrusted = false;
+			if (speed != 0) speed -= gravity;
 		}
 			
 		y += speed*dy;
