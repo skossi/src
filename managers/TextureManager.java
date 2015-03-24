@@ -59,7 +59,7 @@ public class TextureManager {
 		ex = new Texture(Gdx.files.internal(asset+location+"ex.png"));
 		black = new Texture(Gdx.files.internal(asset+location+"black.png"));
 		blinkBlack = new Texture(Gdx.files.internal(asset+location+"blackBlikk.png"));
-		selected = new Texture(Gdx.files.internal(asset+location+"selected.png"));
+		selected = new Texture(Gdx.files.internal(asset+location+"selectedNEW.png"));
 		ui_bg = new Texture(Gdx.files.internal(asset+location+"ui_bg.png"));
 		redline = new Texture(Gdx.files.internal(asset+location+"redline.png"));
 		ui_pauseOn = new Texture(Gdx.files.internal(asset+location+"pauseOn.png"));
