@@ -62,37 +62,21 @@ public class TextureManager {
 		ex = new Texture(Gdx.files.internal(asset+location+"ex.png"));		
 		blinkBlack = new Texture(Gdx.files.internal(asset+location+"/blackBlikk.png"));
 		selected = new Texture(Gdx.files.internal(asset+location+"selectedNEW.png"));
-<<<<<<< HEAD
 		loseLine = new Texture(Gdx.files.internal(asset+location+"redline.png"));	
 		//*-------MUTUAL ASSETS------*
 		
 		black = new Texture(Gdx.files.internal("MutualAssets/black.png"));
 		dropParticle = new Texture(Gdx.files.internal("MutualAssets/dropParticle.png"));
-=======
-		ui_bg = new Texture(Gdx.files.internal(asset+location+"ui_bg.png"));
-		redline = new Texture(Gdx.files.internal(asset+location+"redline.png"));
-		ui_pauseOn = new Texture(Gdx.files.internal(asset+location+"pauseOn.png"));
-		ui_pauseOff = new Texture(Gdx.files.internal(asset+location+"pauseOff.png"));
-		ui_soundOn = new Texture(Gdx.files.internal(asset+location+"soundOn.png"));
-		ui_soundOff = new Texture(Gdx.files.internal(asset+location+"soundOff.png"));
-		pauseBlock = new Texture(Gdx.files.internal(asset+location+"pauseBlock.png"));
-		newScore = new Texture(Gdx.files.internal(asset+location+"newScore.png"));
-		storeTabSelect = new Texture(Gdx.files.internal(asset+location+"storeBar.png"));
-		scoreTabSelect = new Texture(Gdx.files.internal(asset+location+"scoreBar.png"));
 		powerDown = new Texture(Gdx.files.internal("MutualAssets/powerDown.png"));
->>>>>>> 649c8bf0bfc3f1888a7610fa2a9fcddfb444fffd
 		swapTheme = new Texture(Gdx.files.internal("MutualAssets/SwapTheme.png"));
 		scoreBack = new Texture(Gdx.files.internal("MutualAssets/scoreBack.png"));
 		lockedItem = new Texture(Gdx.files.internal("MutualAssets/locked.png"));
 		priceHolder = new Texture(Gdx.files.internal("MutualAssets/PriceHolder.png"));
-<<<<<<< HEAD
 		ui_bg = new Texture(Gdx.files.internal("MutualAssets/ui_bg.png"));
 		ui_soundOn = new Texture(Gdx.files.internal("MutualAssets/soundOn.png"));
 		ui_soundOff = new Texture(Gdx.files.internal("MutualAssets/soundOff.png"));
 		storeTabSelect = new Texture(Gdx.files.internal("MutualAssets/storeBar.png"));
 		scoreTabSelect = new Texture(Gdx.files.internal("MutualAssets/scoreBar.png"));
-=======
->>>>>>> 649c8bf0bfc3f1888a7610fa2a9fcddfb444fffd
 	}
 }
 

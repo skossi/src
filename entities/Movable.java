@@ -101,18 +101,6 @@ public class Movable {
 		if (speed < 0 && isBeingThrusted) isBeingThrusted = false;
 		if (speed != 0) speed -= gravity;
 		
-		
-<<<<<<< HEAD
-		if (!justSpawned) {
-			if (speed < 0) 
-			{
-				isBeingThrusted = false;
-			}
-			if (speed != 0) speed -= gravity;
-		}
-=======
->>>>>>> 649c8bf0bfc3f1888a7610fa2a9fcddfb444fffd
-			
 		y += speed*dy;
 		
 		if(spawnParticles)

@@ -412,7 +412,6 @@ public class Playstate extends Gamestate{
 	{
 		//TODO: this should not be here!!!! just for demo atm
 		checkLoseOffset(true);
-<<<<<<< HEAD
 		if(!isPaused)
 		{
 			for(int i = 0; i < columns; i++) {
@@ -429,21 +428,21 @@ public class Playstate extends Gamestate{
 				    {		
 					    //TODO: this should also not be here!!!! just for demo atm
 					    if(m.row > loseConditionOffset && m.speed  == 0) loseConditionOffset = m.row;
-					    batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y);  
+					    if(m.isPowerDown)
+			    		  {
+		    				  batch.draw(Man.TextureM.powerDown, m.x, m.y);
+			    		  }
+					    else batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y);  
 				    }
 			    }
 		    }
 		      
 		    checkLoseOffset(false);
-		      
-		    
-		      
 		    if(isSelected && selectedM != null) {
 		    	if (!selectedM.justSpawned) 
 		    	 // -3 offset since picture is 70x70
 		    		batch.draw(Man.TextureM.selected, selectedM.x-3, selectedM.y-3);
-		    }
-		    
+		    }    
 		}
 		else
 	    {
@@ -459,52 +458,6 @@ public class Playstate extends Gamestate{
 		batch.draw(Man.TextureM.loseLine, 0, loseCondition+loseConditionOffset);
 		batch.draw(Man.TextureM.ui_bg, UI.x, UI.y, UI.width, UI.height);
 	    Man.fontWhite.draw(batch,Integer.toString(score), 240, scoreBoardPos);
-	    
-=======
-		//batch.draw(Background, 0, 0);
-	      for(int i = 0; i < columns; i++) {
-	    	  for (int j = 0; j < rows; j++) {
-	    		  Movable m = Movables[i][j];
-	    		  //TODO: change this to one boolean, m.isSelected
-	    		  if (m != null)
-	    		  {		
-	    			  if(m.row > loseConditionOffset) loseConditionOffset = m.row;
-	    			  if(m.isPowerDown)
-		    		  {
-	    				  batch.draw(Man.TextureM.powerDown, m.x, m.y);
-		    		  }
-	    			  else batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
-	    		  }
-	    	  }
-	      }
-	      
-	      checkLoseOffset(false);
-	      
-	      batch.draw(Man.TextureM.redline, 0, loseCondition+loseConditionOffset);
-	      
-	      if(isSelected && selectedM != null) {
-	    	  if (!selectedM.justSpawned) 
-	    		  // -3 offset since picture is 70x70
-	    		  batch.draw(Man.TextureM.selected, selectedM.x-3, selectedY-3);
-	      }
-	      if(isPaused && !isTesting)
-	      {
-	    	  batch.draw(Man.TextureM.pauseBlock,0,0,480,800);
-	    	  batch.draw(Man.ButtonM.PauseResume.tex, Man.ButtonM.PauseResume.x, Man.ButtonM.PauseResume.y);
-	    	  batch.draw(Man.ButtonM.PauseRestart.tex, Man.ButtonM.PauseRestart.x, Man.ButtonM.PauseRestart.y);
-	    	  batch.draw(Man.ButtonM.PauseQuit.tex, Man.ButtonM.PauseQuit.x, Man.ButtonM.PauseQuit.y);
-	      }
-	      batch.draw(Man.TextureM.ui_bg, UI.x, UI.y, UI.width, UI.height);
-	      if(!isPaused)batch.draw(Man.TextureM.ui_pauseOn,UI.x,UI.y+5,64,64);
-	      else batch.draw(Man.TextureM.ui_pauseOff,UI.x,UI.y+5,64,64);
-	     
-	      if(Man.isMuted) batch.draw(Man.TextureM.ui_soundOff,416,UI.y+10,64,64);
-	      else batch.draw(Man.TextureM.ui_soundOn,416,UI.y+10,64,64);
-	      
-	      //Man.drawScoreBoard(batch, 100, scoreBoardPos, drawSwapScores, false, -1, Man.fontWhite);
-	      Man.fontWhite.draw(batch, "LVL : " + Integer.toString(lvlDisp), 300, scoreBoardPos);
-	      Man.fontWhite.draw(batch, "BLOCKS : " + Integer.toString(score), 100, scoreBoardPos);
->>>>>>> 649c8bf0bfc3f1888a7610fa2a9fcddfb444fffd
 	}
 	
 	public static void touchUp(int x, int y) {
@@ -514,22 +467,7 @@ public class Playstate extends Gamestate{
 	
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
-	{
-<<<<<<< HEAD
-=======
-		int barPress = UI.isTouched(x, y);
-		if(barPress == 1) 
-		{
-			isPaused =! isPaused;
-			Man.playSoundEffect(AudioManager.PAUSE);
-		}
-		if(barPress == 4)
-		{
-			Man.soundMute();
-			Man.playSoundEffect(AudioManager.MUTE);
-		}
->>>>>>> 649c8bf0bfc3f1888a7610fa2a9fcddfb444fffd
-		
+	{	
 		isSelected = true;
 		selectedM = locateMovable(x, y);
 		
@@ -866,18 +804,17 @@ public class Playstate extends Gamestate{
 				m3.typeOne = null;
 				m3.typeTwo = false;
 				m3.timeBlacked = System.currentTimeMillis();
-<<<<<<< HEAD
+
 				/*
 				m3.spawnParticles = true;
 				m3.particleEmit = new ParticleEmitter((int)m3.x,(int)m3.y,Man.TextureM.dropParticle);
 		  		*/
-=======
-				if(m3.isPowerDown){
+				if(m3.isPowerDown)
+				{
 					powerDownFound = true;
 					m3.isPowerDown = false;
 					activatePowerDown(m3);
 				}
->>>>>>> 649c8bf0bfc3f1888a7610fa2a9fcddfb444fffd
 		   }
 	   	   if(powerDownFound) return;
 		   //TODO: skoda
@@ -952,11 +889,7 @@ public class Playstate extends Gamestate{
 	  
 	   stats.matchesMade ++;
 	   isSelected = false;
-<<<<<<< HEAD
-	   
-=======
 	   selectedM = null;
->>>>>>> 649c8bf0bfc3f1888a7610fa2a9fcddfb444fffd
 	   if(isBeingThrusted){
 		   //TODO: Resevered for thrustage
 		   //Stop reserving space. We must save space for powerups!
