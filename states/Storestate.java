@@ -19,14 +19,11 @@ public class Storestate extends Gamestate {
 
 	   private Wallet wallet;
 	   
-	  // private String[] drawCurrency;
-	   
 	   private String drawCurrency;
 	   private int currency;
-	   private int screenDir;
+	   public static int screenDir;
 	   
 	   private RectTex[] tabs;
-	   private RectTex[][] Store;
 	   private String[] tabText;
 	   private int selectTab;
 	   
@@ -67,8 +64,8 @@ public class Storestate extends Gamestate {
 		tabs[2] = Man.ButtonM.TabThemes;
 		tabs[3] = Man.ButtonM.TabExtras;
 		tabText[0] = "Powers";
-		tabText[1] = "Levels";
-		tabText[2] = "Themes";
+		tabText[1] = "Audios";
+		tabText[2] = "Visual";
 		tabText[3] = "Extras";
 		
 		swapThemeAni = false;
@@ -87,8 +84,11 @@ public class Storestate extends Gamestate {
 		{
 			//drawCurrency[i] = Integer.toString(Man.ScoreM.scoreHolder[5][i]);
 		}
+		
 		currency = Man.ScoreM.currency;
-		drawCurrency = Integer.toString(currency);
+		
+		if(currency > 9999) drawCurrency = "+9999";
+		else drawCurrency = Integer.toString(currency);
 		
 		Man.AnimationM.SideAnimation = true;
 		Man.AnimationM.SideXOffset = 480;
@@ -121,7 +121,7 @@ public class Storestate extends Gamestate {
 	public void draw(SpriteBatch batch)
 	{
 		int xOffset = Man.AnimationM.SideXOffset;
-		
+		batch.setColor(Man.Color_Store);
 		batch.draw(StoreMain.tex, StoreMain.x+xOffset, StoreMain.y);
 		
 		for(int i = 0; i < 4; i++)
@@ -130,14 +130,15 @@ public class Storestate extends Gamestate {
 			if(i == selectTab)Man.fontWhite.draw(batch, tabText[i], 15+120*i+xOffset, 715);
 			else Man.fontfff60.draw(batch, tabText[i], 15+120*i+xOffset, 715);
 		}
+		batch.setColor(Man.Color_StoreBar);
+		batch.draw(Man.TextureM.storeTabSelect,120*selectTab+xOffset,650);
+		batch.draw(Man.TextureM.scoreBack,20+xOffset,150);
 		
 		Man.fontBlack.draw(batch, "Your currency : ", 10+xOffset, 625);
-		//Man.drawScoreBoard(batch, 210+xOffset, 580, drawCurrency,false, -1, Man.fontBlack);
 		
 		Man.fontBlack.draw(batch,drawCurrency,210+xOffset, 625);
 		
-		batch.draw(Man.TextureM.storeTabSelect,120*selectTab+xOffset,650);
-		
+		batch.setColor(1,1,1,1);
 		
 		//DRAW ACTIVE STORE 
 		for(int i = 0; i < 4; i++)
@@ -156,7 +157,9 @@ public class Storestate extends Gamestate {
 			//else batch.draw unlocked
 		}
 		
+		batch.setColor(Man.Color_Logo);
 		batch.draw(Back.tex, Back.x+xOffset, Back.y);
+		batch.setColor(1,1,1,1);
 		
 		if(swapThemeAni)
 		{
@@ -170,6 +173,8 @@ public class Storestate extends Gamestate {
 			batch.draw(Man.TextureM.circle,x+2*68,y);
 			batch.draw(Man.TextureM.ex,x+3*68,y);
 		}
+		
+		
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
@@ -210,19 +215,28 @@ public class Storestate extends Gamestate {
 				if(buttonClick(Man.ButtonM.StoreSelect[selectTab][0],x,y))
 				{
 					if(wallet.owned[selectTab][0])canChangeTheme(0);
-					else checkCapital(selectTab,0);
-					
+					else checkCapital(selectTab,0);	
 				}
 				if(buttonClick(Man.ButtonM.StoreSelect[selectTab][1],x,y))
 				{
 					if(wallet.owned[selectTab][1])canChangeTheme(1);
 					else checkCapital(selectTab,1);
 				}
+				if(buttonClick(Man.ButtonM.StoreSelect[selectTab][2],x,y))
+				{
+					if(wallet.owned[selectTab][2])canChangeTheme(2);
+					else checkCapital(selectTab,2);
+				}
+				if(buttonClick(Man.ButtonM.StoreSelect[selectTab][3],x,y))
+				{
+					if(wallet.owned[selectTab][3])canChangeTheme(3);
+					else checkCapital(selectTab,3);
+				}
 				break;
 			}
 			case 3 : 
 			{
-				
+
 				break;
 			}
 		}

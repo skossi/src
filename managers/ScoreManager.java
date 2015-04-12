@@ -3,6 +3,8 @@ package managers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
+import entities.GameStats;
+
 //Class by Ottar Gudmundsson
 //Written 26.2.2015
 //Score manager takes care of all scores and statistics saved into the game.
@@ -13,23 +15,22 @@ public class ScoreManager {
 	
 	private Preferences prefs;
 	public boolean NewHighScore;
-	public boolean NewIndivScore;
-	public int whichNewIndivScore;
 	public boolean firstTime;
-	private static String[] Type = new String[]{"Best","Square","Triangle","Circle","Ex","Currency"};
-	public int[][] scoreHolder = new int[6][5];
-	public int[] currentScore = new int[5];
+	private String[] infoString = {"Currency","HighScore","Play","Pause","Swap","Match","Blocks"};
+	public int[] infoHolder = new int[infoString.length];
 	public int currency;
 	public int newestScore;
+
 	
-	public ScoreManager()
+	public ScoreManager(Preferences p)
 	{
+		prefs = p;
 		getScores();
 		firstTime = prefs.getBoolean("First");
 		
 		wallet = new Wallet(prefs);
 		
-		//Just for debugging - should be taken out before release or build
+		//TODO:Just for debugging - should be taken out before release or build
 		firstDone();
 	}
 	
@@ -46,65 +47,66 @@ public class ScoreManager {
 		firstTime = true;
 		prefs.putBoolean("First",true);
 		
-		wallet.owned[2][0] = true;
 		prefs.flush();
-		prefs = Gdx.app.getPreferences("My Preferences");
+		
 	}
 	//Updates the resources manager variables by using data from the phones preferences
 	private void getScores()
-	{
-		prefs = Gdx.app.getPreferences("My Preferences");
-		currency = prefs.getInteger("CurrencyForStore");
-		for(int i = 0; i < 5; i++)for(int j = 0; j < 5; j++)scoreHolder[i][j] = prefs.getInteger(Type[i]+Type[j]);			
+	{	
+		for(int i = 0 ; i < infoString.length; i++)
+		{
+			infoHolder[i] = prefs.getInteger(infoString[i]);
+		}
 	}
 	
 	//Reduces the players currency by amount of price item bought.
 	public void payForAsset(int price)
 	{
 		currency -= price;
-		prefs.putInteger("CurrencyForStore", currency);
+		prefs.putInteger(infoString[0], currency);
 		prefs.flush();
 	}
 	
+	//TODO : Add stats to a public array and display in scorestate!
 	//Takes in parameter newScore that is players score when game is lost. 
 	//Gets preferences and checks if a new high score was made
 	//if so, it saves it and refreshes the preferences.
-	public void checkScore(int[] newScore, int score)
+	public void checkScore(int score, GameStats aStats)
 	{
+		int[] infoArray = aStats.loadToArray();
 		NewHighScore = false;
-		NewIndivScore = false;
 		getScores();
 		
-		int sum = 0;
-		for(int k = 1 ; k < 5; k++)
+		currency = infoHolder[0];
+		
+		if(score > infoHolder[1])
 		{
-			sum += newScore[k-1];
-			currentScore[k] = newScore[k-1];
-			scoreHolder[5][k-1] += newScore[k-1];
-			//currencyInt[k-1] = 0;
+			NewHighScore = true;
+			prefs.putInteger(infoString[1], score);
 		}
-		currentScore[0] = sum;
+		
+		for(int i = 2 ; i < infoHolder.length-1; i++)
+		{
+			infoHolder[i] += infoArray[i-2];
+			prefs.putInteger(infoString[i], infoHolder[i]);
+		}
+		
+		infoHolder[6] += score;
+		prefs.putInteger(infoString[6], infoHolder[6]);
 		
 		newestScore = score;
 		currency += score;
-		prefs.putInteger("CurrencyForStore", currency);
+		prefs.putInteger(infoString[0], currency);
 
-		for(int i = 0; i < 5; i++)
-		{
-			if(currentScore[i] > scoreHolder[i][i])
-			{
-				for(int j = 0; j < 5; j++)
-				{
-					prefs.putInteger(Type[i]+Type[j],currentScore[j]);
-					if(i == 0)NewHighScore = true;
-					else
-					{
-						whichNewIndivScore = i-1;
-					}
-				}
-			}
-		}
 		prefs.flush();
 		getScores();
 	}
 }
+
+
+
+
+
+
+
+

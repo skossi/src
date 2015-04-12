@@ -13,7 +13,7 @@ public class AnimationManager {
 	public int MenuYOffset;
 	public int SideXOffset;
 	public int SideYOffset;
-	public boolean SideAnimation;
+	public static boolean SideAnimation;
 	public int backgroundSpeed = -600;
 	public int horizontalSpeed = 0;
 	public int verticalSpeed = 0;
@@ -22,7 +22,7 @@ public class AnimationManager {
 	public boolean moveMenu;
 	public boolean moveFromSides;
 	public boolean isMenuDown;
-	public static double accel = 1.1;
+	public static double accel = 5.1;
 	
 	public AnimationManager(GameStateManager g)
 	{
@@ -53,8 +53,7 @@ public class AnimationManager {
 			horizontalSpeed = changeSpeed;
 			MenuXOffset = value;
 			if(value <= -maxValue)gsm.setState(underDest);
-			if(value >= maxValue) gsm.setState(overDest);
-			
+			if(value >= maxValue) gsm.setState(overDest);			
 		}
 		else
 		{
@@ -62,9 +61,7 @@ public class AnimationManager {
 			MenuYOffset = value;
 			if(value <= -maxValue)setPlayState(underDest);
 			if(value >= maxValue) setPlayState(overDest);
-		}
-		
-		
+		}	
 	}
 	
 	//Animation that takes care of resetting the menu from the sides.
@@ -94,8 +91,7 @@ public class AnimationManager {
 				speedAdd = 0;
 				SideAnimation = false;	
 			}
-		}
-		
+		}	
 	}
 	
 	//Animation that takes care of resetting the menu from the the bottom/top.
@@ -123,6 +119,7 @@ public class AnimationManager {
 		speedAdd -= accel;
 		if(MenuXOffset*sideDir*-1 <= 0)
 		{
+			MenuXOffset = 0;
 			speedAdd = 0;
 			moveFromSides = false;
 		}

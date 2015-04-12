@@ -32,8 +32,9 @@ public class Menustate extends Gamestate {
 	 private int stateDir;
 	 private boolean moveMenu;
 	 
-	 private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+	 private int soundX,soundY;
 	 
+	 private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 	   
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
@@ -53,7 +54,11 @@ public class Menustate extends Gamestate {
 		MenuArray[2] = Man.ButtonM.EnterScore;
 		MenuArray[3] = Man.ButtonM.EnterTut;
 		MenuArray[4] = Man.ButtonM.EnterStore;
+		
 		moveMenu = false;
+		
+		soundX = 380;
+		soundY = 50;
 		
 	}
 	//See abstrakt class Gamestate update(float dt);
@@ -79,20 +84,45 @@ public class Menustate extends Gamestate {
 			if(Man._b < Man._bOrg) Man._b += 4*dt;
 			Man.AnimationM.MenuDown(dt);
 		}
-		
 	}
 
 	
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		for(int i = 0; i < MenuArray.length; i++)
-		{
-			batch.draw
-			(MenuArray[i].tex, 
-			MenuArray[i].x+Man.AnimationM.MenuXOffset, 
-			MenuArray[i].y+Man.AnimationM.MenuYOffset);   
-		}
+		batch.setColor(Man.Color_Logo);
+		batch.draw(
+		MenuArray[0].tex, 
+		MenuArray[0].x+Man.AnimationM.MenuXOffset, 
+		MenuArray[0].y+Man.AnimationM.MenuYOffset);
+		
+		batch.setColor(Man.Color_Play);
+		batch.draw(
+		MenuArray[1].tex, 
+		MenuArray[1].x+Man.AnimationM.MenuXOffset, 
+		MenuArray[1].y+Man.AnimationM.MenuYOffset);
+		
+		batch.setColor(Man.Color_Score);
+		batch.draw(
+		MenuArray[2].tex, 
+		MenuArray[2].x+Man.AnimationM.MenuXOffset, 
+		MenuArray[2].y+Man.AnimationM.MenuYOffset);
+		
+		batch.setColor(Man.Color_Tutorial);
+		batch.draw(
+		MenuArray[3].tex, 
+		MenuArray[3].x+Man.AnimationM.MenuXOffset, 
+		MenuArray[3].y+Man.AnimationM.MenuYOffset);
+		
+		batch.setColor(Man.Color_Store);
+		batch.draw(
+		MenuArray[4].tex, 
+		MenuArray[4].x+Man.AnimationM.MenuXOffset, 
+		MenuArray[4].y+Man.AnimationM.MenuYOffset);
+
+		batch.setColor(1,1,1,1);
+		if(Man.isMuted) batch.draw(Man.TextureM.ui_soundOff,soundX+Man.AnimationM.MenuXOffset,soundY+Man.AnimationM.MenuYOffset,64,64);
+	    else batch.draw(Man.TextureM.ui_soundOn,soundX+Man.AnimationM.MenuXOffset,soundY+Man.AnimationM.MenuYOffset,64,64);
 	}
 	
 	//Sets the direction of the transition.
@@ -106,6 +136,13 @@ public class Menustate extends Gamestate {
 	public void justTouched(float x, float y)
 	{
 		if(moveMenu || Man.AnimationM.moveFromSides ) return; //|| !Man.isMenuDown
+		
+		if(x > soundX && x < soundX + 64 && y > soundY && y < soundY+64)
+		{
+			Man.soundMute();
+			Man.playSoundEffect(AudioManager.MUTE);
+		}
+		
 		//Play
 		if(buttonClick(MenuArray[1],x,y)) 
 		{

@@ -19,8 +19,6 @@ public class Loststate extends Gamestate{
 	private RectTex MainMenu;
 	private RectangleManager Man;
 	
-	private String[] scoreMade;			
-	private String[] drawBestScore;
 	private String[] funnyMessage;
 	private int funnyDisplay;
 	
@@ -33,8 +31,9 @@ public class Loststate extends Gamestate{
 	private int lowerSpeedAdd;
 	private int scoreOffset;
 	private int screenDir;
-	private int speedAdd;
 	private String currencyToDisplay;
+	// Debug countering
+	private float timer;
 	
 	
 	//Constructor
@@ -49,16 +48,10 @@ public class Loststate extends Gamestate{
 	{
 		Man = RectMan;
 		GameOver = Man.ButtonM.Over;
-		scoreMade = new String[4];
-		drawBestScore = new String[4];
-		funnyMessage = new String[]{"You cant always win..", "Is that the best you can do?", 
+		funnyMessage = new String[]{"You cant always win you know", "Is that the best you can do?", 
 				"How about trying for real ?","Push it to the limit, dandadan.."};
 		funnyDisplay = (int) (Math.random() * 4);
-		for(int i = 0; i < 4; i++)
-		{
-			scoreMade[i] = Integer.toString(Man.ScoreM.currentScore[i+1]);
-			//drawBestScore[i] = Integer.toString(Man.ScoreM.scoreHolder[0][i+1]);
-		}
+		
 		currencyToDisplay = Integer.toString(Man.ScoreM.newestScore);
 		
 		Replay = Man.ButtonM.Replay;
@@ -80,6 +73,7 @@ public class Loststate extends Gamestate{
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
+		
 		if(Animation)
 		{
 			if(gameEnd)
@@ -105,6 +99,7 @@ public class Loststate extends Gamestate{
 					if(lowerOffset >= 0)
 					{
 						lowerOffset = 0;
+						yOffset = 0;
 						Animation = false;
 						gameEnd = false;
 					}
@@ -129,34 +124,31 @@ public class Loststate extends Gamestate{
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
+		
 		batch.draw(GameOver.tex, GameOver.x, GameOver.y+yOffset);
 		if(Man.ScoreM.NewHighScore)Man.fontWhite.draw(batch,"Congratulations, new score!" , 60, 675+yOffset);
 		else Man.fontWhite.draw(batch,funnyMessage[funnyDisplay] , 60, 675+yOffset);
 		
 		Man.fontWhite.draw(batch,"Your score was :", 135, 630+yOffset);
 		
-		//Man.drawScoreBoard(batch, 100, 530 +scoreOffset, scoreMade, Man.ScoreM.NewIndivScore, Man.ScoreM.whichNewIndivScore, Man.fontWhite );
-		Man.fontWhite.draw(batch,"         "+currencyToDisplay,100, 530+scoreOffset);
+		Man.fontWhite.draw(batch,currencyToDisplay,240, 530+scoreOffset);
 		
 		if(gameEnd)
 		{
-			batch.draw(Man.TextureM.redline, 0, 670-800+yOffset);
-			
-			Man.fontWhite.draw(batch,"You collected :", 145, 470+lowerOffset);
-			Man.drawScoreBoard(batch, 100, 370+lowerOffset, scoreMade, false, -1, Man.fontWhite);
-	
+			batch.draw(Man.TextureM.loseLine, 0, 670-800+yOffset);
+			batch.setColor(Man.Color_Play);
 			batch.draw(Replay.tex, Replay.x, Replay.y+lowerOffset);
+			batch.setColor(Man.Color_Tutorial);
 			batch.draw(MainMenu.tex, MainMenu.x, MainMenu.y+lowerOffset);
 		}
 		else 
 		{
-			Man.fontWhite.draw(batch,"You collected :", 145, 470+yOffset);
-			Man.drawScoreBoard(batch, 100, 370+yOffset, scoreMade, false, -1, Man.fontWhite);
-	
+			batch.setColor(Man.Color_Play);
 			batch.draw(Replay.tex, Replay.x, Replay.y+yOffset);
+			batch.setColor(Man.Color_Tutorial);
 			batch.draw(MainMenu.tex, MainMenu.x, MainMenu.y+yOffset);
 		}
-		//Man.drawScoreBoard(batch, 100, 530 +scoreOffset, scoreMade, Man.ScoreM.NewIndivScore, Man.ScoreM.whichNewIndivScore, Man.fontWhite );	
+		batch.setColor(1,1,1,1);
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);

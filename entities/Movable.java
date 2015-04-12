@@ -2,6 +2,7 @@ package entities;
 
 import states.Playstate;
 
+
 import com.badlogic.gdx.graphics.Texture;
 
 /**
@@ -29,6 +30,9 @@ public class Movable {
 	public boolean justSpawned;
 	public int ID;
 	public double gravity = 0.075;
+	
+	public boolean spawnParticles;
+	public ParticleEmitter particleEmit;
 	
 	/**	
 	*Constructs ablock, i.e. Movable
@@ -86,14 +90,40 @@ public class Movable {
 		if (row == 0 || speed == 0) return;
 		
 		if (!justSpawned) {
-			if (speed < 0) isBeingThrusted = false;
+			if (speed < 0) 
+			{
+				isBeingThrusted = false;
+			}
 			if (speed != 0) speed -= gravity;
 		}
 			
 		y += speed*dy;
 		
-		return;
+		if(spawnParticles)
+		{
+			particleEmit.x = (int)x;
+			particleEmit.y = (int)y;
+			particleEmit.update(dy,speed);
+		}
+		
+			
+		
+		return;  //Why is this here?
 	}
+	
+	public void upgradeEmitter()
+	{
+		particleEmit.upgrade();
+	}
+	
+	//Should happen when swap blocked lands again.
+	public void removeEmitter()
+	{
+		spawnParticles = false;
+		particleEmit = null;
+		
+	}
+	
 	//This function checks whether a movable was unmovable and whether its time
 	//for it to become movable
 	public boolean movableCheck() {

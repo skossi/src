@@ -1,7 +1,6 @@
 package com.blokk.game;
 
 import managers.GameStateManager;
-import managers.MyInputProcessor;
 import managers.RectangleManager;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -37,6 +36,9 @@ public class BlokkGame implements ApplicationListener {
    private int columns;
    private int size;
    private int steps;
+   private Texture loadingScreen;
+   //TODO : Implemtent warning if nominal update is too big?
+  // private int _CONST_NOMINALUPDATE = 16;
    
    /**
    * Starts the gameloop by opening components from badlogic pack and sets the orthogonal projection of the camera.
@@ -47,11 +49,11 @@ public class BlokkGame implements ApplicationListener {
       camera = new OrthographicCamera();
       camera.setToOrtho(false, 480, 800);
       batch = new SpriteBatch();
+      
       R_Man = new RectangleManager();
       gsm = new GameStateManager(R_Man);
       R_Man.gsm = gsm;
       R_Man.assignAnimation();
-      Gdx.input.setCatchBackKey(true);
       
       size = 68;
       steps = size; //pixel perfect updating
@@ -71,6 +73,9 @@ public class BlokkGame implements ApplicationListener {
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
    
       dy = Gdx.graphics.getDeltaTime()/3;
+      
+      //TODO : Use this : if(dy >= 200) dy = _CONST_NOMINALUPDATE/3;
+      
       gsm.update(dy);
       
       camera.update();
@@ -82,8 +87,8 @@ public class BlokkGame implements ApplicationListener {
       gsm.draw(batch);
       batch.end();
       
-      MyInputProcessor inputProcessor = new MyInputProcessor();
-      Gdx.input.setInputProcessor(inputProcessor);
+      
+     
       
       if (Gdx.input.justTouched()) 
       {  

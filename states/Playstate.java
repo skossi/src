@@ -1,7 +1,6 @@
 package states;
 
 import java.util.Random;
-import com.blokk.game.Utils;
 
 import managers.AudioManager;
 import managers.GameStateManager;
@@ -10,8 +9,11 @@ import managers.RectangleManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import com.blokk.game.Utils;
 
+import entities.GameStats;
 import entities.Movable;
+import entities.ParticleEmitter;
 import entities.RectTex;
 import entities.UI;
  
@@ -34,8 +36,6 @@ public class Playstate extends Gamestate{
 	   private float selectedX;
 	   private float selectedY;
 	   private int takeoffSpeed;
-	   private int[] swapScores;
-	   private String[] drawSwapScores;
 	   private int steps;
 	   private int startingRows;
 	   private RectangleManager Man;
@@ -56,6 +56,7 @@ public class Playstate extends Gamestate{
 	   private int score;
 	   private int introSpeed;
 	   private int lvlDisp;
+	   private GameStats stats;
 	   
 	   // public for global access
 	   public static boolean isSelected;
@@ -95,8 +96,6 @@ public class Playstate extends Gamestate{
 		defaultSpeed = 600;
 		loseCondition = 840;
 		losePos = 1;
-		swapScores = new int[4];
-		drawSwapScores = new String[]{"0","0","0","0"};
 		canPlay = false;
 		startAnimation = true;
 		introSpeed = 300;
@@ -105,6 +104,8 @@ public class Playstate extends Gamestate{
 		score = 0;
 		prepareMatrix();
 		lvlDisp = 1;
+		
+		stats = new GameStats();
 		
 		isTesting = false;
 		
@@ -189,7 +190,8 @@ public class Playstate extends Gamestate{
    // After: Called when a block is deleted by thrusting it up above the loseCondition line
    //       Deletes the movable, adds scores and plays sound
    public void killBlock(Movable m1){
-	   if (m1.y > loseCondition && m1.speed > 0){ 
+	   if (m1.y > loseCondition && m1.speed > 0 && canPlay)
+	   {
 		   addScore(Movables[m1.col][m1.row].typeOne, Movables[m1.col][m1.row].typeTwo,1);
 
 		   Movables[m1.col][m1.row] = null;
@@ -280,12 +282,14 @@ public class Playstate extends Gamestate{
 		if (isPaused) {
 //			printMovables();
 //			isTesting = true;
+			stats.timePaused += dt*3;
 			System.out.println("Entering delay");
 			delayMovableTimers(dt);
 			return;
 		}
 		if(canPlay)
 		{
+			stats.timePlayed += dt*3;
 			if(actions < startingRows){
 				if(System.currentTimeMillis() - actionTime > 1000) { // testing, var 1000
 					beginAction();
@@ -317,8 +321,10 @@ public class Playstate extends Gamestate{
 		else if (startAnimation) playIntro(dt,-1);
 		else blackMovableAnimation(dt);
 		for (int i = 0; i < steps; i++) computeSubStep(dt/steps);
+		
 	}
 
+	
 	private void playIntro(float dt, int dir)
 	{
 		introSpeed += dir;
@@ -393,67 +399,58 @@ public class Playstate extends Gamestate{
 	{
 		//TODO: this should not be here!!!! just for demo atm
 		checkLoseOffset(true);
-		
-		//batch.draw(Background, 0, 0);
-	      for(int i = 0; i < columns; i++) {
-	    	  for (int j = 0; j < rows; j++) {
-	    		  Movable m = Movables[i][j];
-	    		  if (m != null)
-	    		  {		
-	    			//TODO: this should also not be here!!!! just for demo atm
-	    			  if(m.row > loseConditionOffset) loseConditionOffset = m.row;
-	    			  batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
-		    		  if(m.isPower)
-		    		  {
-		    		  }
-	    			  
-	    		  }
-	    	  }
-	      }
-	      
-	      checkLoseOffset(false);
-	      
-	      batch.draw(Man.TextureM.redline, 0, loseCondition+loseConditionOffset);
-	      
-	      if(isSelected && selectedM != null) {
-	    	  if (!selectedM.justSpawned) 
-	    		  // -3 offset since picture is 70x70
-	    		  batch.draw(Man.TextureM.selected, selectedM.x-3, selectedM.y-3);
-	      }
-	      if(isPaused && !isTesting)
-	      {
-	    	  batch.draw(Man.TextureM.pauseBlock,0,0,480,800);
-	    	  batch.draw(Man.ButtonM.PauseResume.tex, Man.ButtonM.PauseResume.x, Man.ButtonM.PauseResume.y);
-	    	  batch.draw(Man.ButtonM.PauseRestart.tex, Man.ButtonM.PauseRestart.x, Man.ButtonM.PauseRestart.y);
-	    	  batch.draw(Man.ButtonM.PauseQuit.tex, Man.ButtonM.PauseQuit.x, Man.ButtonM.PauseQuit.y);
-	      }
-	      batch.draw(Man.TextureM.ui_bg, UI.x, UI.y, UI.width, UI.height);
-	      if(!isPaused)batch.draw(Man.TextureM.ui_pauseOn,UI.x,UI.y+5,64,64);
-	      else batch.draw(Man.TextureM.ui_pauseOff,UI.x,UI.y+5,64,64);
-	     
-	      if(Man.isMuted) batch.draw(Man.TextureM.ui_soundOff,416,UI.y+10,64,64);
-	      else batch.draw(Man.TextureM.ui_soundOn,416,UI.y+10,64,64);
-	      
-	      //Man.drawScoreBoard(batch, 100, scoreBoardPos, drawSwapScores, false, -1, Man.fontWhite);
-	      Man.fontWhite.draw(batch, "LVL : " + Integer.toString(lvlDisp), 300, scoreBoardPos);
-	      Man.fontWhite.draw(batch, "BLOCKS : " + Integer.toString(score), 100, scoreBoardPos);
+		if(!isPaused)
+		{
+			for(int i = 0; i < columns; i++) {
+		    	  for (int j = 0; j < rows; j++) {
+		    		  Movable m = Movables[i][j];
+		    		  if(m != null)if(m.spawnParticles)m.particleEmit.drawParticle(batch);
+		    	  }
+			}
+			
+		    for(int i = 0; i < columns; i++) {
+			    for (int j = 0; j < rows; j++) {
+				    Movable m = Movables[i][j];
+				    if (m != null)
+				    {		
+					    //TODO: this should also not be here!!!! just for demo atm
+					    if(m.row > loseConditionOffset && m.speed  == 0) loseConditionOffset = m.row;
+					    batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y);  
+				    }
+			    }
+		    }
+		      
+		    checkLoseOffset(false);
+		      
+		    
+		      
+		    if(isSelected && selectedM != null) {
+		    	if (!selectedM.justSpawned) 
+		    	 // -3 offset since picture is 70x70
+		    		batch.draw(Man.TextureM.selected, selectedM.x-3, selectedM.y-3);
+		    }
+		    
+		}
+		else
+	    {
+			batch.setColor(Man.Color_Play);
+	    	batch.draw(Man.ButtonM.PauseResume.tex, Man.ButtonM.PauseResume.x, Man.ButtonM.PauseResume.y);
+	    	batch.setColor(Man.Color_Tutorial);
+	    	batch.draw(Man.ButtonM.PauseRestart.tex, Man.ButtonM.PauseRestart.x, Man.ButtonM.PauseRestart.y);
+	    	batch.setColor(Man.Color_Store);
+	    	batch.draw(Man.ButtonM.PauseQuit.tex, Man.ButtonM.PauseQuit.x, Man.ButtonM.PauseQuit.y);
+	    	batch.setColor(1,1,1,1);
+	    }
+
+		batch.draw(Man.TextureM.loseLine, 0, loseCondition+loseConditionOffset);
+		batch.draw(Man.TextureM.ui_bg, UI.x, UI.y, UI.width, UI.height);
+	    Man.fontWhite.draw(batch,Integer.toString(score), 240, scoreBoardPos);
+	    
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
-		
-		int barPress = UI.isTouched(x, y);
-		if(barPress == 1) 
-		{
-			isPaused =! isPaused;
-			Man.playSoundEffect(AudioManager.PAUSE);
-		}
-		if(barPress == 4)
-		{
-			Man.soundMute();
-			Man.playSoundEffect(AudioManager.MUTE);
-		}
 		
 		isSelected = true;
 		selectedM = locateMovable(x, y);
@@ -488,11 +485,7 @@ public class Playstate extends Gamestate{
 			}
 		}
 		difficulty = 1.0;
-		for(int k = 0; k < swapScores.length;k++)
-		{
-			swapScores[k] = 0;
-			drawSwapScores[k] = "0";
-		}
+		score = 0;
 		isPaused = false;
 		prepareMatrix();
 		actions = 0;
@@ -515,8 +508,8 @@ public class Playstate extends Gamestate{
 	
 	public void delayMovableTimers(float dt)
 	{
-		System.out.println(dt);
-		System.out.println("Inside delay");
+		//System.out.println(dt);
+		//System.out.println("Inside delay");
 		for(Movable[] row : Movables)
 			for(Movable m1 : row)
 			{
@@ -524,12 +517,12 @@ public class Playstate extends Gamestate{
 				if(m1.timeBlacked!=Long.MAX_VALUE)
 				{
 					m1.timeBlacked=m1.timeBlacked+(long) (3000*dt);
-					System.out.println("Delaying black");
+					//System.out.println("Delaying black");
 				}
 				if(m1.isBeingThrusted)
 				{
 					m1.timeThrusted=m1.timeThrusted+(long)(3000*dt);
-					System.out.println("Delaying thrust");
+					//System.out.println("Delaying thrust");
 				}
 			}
 	}
@@ -537,6 +530,9 @@ public class Playstate extends Gamestate{
    *Breaks the entities update into smaller steps so it wont render out of bounds.
    * @param dy is the delta time of each frame rendered
    */
+	
+	//TODO : FIX THIS. We are doing this wrong. It should check m1 first and then
+	//		update 64 times. Then m2 and update 64 times not 64 times update everyone.
 	public void computeSubStep(float dy) {
 		for(int j = 0; j < rows; j++) {
     	  for (int i = 0; i < columns; i++) {
@@ -718,6 +714,8 @@ public class Playstate extends Gamestate{
 	   if(m1.ID != -1) shootByID(m1.ID, superSpeed);
 	   else shootRows(m1.col, 1, index, takeoffSpeed, false, thrustID);
 	   Man.playSoundEffect(AudioManager.MATCH);
+	   
+	   
 	   }
    }
 	   
@@ -741,23 +739,24 @@ public class Playstate extends Gamestate{
 				m3.typeOne = null;
 				m3.typeTwo = false;
 				m3.timeBlacked = System.currentTimeMillis();
+				/*
+				m3.spawnParticles = true;
+				m3.particleEmit = new ParticleEmitter((int)m3.x,(int)m3.y,Man.TextureM.dropParticle);
+		  		*/
 		   }
 		   //TODO: skoda
 		   if(m1.ID != -1) shootByID(m1.ID, superSpeed);
 		   else shootRows(index, count, row, takeoffSpeed, false, thrustID);
 		   Man.playSoundEffect(AudioManager.MATCH);
-	   }
+		}
    }
 
    // Use: addScore(typeOne, typeTwo, pts);
    // After: The score has been incremented by amount pts
 	private void addScore(Boolean typeOne, boolean typeTwo, int aScore) 
 	{
-		score++;
 		if(typeOne == null) return;
-		int swapToAdd = typeOne ? (typeTwo ? 0 : 2) : (typeTwo ? 1 : 3);
-		swapScores[swapToAdd] += aScore;
-		drawSwapScores[swapToAdd] = Integer.toString(swapScores[swapToAdd]);
+		score++;
 	}
 	
    // Use: shootRows(blockIndex, blockCount, blockRow, isBeingThrusted);
@@ -765,7 +764,10 @@ public class Playstate extends Gamestate{
    //        blockIndex+blockCount and all blocks above that.
    //        The variable isBeingThrusted is not being used currently.
    public void shootRows(int index, int count, int row, int speed, boolean isBeingThrusted, int ID){
+	  
+	   stats.matchesMade ++;
 	   isSelected = false;
+	   
 	   if(isBeingThrusted){
 		   //TODO: Resevered for thrustage
 		   //Stop reserving space. We must save space for powerups!
@@ -779,6 +781,11 @@ public class Playstate extends Gamestate{
 			       m1.timeThrusted = System.currentTimeMillis();   
 			       m1.isBeingThrusted = true; 
 			       m1.ID = ID;
+			       if(m1.typeOne == null)
+			       {
+				       m1.spawnParticles = true;
+					   m1.particleEmit = new ParticleEmitter((int)m1.x,(int)m1.y,Man.TextureM.dropParticle,m1.speed);
+			       }
 			   }
 		   }
 	   }
@@ -881,6 +888,9 @@ public class Playstate extends Gamestate{
    */
 
    public void swapTypes(Movable m1, Movable m2) {
+	   
+	   stats.swapsMade ++;
+	   
 	   Boolean tempOne = m1.typeOne;
 	   boolean tempTwo = m1.typeTwo;
 	   m1.typeOne = m2.typeOne;
@@ -912,7 +922,7 @@ public class Playstate extends Gamestate{
 	//Saves current score and sets the state to Lost. Called when game is lost
 	private void gameOver()
 	{
-		Man.ScoreM.checkScore(swapScores,score);
+		Man.ScoreM.checkScore(score,stats);
 		gsm.setState(GameStateManager.LOST);
 	}	
 }

@@ -67,8 +67,18 @@ public class AudioManager {
 	//Raises the chosen themes intensity. 
 	public void raiseThemeMusic()
 	{
-		if(activeMusic > 2) return;
+		System.out.println("ShouldRaiseMusic");
+		if(activeMusic > 2) return; // was 2, supposed to be 3?
+		/*
 		MusicThemes[activeMusic].setLooping(false);
+		MusicThemes[activeMusic].stop();
+    	activeMusic++;
+    	MusicThemes[activeMusic].setLooping(true);
+		MusicThemes[activeMusic].play();
+		//MusicThemes[activeMusic].setPosition(soundPos);
+	    MusicThemes[activeMusic].setVolume(Volume);
+		*/
+		
 		MusicThemes[activeMusic].setOnCompletionListener(new Music.OnCompletionListener()
 		{
 	        public void onCompletion(Music aMusic)
@@ -80,6 +90,12 @@ public class AudioManager {
 	    	    MusicThemes[activeMusic].setVolume(Volume);
 	        }
 	    });
+	}
+	
+	public void stopMusic()
+	{
+		MusicThemes[activeMusic].setLooping(false);
+		MusicThemes[activeMusic].stop();
 	}
 	
 	//Sets the theme music back to the basic beat of the game.

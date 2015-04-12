@@ -19,20 +19,4 @@ public class UI {
 		width = newWidth;
 		height = newHeight;
 	}
-	
-	/**
- 	*  Returns an integer based on where the user is touching the UI
- 	* @param float touchX is the x co-ordinate of the touch
- 	* @param float touchY is the y co-ordinate of the touch
- 	*/
-	public int isTouched(float touchX, float touchY) {
-		float section = width/4;
-		if (touchY > y && touchY < y + height) {
-			if (touchX > 0 && touchX < section) return 1; // pause
-			else if (touchX >= section && touchX < 2*section) return 2;
-			else if (touchX >= 2*section && touchX < 3*section) return 3;
-			else return 4; //Sound on/off
-		}
-		return -1;
-	}
 }

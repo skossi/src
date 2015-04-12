@@ -2,6 +2,8 @@ package states;
 
 import managers.GameStateManager;
 import managers.RectangleManager;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import entities.RectTex;
@@ -15,18 +17,15 @@ public class Scorestate extends Gamestate {
 	   private RectTex Score;
 	   private RectangleManager Man;
 	   
+	   
 	   private int selectTab;
 	   private RectTex[] tabs;
 	   private String[] tabText;
-	   
-	   private String[] drawBestScore;
-	   private String[] drawBestSquare;
-	   private String[] drawBestTriangle;
-	   private String[] drawBestCircle;
-	   private String[] drawBestEx;
+	   private String[] gameInfo;
+	   private String[] gameInfoString = {"High Score", "Time Played","Time Paused", "Swaps Made","Matches Made", "Total Score"};
 	   
 	  // private int xOffset;
-	   private int screenDir;
+	   public static int screenDir;
 	   
 	   
 	//Constructor
@@ -35,37 +34,29 @@ public class Scorestate extends Gamestate {
 	{	
 		super(gsm);
 	}
+	
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
 		Man = RectMan;
 
 		Score = Man.ButtonM.Score;
-		tabs = new RectTex[4];
-		tabText = new String[3];
+		tabs = new RectTex[2];
+		tabText = new String[2];
+		gameInfo = new String[6];
+		
+		for(int i = 0 ; i < gameInfo.length; i++)
+		{
+			if(i == 1 || i == 2) gameInfo[i] = timeConversion(Man.ScoreM.infoHolder[i+1]);
+			else gameInfo[i] = Integer.toString(Man.ScoreM.infoHolder[i+1]);
+		}
 		
 		selectTab = 0;
 		
-		tabs[0] = Man.ButtonM.TabBest;
-		tabs[1] = Man.ButtonM.TabStats;
-		tabs[2] = Man.ButtonM.TabAbout;
-		tabText[0] = "Best";
-		tabText[1] = "Stats";
-		tabText[2] = "About";
-		
-		drawBestScore = new String[4];
-		drawBestSquare = new String[4];
-		drawBestTriangle = new String[4];
-		drawBestCircle = new String[4];
-		drawBestEx = new String[4];
-		for(int i = 0; i < 4; i++)
-		{
-			drawBestScore[i] = Integer.toString(Man.ScoreM.scoreHolder[0][i+1]);
-			drawBestSquare[i] = Integer.toString(Man.ScoreM.scoreHolder[1][i+1]);
-			drawBestTriangle[i] = Integer.toString(Man.ScoreM.scoreHolder[2][i+1]);
-			drawBestCircle[i] = Integer.toString(Man.ScoreM.scoreHolder[3][i+1]);
-			drawBestEx[i] = Integer.toString(Man.ScoreM.scoreHolder[4][i+1]);
-		}
+		tabs[0] = Man.ButtonM.TabStats;
+		tabs[1] = Man.ButtonM.TabAbout;
+		tabText[0] = "Stats";
+		tabText[1] = "About";
 		
 		Man.AnimationM.SideAnimation = true;
 		Man.AnimationM.SideXOffset = -480;
@@ -93,40 +84,37 @@ public class Scorestate extends Gamestate {
 	public void draw(SpriteBatch batch)
 	{
 		int xOffset = Man.AnimationM.SideXOffset;
+		batch.setColor(Man.Color_Score);
 		batch.draw(Score.tex, Score.x+xOffset, Score.y);
 		
-		for(int i = 0 ; i < 3; i++)
+		for(int i = 0 ; i < 2; i++)
 		{
 			batch.draw(tabs[i].tex,tabs[i].x+xOffset,tabs[i].y);
-			if(i == selectTab)Man.fontWhite.draw(batch, tabText[i], 30+160*i+xOffset, 690);
-			else Man.fontfff60.draw(batch, tabText[i], 30+160*i+xOffset, 690);
+			if(i == selectTab)Man.fontWhite.draw(batch, tabText[i], 50+240*i+xOffset, 690);
+			else Man.fontfff60.draw(batch, tabText[i], 50+240*i+xOffset, 690);
 
 		}
-		batch.draw(Man.TextureM.scoreTabSelect,selectTab*160+xOffset,625);
-		
+		batch.setColor(Man.Color_ScoreBar);
+		batch.draw(Man.TextureM.scoreTabSelect,selectTab*240+xOffset,625);	
 		batch.draw(Man.TextureM.scoreBack,20+xOffset,150);
 		
+		batch.setColor(1,1,1,1);
 		if(selectTab == 0)
 		{
-			//Man.fontBlack.draw(batch,"Your best score is :", 115+xOffset, 695);
-			//Man.drawScoreBoard(batch, 100+xOffset, 560, drawBestScore, false, -1,Man.fontBlack);
-			
-			Man.fontBlack.draw(batch,"Your best individual score is :", 50+xOffset, 550);
-			
-			Man.fontBlack.draw(batch,"Red Run : ", 20+xOffset, 510);
-			Man.drawScoreBoard(batch, 190+xOffset, 465, drawBestSquare, true, 0,Man.fontWhite);
-			
-			Man.fontBlack.draw(batch,"Green Run : ", 20+xOffset, 410);
-			Man.drawScoreBoard(batch, 190+xOffset, 365, drawBestTriangle, true, 1,Man.fontWhite);
-	
-			Man.fontBlack.draw(batch,"Yellow Run : ", 20+xOffset, 310);
-			Man.drawScoreBoard(batch, 190+xOffset, 265, drawBestCircle, true, 2,Man.fontWhite);
-	
-			Man.fontBlack.draw(batch,"Blue Run : ", 20+xOffset, 210);
-			Man.drawScoreBoard(batch, 190+xOffset, 165, drawBestEx, true, 3,Man.fontWhite);
+			for( int i = 0 ; i < gameInfo.length; i++)
+			{
+				Man.fontBlack.draw(batch, gameInfoString[i], 60+xOffset, 560 - 60*i);
+				Man.fontBlack.draw(batch, gameInfo[i], 300+xOffset, 560 - 60*i);
+			}
 		}
-		
+		else if (selectTab == 1)
+		{
+			batch.draw(Man.ButtonM.Facebook.tex,Man.ButtonM.Facebook.x+xOffset,Man.ButtonM.Facebook.y);
+			Man.fontBlack.draw(batch, "Learn about us on facebook.", 60+xOffset, 250);
+		}
+		batch.setColor(Man.Color_Logo);
 		batch.draw(Back.tex, Back.x+xOffset, Back.y);
+		batch.setColor(1,1,1,1);
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
@@ -135,7 +123,7 @@ public class Scorestate extends Gamestate {
 		if(Man.AnimationM.SideAnimation) return;
 		if(buttonClick(tabs[0],x,y)) selectTab = 0;
 		if(buttonClick(tabs[1],x,y)) selectTab = 1;
-		if(buttonClick(tabs[2],x,y)) selectTab = 2;
+		if(selectTab == 1 && buttonClick(Man.ButtonM.Facebook,x,y)) Gdx.net.openURI("http://facebook.com/ottardagreat");
 		if(buttonClick(Back,x,y))
 		{
 			screenDir = -1;
@@ -148,6 +136,35 @@ public class Scorestate extends Gamestate {
 		if (x < (rekt.x + rekt.width) && x > rekt.x && y > rekt.y && y < (rekt.y + rekt.height)) return true;
 		return false;
 	}
+	
+	private String timeConversion(int totalSeconds) {
+
+	    final int MINUTES_IN_AN_HOUR = 60;
+	    final int SECONDS_IN_A_MINUTE = 60;
+
+	    int seconds = totalSeconds % SECONDS_IN_A_MINUTE;
+	    int totalMinutes = totalSeconds / SECONDS_IN_A_MINUTE;
+	    int minutes = totalMinutes % MINUTES_IN_AN_HOUR;
+	    int hours = totalMinutes / MINUTES_IN_AN_HOUR;
+	    
+	    String sec = adjustNumerals(seconds);
+	    String min = adjustNumerals(minutes);
+	    String hour = adjustNumerals(hours);
+
+	    return hour + ":" + min + ":" + sec;
+	}
+	
+	private String adjustNumerals(int aNumber)
+	{
+		String aString;
+		
+		if(aNumber == 0) aString = "00";
+	    else if (aNumber < 10) aString = "0"+Integer.toString(aNumber);
+	    else aString = Integer.toString(aNumber);
+		
+		return aString;
+	}
+	
 	//See abstrakt class Gamestate isTouched(x,y);
 	public void isTouched(float x, float y)
 	{

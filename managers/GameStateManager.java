@@ -8,6 +8,7 @@ import states.Scorestate;
 import states.Storestate;
 import states.Tutorialstate;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //Class by Óttar Guðmundsson
 //Written 30.10.2014
@@ -24,7 +25,7 @@ public class GameStateManager{
 	public static final int LOST = 4;
 	public static final int STORE = 5;
 	
-	public int ACTIVESTATE; //Keep track of which state is running. Is not used but might be good for debugging.
+	public static int ACTIVESTATE; //Keep track of which state is running. Is not used but might be good for debugging.
 	
 	public boolean introStart;
 	public boolean introEnd = false; 
@@ -35,8 +36,15 @@ public class GameStateManager{
 	{
 		
 		RectMana = rsm;
+
+		Gdx.input.setCatchBackKey(true);
+		MyInputProcessor inputProcessor = new MyInputProcessor();
+		Gdx.input.setInputProcessor(inputProcessor);
+		
 		if(rsm.ScoreM.firstTime)setState(MENU);
 		else setState(TUTORIAL);
+		
+		
 	}
 	//Takes in parameter static final int state which stands for each 
 	public void setState(int state)
@@ -48,7 +56,6 @@ public class GameStateManager{
 		if(state == TUTORIAL) gameState = new Tutorialstate(this);
 		if(state == LOST) gameState = new Loststate(this);
 		if(state == STORE) gameState = new Storestate(this);
-		//System.out.println(state);
 		ACTIVESTATE = state;
 		gameState.init(RectMana);
 	}
