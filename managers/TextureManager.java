@@ -61,8 +61,7 @@ public class TextureManager {
 		ex = new Texture(Gdx.files.internal(asset+location+"ex.png"));		
 		blinkBlack = new Texture(Gdx.files.internal(asset+location+"/blackBlikk.png"));
 		selected = new Texture(Gdx.files.internal(asset+location+"selectedNEW.png"));
-		loseLine = new Texture(Gdx.files.internal(asset+location+"redline.png"));
-	
+		loseLine = new Texture(Gdx.files.internal(asset+location+"redline.png"));	
 		//*-------MUTUAL ASSETS------*
 		
 		black = new Texture(Gdx.files.internal("MutualAssets/black.png"));
