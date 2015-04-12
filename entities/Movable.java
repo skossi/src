@@ -24,12 +24,16 @@ public class Movable {
 	public boolean isMovable;
 	public long timeThrusted;
 	public long timeBlacked;
+	public long timeShuffled1;
+	public long timeShuffled2;
+	public long timeShuffled3;
+	public long delayBlacked;
 	public boolean isBeingThrusted;
-	public boolean isPower;
+	public boolean isPowerDown;
 	public boolean isBeingSwapped;
 	public boolean justSpawned;
 	public int ID;
-	public double gravity = 0.075;
+	public double gravity = 0.1;
 	
 	public boolean spawnParticles;
 	public ParticleEmitter particleEmit;
@@ -69,9 +73,13 @@ public class Movable {
 		isMovable = m.isMovable;
 		justSpawned = m.justSpawned;
 		timeThrusted = m.timeThrusted;
+		timeShuffled1 = m.timeShuffled1;
+		timeShuffled2 = m.timeShuffled2;
+		timeShuffled3 = m.timeShuffled3;
+		delayBlacked = m.delayBlacked;
 		isBeingThrusted = m.isBeingThrusted;
 		timeBlacked = Long.MAX_VALUE;
-		isPower = m.isPower;
+		isPowerDown = m.isPowerDown;
 	}
 	
 	/**
@@ -87,8 +95,14 @@ public class Movable {
 //		}
 		
 		// no need to update the invisible bottom row or static blocks
-		if (row == 0 || speed == 0) return;
+		if (row == 0) return;
 		
+		
+		if (speed < 0 && isBeingThrusted) isBeingThrusted = false;
+		if (speed != 0) speed -= gravity;
+		
+		
+<<<<<<< HEAD
 		if (!justSpawned) {
 			if (speed < 0) 
 			{
@@ -96,6 +110,8 @@ public class Movable {
 			}
 			if (speed != 0) speed -= gravity;
 		}
+=======
+>>>>>>> 649c8bf0bfc3f1888a7610fa2a9fcddfb444fffd
 			
 		y += speed*dy;
 		
