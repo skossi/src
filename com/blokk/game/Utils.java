@@ -7,15 +7,15 @@ public class Utils {
 	public static int[] integerType(int i){
 		int[] result = new int[2];
 		switch(i){
-		case 1: 
+		case 0: 
 			return result;
-		case 2:
+		case 1:
 			result[1] = 1;
 			return result;
-		case 3: 
+		case 2: 
 			result[0] = 1;
 			return result;
-		case 4:
+		case 3:
 			result[0] = 1;
 			result[1] = 1;
 			return result;

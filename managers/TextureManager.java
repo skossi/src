@@ -20,6 +20,7 @@ public class TextureManager {
 	public Texture ex;
 	public Texture black;
 	public Texture blinkBlack;
+	public Texture powerDown;
 	public Texture selected;
 	public Texture ui_bg;
 	public Texture ui_pauseOn;
@@ -70,10 +71,10 @@ public class TextureManager {
 		newScore = new Texture(Gdx.files.internal(asset+location+"newScore.png"));
 		storeTabSelect = new Texture(Gdx.files.internal(asset+location+"storeBar.png"));
 		scoreTabSelect = new Texture(Gdx.files.internal(asset+location+"scoreBar.png"));
+		powerDown = new Texture(Gdx.files.internal("MutualAssets/powerDown.png"));
 		swapTheme = new Texture(Gdx.files.internal("MutualAssets/SwapTheme.png"));
 		scoreBack = new Texture(Gdx.files.internal("MutualAssets/scoreBack.png"));
 		lockedItem = new Texture(Gdx.files.internal("MutualAssets/locked.png"));
 		priceHolder = new Texture(Gdx.files.internal("MutualAssets/PriceHolder.png"));
-		
 	}
 }

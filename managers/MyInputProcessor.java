@@ -32,7 +32,7 @@ public class MyInputProcessor implements InputProcessor {
 	   // fire an event to Playstate when the user releases the touchpad
 	   @Override
 	   public boolean touchUp (int x, int y, int pointer, int button) {
-		  Playstate.isSelected = false;
+		  Playstate.touchUp(x, y);
 	      return true;
 	   }
 

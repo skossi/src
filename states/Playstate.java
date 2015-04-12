@@ -33,6 +33,7 @@ public class Playstate extends Gamestate{
 	   private int size;
 	   private float selectedX;
 	   private float selectedY;
+	   private float currentY;
 	   private int takeoffSpeed;
 	   private int[] swapScores;
 	   private String[] drawSwapScores;
@@ -40,7 +41,6 @@ public class Playstate extends Gamestate{
 	   private int startingRows;
 	   private RectangleManager Man;
 	   private UI UI;
-	   private Movable selectedM;
 	   private long lastWave;
 	   private int loseCondition;
 	   private int loseConditionOffset;
@@ -51,6 +51,7 @@ public class Playstate extends Gamestate{
 	   private long actionTime;
 	   private int actions;
 	   private int IDs;
+	   private double pseudo;
 	   private boolean startAnimation;
 	   private int scoreBoardPos;
 	   private int score;
@@ -58,6 +59,7 @@ public class Playstate extends Gamestate{
 	   private int lvlDisp;
 	   
 	   // public for global access
+	   public static Movable selectedM;
 	   public static boolean isSelected;
 	   public static double difficulty;
 	   private int musicThreshold;
@@ -82,7 +84,7 @@ public class Playstate extends Gamestate{
 		isPaused = false;
 		Man.AnimationM.isMenuDown = true;
 		size = 68;
-		steps = size; //pixel perfect updating
+		steps = size/2; //pixel perfect updating
 		columns = 7;
 		rows = 13;
 		takeoffSpeed = 600;
@@ -92,7 +94,8 @@ public class Playstate extends Gamestate{
 		lastWave = 0;
 		UI = new UI(0, 800, 480, size);
 		difficulty = 1.0;
-		defaultSpeed = 600;
+		pseudo = 0;
+		defaultSpeed = 300;
 		loseCondition = 840;
 		losePos = 1;
 		swapScores = new int[4];
@@ -135,8 +138,6 @@ public class Playstate extends Gamestate{
 		    		  break;
 		    	  }
 		      }
-		      
-		     
 		      m1.row = available_row;
 		      m1.x = (size+1)*m1.col;
 		      m1.y = 800;
@@ -146,6 +147,18 @@ public class Playstate extends Gamestate{
 		      m1.isBeingThrusted = false;
 		      m1.justSpawned = true;
 		      m1.ID = 0;
+		      m1.timeShuffled1 = Long.MAX_VALUE;
+		      m1.timeShuffled2 = Long.MAX_VALUE;
+		      m1.timeShuffled3 = Long.MAX_VALUE;
+		      m1.delayBlacked = Long.MAX_VALUE;
+		      double r = Math.random();
+		      m1.isPowerDown = false;
+		      if(r > 0.99-pseudo){
+		    	  pseudo = 0;
+		    	  m1.isPowerDown = true;
+		      } else{
+		    	  pseudo += 0.003;
+		      }
 			  
 			  Movables[m1.col][available_row] = m1;
 			  giveLegalType(m1);
@@ -178,7 +191,7 @@ public class Playstate extends Gamestate{
 	       movable.isBeingThrusted = false;
 	       movable.justSpawned = false;
 	       movable.x = (size+1)*i;
-	       movable.isPower = false;
+	       movable.isPowerDown = false;
 	       movable.ID = -1;
 		   Movables[i][0] = movable;
 		   
@@ -393,20 +406,19 @@ public class Playstate extends Gamestate{
 	{
 		//TODO: this should not be here!!!! just for demo atm
 		checkLoseOffset(true);
-		
 		//batch.draw(Background, 0, 0);
 	      for(int i = 0; i < columns; i++) {
 	    	  for (int j = 0; j < rows; j++) {
 	    		  Movable m = Movables[i][j];
+	    		  //TODO: change this to one boolean, m.isSelected
 	    		  if (m != null)
 	    		  {		
-	    			//TODO: this should also not be here!!!! just for demo atm
 	    			  if(m.row > loseConditionOffset) loseConditionOffset = m.row;
-	    			  batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
-		    		  if(m.isPower)
+	    			  if(m.isPowerDown)
 		    		  {
+	    				  batch.draw(Man.TextureM.powerDown, m.x, m.y);
 		    		  }
-	    			  
+	    			  else batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
 	    		  }
 	    	  }
 	      }
@@ -418,7 +430,7 @@ public class Playstate extends Gamestate{
 	      if(isSelected && selectedM != null) {
 	    	  if (!selectedM.justSpawned) 
 	    		  // -3 offset since picture is 70x70
-	    		  batch.draw(Man.TextureM.selected, selectedM.x-3, selectedM.y-3);
+	    		  batch.draw(Man.TextureM.selected, selectedM.x-3, selectedY-3);
 	      }
 	      if(isPaused && !isTesting)
 	      {
@@ -439,10 +451,14 @@ public class Playstate extends Gamestate{
 	      Man.fontWhite.draw(batch, "BLOCKS : " + Integer.toString(score), 100, scoreBoardPos);
 	}
 	
+	public static void touchUp(int x, int y) {
+		isSelected = false;
+		selectedM = null;
+	}
+	
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
-		
 		int barPress = UI.isTouched(x, y);
 		if(barPress == 1) 
 		{
@@ -459,8 +475,8 @@ public class Playstate extends Gamestate{
 		selectedM = locateMovable(x, y);
 		
 		if (selectedM != null) {
-			selectedX = selectedM.x + size/2;
-			selectedY = selectedM.y + size/2;
+			selectedX = selectedM.x;
+			selectedY = selectedM.y;
 		}
 		
 		if(isPaused)
@@ -508,8 +524,9 @@ public class Playstate extends Gamestate{
 	    if (isSelected) findMovable(x, y);
 	    
 	    if (selectedM != null) {
+			currentY = y;
 			selectedX = selectedM.x + size/2;
-			selectedY = selectedM.y + size/2;
+			selectedY = selectedM.y;
 		}
 	}
 	
@@ -542,7 +559,6 @@ public class Playstate extends Gamestate{
     	  for (int i = 0; i < columns; i++) {
     		  Movable m1 = Movables[i][j];
     		  if(m1 == null || m1.row == 0) continue;
-
     		  if (m1.speed != 0) {
 				  if (Movables[m1.col][m1.row-1] != null && m1 != Movables[m1.col][m1.row-1] && 
 						  m1.intersects(Movables[m1.col][m1.row-1])) {
@@ -566,8 +582,30 @@ public class Playstate extends Gamestate{
     		  }
     		  // this happens when block can be unblacked/afsvertist
     		  if(m1.movableCheck()){
-    			  giveLegalType(m1);
+    			   // Skítamix
+    			   m1.typeOne = true;
+    			   giveLegalType(m1);
     		  }
+    		  if(System.currentTimeMillis() - m1.timeShuffled1> 0) {
+    			   giveLegalType(m1);
+    			   m1.timeShuffled1 = Long.MAX_VALUE;
+    			}
+    		  else if(System.currentTimeMillis() - m1.timeShuffled2> 0) {
+   			       giveLegalType(m1);
+   			       m1.timeShuffled2 = Long.MAX_VALUE;
+   			   }
+    		  else if(System.currentTimeMillis() - m1.timeShuffled3> 0) {
+ 			       giveLegalType(m1);
+ 			       m1.timeShuffled3 = Long.MAX_VALUE;
+ 			  }
+    		  if(System.currentTimeMillis() - m1.delayBlacked > 0){
+ 				   m1.delayBlacked = Long.MAX_VALUE;
+ 				   m1.typeOne = null;
+ 				   m1.typeTwo = false;
+ 				   m1.isPowerDown = false;
+ 				   m1.timeBlacked = System.currentTimeMillis(); 				  
+ 			  }
+
         	  m1.update(dy);
         	  killBlock(m1);
     	  }
@@ -575,12 +613,16 @@ public class Playstate extends Gamestate{
 	}
 	
 	// Use: giveLegalType(m1);
+	// Before: m1 is a movable block
 	// After: m1 has been given a type so he doesn't match with nearby blocks  
 	public void giveLegalType(Movable m1){
+		if (m1.typeOne == null) return;
 		Random ran = new Random();
 		  int x = ran.nextInt(4);
-		  for(int i = 0; i<4; i++){
-			  int[] tryType = Utils.integerType(((x+i)%4)+1);
+		  // first we attempt random type if this doesn't work we walk through them all until someone fits
+		  for(int attempts = 0; attempts < 4; attempts++){
+			  x = ran.nextInt(4);
+			  int[] tryType = Utils.integerType(x);
 			  boolean tryOne = Utils.toBoolean(tryType[0]);
 			  boolean tryTwo = Utils.toBoolean(tryType[1]);
 			  m1.setType(tryOne, tryTwo);
@@ -588,7 +630,18 @@ public class Playstate extends Gamestate{
 			  int[] resultsHorizontal = findHorizontalMatches(m1, thrustCase);
 			  int[] resultsVertical = findVerticalMatches(m1, thrustCase);
 			  if(resultsHorizontal[0] == 0 && resultsVertical[0] == 0)
-				  break;
+				  return;
+		  }
+		  for(int i = 0; i<4; i++){
+			  int[] tryType = Utils.integerType((x+i)%4);
+			  boolean tryOne = Utils.toBoolean(tryType[0]);
+			  boolean tryTwo = Utils.toBoolean(tryType[1]);
+			  m1.setType(tryOne, tryTwo);
+			  boolean thrustCase = false;
+			  int[] resultsHorizontal = findHorizontalMatches(m1, thrustCase);
+			  int[] resultsVertical = findVerticalMatches(m1, thrustCase);
+			  if(resultsHorizontal[0] == 0 && resultsVertical[0] == 0)
+				  return;
 		  }    
 	}
 	
@@ -606,7 +659,7 @@ public class Playstate extends Gamestate{
 		   int ID = m1.ID;
 		   for(int j = 0; j < columns; j++){
 			   for(int i = j;  i< columns; i++){
-				   if( isSameType(Movables[i][row], m1)){
+				   if(isSameType(Movables[i][row], m1)){
 					   if(thrustCase){
 						   if(Movables[i][row].ID == ID ){
 							   count++;   
@@ -710,9 +763,24 @@ public class Playstate extends Gamestate{
 	   int count = shootCoordinates[2];
 	   if(count > 2){
 		Movable m3 = Movables[col][index];	   
+		//Here the blocks become black/svartir/svertun
 		m3.typeOne = null;
 		m3.typeTwo = false;
 		m3.timeBlacked = System.currentTimeMillis();
+		for (int i = index; i < count+index; i++){
+			Movable m4 = Movables[col][i];
+			if(m4.isPowerDown){
+				for (int j = index; j < count+index; j++){
+					Movable m5 = Movables[col][j];
+					m5.typeOne = null;
+					m5.typeTwo = false;
+					m5.isPowerDown = false;
+					m5.timeBlacked = System.currentTimeMillis();
+				}
+				activatePowerDown(m4);
+				return;
+			}
+		}
    
 	   //TODO: skoda
 	   if(m1.ID != -1) shootByID(m1.ID, superSpeed);
@@ -730,22 +798,74 @@ public class Playstate extends Gamestate{
 	   int[] shootCoordinates = findHorizontalMatches(m1, thrustCase);
 	   int index = shootCoordinates[1];
 	   int count = shootCoordinates[2];
+	   boolean powerDownFound = false;
 	   if(count > 2){
 		   for(int j = index; j < index+count; j++){ 
 			   Movable m3 = Movables[j][row];
-			   if(m3.isPower)
-			   {
-				   //TODO: Resevered for powerupSpace
-			   }
-			   
+			 //Here the blocks become black/svartir/svertun
 				m3.typeOne = null;
 				m3.typeTwo = false;
 				m3.timeBlacked = System.currentTimeMillis();
+				if(m3.isPowerDown){
+					powerDownFound = true;
+					m3.isPowerDown = false;
+					activatePowerDown(m3);
+				}
 		   }
+	   	   if(powerDownFound) return;
 		   //TODO: skoda
 		   if(m1.ID != -1) shootByID(m1.ID, superSpeed);
 		   else shootRows(index, count, row, takeoffSpeed, false, thrustID);
 		   Man.playSoundEffect(AudioManager.MATCH);
+	   }
+   }
+   
+   private void activatePowerDown(Movable m1){
+	   isSelected = false;
+	   selectedM = null;
+	   Random ran = new Random();
+	   int x = ran.nextInt(3);
+	   //x = 2;
+	   if(x == 0){
+		   spawnWave((float)((1+(1-difficulty))*defaultSpeed));
+		   spawnWave((float)((1+(1-difficulty))*defaultSpeed));
+	   } 
+	   else if (x == 1) {
+		   for(int j = 0; j < columns; j++){
+			   Movable m2 = Movables[j][m1.row];
+			   
+			   if(m2 != null) {
+				   if(m2.speed != 0) continue;
+				   if(Math.abs(m2.col-m1.col) > 1) continue;
+				   m2.delayBlacked = System.currentTimeMillis() + 100;
+			   }
+		   }
+		   
+		   for (int i = 0; i < rows; i++) {
+			   
+			   Movable m2 = Movables[m1.col][i];
+			   
+			   if(m2 != null) {
+				   if(m2.speed != 0) continue;
+				   if(Math.abs(m2.row-m1.row) > 2) continue;
+				   m2.typeOne = null;
+				   m2.typeTwo = false;
+				   m2.isPowerDown = false;
+				   m2.timeBlacked = System.currentTimeMillis();
+			   }
+		   }
+	   } else if(x == 2){
+		   for(int j = 0; j < rows; j++){
+			   for (int i = 0; i < columns; i++){
+				   Movable m2 = Movables[i][j];
+				   if(m2 != null) {
+					   int secs = 2;
+					   m2.timeShuffled1 = System.currentTimeMillis() + j*secs*columns+i*secs;
+					   m2.timeShuffled2 = System.currentTimeMillis() + j*2*secs*columns+i*secs*2;
+					   m2.timeShuffled3 = System.currentTimeMillis() + j*3*secs*columns+i*secs*3;
+				   }
+			   }
+		   }
 	   }
    }
 
@@ -766,6 +886,7 @@ public class Playstate extends Gamestate{
    //        The variable isBeingThrusted is not being used currently.
    public void shootRows(int index, int count, int row, int speed, boolean isBeingThrusted, int ID){
 	   isSelected = false;
+	   selectedM = null;
 	   if(isBeingThrusted){
 		   //TODO: Resevered for thrustage
 		   //Stop reserving space. We must save space for powerups!
@@ -787,6 +908,8 @@ public class Playstate extends Gamestate{
    // Use: shootByID(ID, superSpeed);
    // After: Every block with id "ID" will be thrusted upwards with speed "superSpeed"
    public void shootByID(int ID, int superSpeed){
+	   isSelected = false;
+	   selectedM = null;
 	   for(int i=0; i<columns; i++){
 		   for(int j=0; j<rows; j++){
 			   Movable m1 = Movables[i][j];
@@ -804,9 +927,12 @@ public class Playstate extends Gamestate{
    * @param typeOne lets the method know what kind of cube it is.
    * @return true if a corresponding block is matched
    */
+   //IMPORTANT: If the second parameter is PowerDown we continue because the behaviour above
+   //"fixes" m1 into the second parameter then iterates through the row or column inside the first parameter
    public boolean isSameType(Movable m1, Movable m2){
+	   if (m2.isPowerDown) return false;
 	   if(m1 == null || m2 == null || m1.typeOne == null || m2.typeOne == null){return false;}
-	   return m1.typeOne == m2.typeOne && m1.typeTwo == m2.typeTwo;
+	   return (m1.typeOne == m2.typeOne && m1.typeTwo == m2.typeTwo) || m1.isPowerDown;
    }
 	   
    /**
@@ -839,15 +965,15 @@ public class Playstate extends Gamestate{
 	   int row = selectedM.row;
 	   if (row < 0 || row > rows-1 || col < 0 || col > columns-1) return;	   
 	   if (selectedM.justSpawned) return;
-		   if (y > selectedY + size/2) {
-			   handleSwap(col, row, 1);
-			   return;
-		   }
-		   
-		   if (y < selectedY - size/2) {
-			   handleSwap(col, row, -1);
-			   return;
-		   }
+	   if (y > selectedY + size/2) {
+		   handleSwap(col, row, 1);
+		   return;
+	   }
+	   
+	   if (y < selectedY - size/2) {
+		   handleSwap(col, row, -1);
+		   return;
+	   }
    }
    
    // Use: handleSwap(col, row, direction);
@@ -858,7 +984,7 @@ public class Playstate extends Gamestate{
 	   Movable targetM = Movables[col][row+direction];
 	   //TODO: see if checking for same speed has any meaning: targetM.speed != selectedM.speed
 	   // removed when gravity was added
-	   if (targetM == null || targetM.typeOne == null) return;
+	   if (targetM == null || targetM.typeOne == null || targetM.justSpawned) return;
 	   swapTypes(selectedM, targetM);
 	   IDs++;
 	   //DOUBLE SWAP CASES, DOUBLESWAP, SUPERSWAP
@@ -883,10 +1009,13 @@ public class Playstate extends Gamestate{
    public void swapTypes(Movable m1, Movable m2) {
 	   Boolean tempOne = m1.typeOne;
 	   boolean tempTwo = m1.typeTwo;
+	   boolean tempDown = m1.isPowerDown;
 	   m1.typeOne = m2.typeOne;
 	   m1.typeTwo = m2.typeTwo;
+	   m1.isPowerDown = m2.isPowerDown;
 	   m2.typeOne = tempOne;
 	   m2.typeTwo = tempTwo;
+	   m2.isPowerDown = tempDown;
 	   
 	   selectedM = m2;	   
    }  
