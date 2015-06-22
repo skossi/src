@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import entities.RectTex;
+
 //Class by Ottar Gudmundsson
 //Written 14.11.2014
 //Creates Manager that was originally supposed to take care of all rectangles for the game.
@@ -16,6 +18,7 @@ public class RectangleManager
 
 	private String _Asset;
 	public int activeTheme;
+	public int activeAudio;
 	
 	private static final String _Sounds = "Sounds/";
 	private static final String _Buttons = "Buttons/";
@@ -51,48 +54,49 @@ public class RectangleManager
 	public float _b;
 	
 	//Font writing
+	public BitmapFont fontMain;
+	public BitmapFont fontSecond;
 	public BitmapFont fontBlack;
 	public BitmapFont fontWhite;
-	public BitmapFont fontfff60;
+	
+	
 	public String newHighString;
 	public String newIndivString;
 	public String worseString;
-
-	
 	
 	//Creates a resource entity each time the game is opened
 	public RectangleManager()
 	{
 		prefs = Gdx.app.getPreferences("My Preferences");
+		//prefs.clear();
 		activeTheme = prefs.getInteger("ActiveTheme");
+		activeAudio = prefs.getInteger("ActiveAudio");
 		ThemeM = new ThemeManager();
 		
 		assignAssets(activeTheme);
-		
+		assignAudio(activeAudio);
 		
 		TextureM = new TextureManager(_Asset,_Textures);
 		ButtonM = new ButtonManager(_Asset,_Buttons);
-		AudioM = new AudioManager(_Asset,_Sounds);
 		ScoreM = new ScoreManager(prefs);
-		
-		
+	
 		size = 68;
 
 		_r = _rOrg;
 		_g = _gOrg;
 		_b = _bOrg;
 		
-		fontBlack = new BitmapFont();
+		fontMain = new BitmapFont(Gdx.files.internal("Fonts/Segui_White_40.fnt"));
+		fontMain.setColor(Color.BLACK);
+		
+		fontSecond = new BitmapFont(Gdx.files.internal("Fonts/Segui_White_40.fnt"));
+	    fontSecond.setColor(Color.WHITE); //var Color.BLACK
+	    
+	    fontBlack = new BitmapFont(Gdx.files.internal("Fonts/Segui_White_40.fnt"));
 	    fontBlack.setColor(Color.BLACK); //var Color.BLACK
-	    fontBlack.setScale(2,2);
 	    
-	    fontWhite = new BitmapFont();
+	    fontWhite = new BitmapFont(Gdx.files.internal("Fonts/Segui_White_40.fnt"));
 	    fontWhite.setColor(Color.WHITE); //var Color.BLACK
-	    fontWhite.setScale(2,2);
-	    
-	    fontfff60 = new BitmapFont();
-	    fontfff60.setColor(153f/255,153f/255,153f/255,1); //var Color.BLACK
-	    fontfff60.setScale(2,2);
 	    
 	    newHighString = "Congratulations, new score!";
 	    newIndivString = "You made a new record run!";
@@ -100,6 +104,19 @@ public class RectangleManager
 	    
 	}
 	
+	private void assignAudio(int newAudio)
+	{
+		String newSound = "Asset_" + (Integer.toString(newAudio)) + "/";
+		prefs.putInteger("ActiveAudio", newAudio);
+		prefs.flush();
+		activeAudio = newAudio;
+		AudioM = new AudioManager(newSound,_Sounds);
+		isMuted = prefs.getBoolean("Mute");
+		isMuted = AudioM.mute(isMuted);
+	}
+	
+	// Changes the current asset string that points to folder of given assets.
+	// Saves the current used theme and updates the prefered colors.
 	private void assignAssets(int newTheme)
 	{
 		_Asset = "Asset_" + (Integer.toString(newTheme)) + "/";
@@ -109,6 +126,7 @@ public class RectangleManager
 		setColors(activeTheme);	
 	}
 	
+	// Updates the main colors in the game used to draw interactive elements non-relating to the gameplay
 	private void assignColors(int aTheme)
 	{
 		Color_Logo = ThemeM.accessColor(0, aTheme);
@@ -120,6 +138,7 @@ public class RectangleManager
 		Color_StoreBar = ThemeM.accessColor(6, aTheme);
 	}
 	
+	// Sets the main background color of the game and updates the colors of each buttn
 	private void setColors(int theme)
 	{
 		if(theme == 0)
@@ -154,8 +173,6 @@ public class RectangleManager
 	{
 		assignAssets(aTheme);
 		TextureM = new TextureManager(_Asset,_Textures);
-		//AudioM.stopMusic();
-		//AudioM = new AudioManager(_Asset,_Sounds); //Custom sounds?
 		ButtonM = new ButtonManager(_Asset,_Buttons); 
 		
 		_r = _rOrg;
@@ -163,16 +180,23 @@ public class RectangleManager
 		_b = _bOrg;
 	}
 	
-	//Gives the animation manager acces to the state machine
-	public void assignAnimation()
+	public void setAudio(int aAudio)
 	{
-		AnimationM = new AnimationManager(gsm);
+		assignAudio(aAudio);
+	}
+	
+	//Gives the animation manager acces to the state machine
+	public void assignAnimation(GameStateManager g)
+	{
+		AnimationM = new AnimationManager(g);
 	}
 	
 	//Mutes or unmutes the maintheme of the game
 	public void soundMute()
 	{
 		isMuted = AudioM.mute(isMuted);
+		prefs.putBoolean("Mute", !isMuted);
+		prefs.flush();
 	}
 	
 	//Sends request to the audio manager to play chosen sound
@@ -181,22 +205,10 @@ public class RectangleManager
 		AudioM.soundEffect(aSound);
 	}
 	
-	//Draws a scoreboard at given co ordinates. Takes is an array of Strings which represents
-	//high scores, current highscores or the users currency. 
-	//Can also draw a texture at chosen position (to indicate where a new score was made).
-	public void drawScoreBoard(SpriteBatch batch, float x, int y, String[] aString, boolean showSpecial, int specialPos, BitmapFont font )
+	public void drawButton(SpriteBatch batch, RectTex button, int xOffset, int yOffset, boolean white)
 	{
-		batch.draw(TextureM.square,x+0*size,y);
-		batch.draw(TextureM.triangle,x+1*size,y);
-		batch.draw(TextureM.circle,x+2*size,y);
-		batch.draw(TextureM.ex,x+3*size,y);
-		if(showSpecial && specialPos != -1)batch.draw(TextureM.newScore, x+specialPos*size, y);
-		for(int i = 0; i < 4; i++)
-	    {
-			if(aString[i].length() == 4)font.draw(batch, aString[i], x+size*i, y+45);
-			else if(aString[i].length() == 3)font.draw(batch, aString[i], x+10+size*i, y+45); 
-    		else if(aString[i].length() == 2)font.draw(batch, aString[i], x+20+size*i, y+45);
-    		else font.draw(batch, aString[i], x+30+size*i, y+45); 	  
-	    }
+		batch.draw(button.tex,button.x+xOffset,button.y+yOffset);
+		if(white)fontWhite.draw(batch, button.display, button.disX + xOffset, button.disY +yOffset); 
+		else fontBlack.draw(batch, button.display, button.disX + xOffset, button.disY +yOffset); 
 	}
 }

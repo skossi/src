@@ -1,19 +1,13 @@
 package managers;
 
 import states.Playstate;
-import states.Scorestate;
 import states.Storestate;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 
-
-
 public class MyInputProcessor implements InputProcessor {
-		
-		
-
 	
 	   @Override
 	   public boolean keyDown(int keycode) {
@@ -22,22 +16,20 @@ public class MyInputProcessor implements InputProcessor {
 		   //if(keycode == Keys.HOME)
 	        if(keycode == Keys.BACK)
 	        {
-	        	if(state == GameStateManager.PLAY) Playstate.isPaused = !Playstate.isPaused;
+	        	if(state == GameStateManager.PLAY) 
+	        	{
+	        		Playstate.isPaused = !Playstate.isPaused;
+	        	}
 	        	if(state == GameStateManager.MENU)
 	        	{
 	        		Gdx.app.exit();  	
 	        		//keyDown(Keys.HOME);
 	        		//Application.
 	        	}
-	        	if(state == GameStateManager.SCORE)
-	        	{
-	        		AnimationManager.SideAnimation = true;
-	        		Scorestate.screenDir = -1;
-	        	}
 	        	if(state == GameStateManager.STORE)
 	        	{
 	        		AnimationManager.SideAnimation = true;
-	        		Storestate.screenDir = 1;
+	        		Storestate.screenDir = -1;
 	        	}
 	        	
 	        }

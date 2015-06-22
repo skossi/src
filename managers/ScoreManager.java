@@ -46,7 +46,10 @@ public class ScoreManager {
 	{
 		firstTime = true;
 		prefs.putBoolean("First",true);
-		
+		int basicTheme = wallet.aquireAsset(0, 0);
+		int basicAudio = wallet.aquireAsset(1, 0);
+		// Start with 1000 score for debugging
+		//prefs.putInteger(infoString[0], 1000);
 		prefs.flush();
 		
 	}
@@ -57,6 +60,7 @@ public class ScoreManager {
 		{
 			infoHolder[i] = prefs.getInteger(infoString[i]);
 		}
+		currency = infoHolder[0];
 	}
 	
 	//Reduces the players currency by amount of price item bought.

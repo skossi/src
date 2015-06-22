@@ -25,6 +25,15 @@ public class AudioManager {
 	public static final int MUTE = 3;
 	public static final int PAUSE = 4;
 	public static final int START = 5;
+	public static final int LOST = 6;
+	public static final int POWERDOWN1 = 7;
+	public static final int POWERDOWN2 = 8;
+	public static final int POWERDOWN3 = 9;
+	public static final int PUSH = 10;
+	public static final int UNLOCK = 11;
+	public static final int ERROR = 12;
+	public static final int SWITCH = 13;
+	
 	
 	public AudioManager(String aAsset, String aLoc)
 	{
@@ -38,23 +47,31 @@ public class AudioManager {
 	{
 		//Sounds initiated
 		MusicThemes = new Music[4];
-		SoundEffects = new Sound[7];
+		SoundEffects = new Sound[14];
 		
 		MusicThemes[0] = Gdx.audio.newMusic(Gdx.files.internal(asset+location+"ThemeLevel_1.wav"));
 		MusicThemes[1] = Gdx.audio.newMusic(Gdx.files.internal(asset+location+"ThemeLevel_2.wav"));
 		MusicThemes[2] = Gdx.audio.newMusic(Gdx.files.internal(asset+location+"ThemeLevel_3.wav"));
 		MusicThemes[3] = Gdx.audio.newMusic(Gdx.files.internal(asset+location+"ThemeLevel_4.wav"));
-		SoundEffects[COLLECT] = Gdx.audio.newSound(Gdx.files.internal(asset+location+"Collect.wav"));
-		SoundEffects[SWAP] = Gdx.audio.newSound(Gdx.files.internal(asset+location+"SwapTile.wav"));
-		SoundEffects[MATCH] = Gdx.audio.newSound(Gdx.files.internal(asset+location+"Match.wav"));
-		SoundEffects[MUTE] = Gdx.audio.newSound(Gdx.files.internal(asset+location+"Mute.mp3"));
-		SoundEffects[PAUSE] = Gdx.audio.newSound(Gdx.files.internal(asset+location+"Pause.wav"));
-		SoundEffects[START] = Gdx.audio.newSound(Gdx.files.internal(asset+location+"StartGame.wav"));
-		//SoundEffects[6] = Gdx.audio.newSound(Gdx.files.internal(location+"GameOver.wav"));
+		
+		SoundEffects[COLLECT] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Collect.wav"));
+		SoundEffects[SWAP] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/SwapTile.wav"));
+		SoundEffects[MATCH] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Match.wav"));
+		SoundEffects[MUTE] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Mute.mp3"));
+		SoundEffects[PAUSE] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Pause.wav"));
+		SoundEffects[START] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/StartGame.wav"));
+		SoundEffects[LOST] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Lost.wav"));
+		SoundEffects[POWERDOWN1] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Powerdown1.wav"));
+		SoundEffects[POWERDOWN2] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Powerdown2.wav"));
+		SoundEffects[POWERDOWN3] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Powerdown3.wav"));
+		SoundEffects[PUSH] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Push.wav"));
+		SoundEffects[UNLOCK] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Unlock.wav"));
+		SoundEffects[ERROR] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Error.wav"));
+		SoundEffects[SWITCH] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Switch.wav"));
 
 	    // start the playback of the background music immediately
 		Volume = 1;
-		FXVolume = 0.25f;
+		FXVolume = 0.7f;
 		resetThemeMusic();
 	}
 	
@@ -67,8 +84,9 @@ public class AudioManager {
 	//Raises the chosen themes intensity. 
 	public void raiseThemeMusic()
 	{
-		System.out.println("ShouldRaiseMusic");
+		
 		if(activeMusic > 2) return; // was 2, supposed to be 3?
+		
 		/*
 		MusicThemes[activeMusic].setLooping(false);
 		MusicThemes[activeMusic].stop();
@@ -78,7 +96,7 @@ public class AudioManager {
 		//MusicThemes[activeMusic].setPosition(soundPos);
 	    MusicThemes[activeMusic].setVolume(Volume);
 		*/
-		
+		MusicThemes[activeMusic].setLooping(false);
 		MusicThemes[activeMusic].setOnCompletionListener(new Music.OnCompletionListener()
 		{
 	        public void onCompletion(Music aMusic)
@@ -110,6 +128,11 @@ public class AudioManager {
 	    
 	}
 	
+	public void setMainVolume(int aVolume)
+	{
+		Volume = aVolume;
+	}
+	
 	//Mutes all active theme music/sound effects.
 	public boolean mute(boolean aMute)
 	{
@@ -122,7 +145,7 @@ public class AudioManager {
 		else
 		{
 			Volume = 1;
-			FXVolume = 0.25f;
+			FXVolume = 0.7f;
 			MusicThemes[activeMusic].setVolume(Volume);
 		}
 		aMute =! aMute;

@@ -38,11 +38,8 @@ public class ThemeManager {
 	
 	private Color[][] COLORS = new Color[][]{Logo, Play, Score, Tutorial, Store, ScoreBar, StoreBar};
 	
-	public ThemeManager()
-	{
-		
-	}
 	
+	// Returns a set of color given by which item and theme is supposed to be colored
 	public Color accessColor(int aColor,int aTheme)
 	{
 		return COLORS[aColor][aTheme];

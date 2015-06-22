@@ -9,15 +9,13 @@ public class Wallet {
 
 	private Preferences prefs;
 	
-	private String[] storeTabs = new String[]{"Powers", "Levels", "Themes","Extras"};
+	private String[] storeTabs = new String[]{"Themes", "Audios"};
 	private String[] itemsAvailable = new String[]{"item_1","item_2","item_3","item_4"};
 	
 	//THESE MUST BE HARDCODED AND DECIDED
-	private int[] powerPrice = new int[]{300, 300, 300, 300};
-	private int[] levelPrice = new int[]{200, 300, 400, 500};
-	private int[] themePrice = new int[]{0, 250, 400, 800};
-	private int[] extraPrice = new int[]{800, 700, 600, 900};
-	public int[][] price = new int[][]{powerPrice,levelPrice,themePrice,extraPrice};
+	private int[] themePrice = new int[]{0, 250, 4, 8};
+	private int[] audioPrice = new int[]{0, 100, 600, 900};
+	public int[][] price = new int[][]{themePrice,audioPrice};
 	
 	public boolean[][] owned = new boolean[storeTabs.length][itemsAvailable.length];
 			
@@ -25,7 +23,6 @@ public class Wallet {
 	{
 		prefs = p;
 		checkOwnedItems();
-		//initiatePriceWallet();
 	}
 	
 	//Returns true if user has enough currency to buy chosen asset
@@ -47,7 +44,7 @@ public class Wallet {
 	//Sets a public array to the values of the preferences of items owned.
 	private void checkOwnedItems()
 	{
-		for(int i = 0; i < 4; i++)for(int j = 0; j < 4; j++)
+		for(int i = 0; i < 2; i++)for(int j = 0; j < 4; j++)
 			owned[i][j] =prefs.getBoolean(storeTabs[i]+itemsAvailable[j]);		
 	}
 }
