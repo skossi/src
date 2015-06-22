@@ -35,7 +35,7 @@ public class Playstate extends Gamestate{
 	   private int size;
 	   private float selectedX;
 	   private float selectedY;
-	   private float currentY;
+	   private float touchedY;
 	   private int takeoffSpeed;
 	   private int steps;
 	   private int startingRows;
@@ -414,12 +414,12 @@ public class Playstate extends Gamestate{
 		checkLoseOffset(true);
 		if(!isPaused)
 		{
-			for(int i = 0; i < columns; i++) {
-		    	  for (int j = 0; j < rows; j++) {
-		    		  Movable m = Movables[i][j];
-		    		  if(m != null)if(m.spawnParticles)m.particleEmit.drawParticle(batch);
-		    	  }
-			}
+//			for(int i = 0; i < columns; i++) {
+//		    	  for (int j = 0; j < rows; j++) {
+//		    		  Movable m = Movables[i][j];
+//		    		  if(m != null)if(m.spawnParticles)m.particleEmit.drawParticle(batch);
+//		    	  }
+//			}
 			
 		    for(int i = 0; i < columns; i++) {
 			    for (int j = 0; j < rows; j++) {
@@ -470,12 +470,7 @@ public class Playstate extends Gamestate{
 	{	
 		isSelected = true;
 		selectedM = locateMovable(x, y);
-		
-		if (selectedM != null) {
-			selectedX = selectedM.x;
-			selectedY = selectedM.y;
-		}
-		
+		touchedY = y;
 		if(isPaused)
 		{
 			if(buttonClick(Man.ButtonM.PauseResume,x,y)) isPaused = false;
@@ -516,10 +511,15 @@ public class Playstate extends Gamestate{
 		if(isPaused) return;
 	    if (isSelected) findMovable(x, y);
 	    
+	    
 	    if (selectedM != null) {
-			currentY = y;
+	    	if (selectedM.isPowerDown) {
+	    		selectedM.isPowerDown = false;
+		    	activatePowerDown();
+		    	return;
+		    }
 			selectedX = selectedM.x + size/2;
-			selectedY = selectedM.y;
+			selectedY = selectedM.y + size/2;
 		}
 	}
 	
@@ -655,9 +655,10 @@ public class Playstate extends Gamestate{
 		   int ID = m1.ID;
 		   for(int j = 0; j < columns; j++){
 			   for(int i = j;  i< columns; i++){
-				   if(isSameType(Movables[i][row], m1)){
+				   Movable m2 = Movables[i][row];
+				   if(isSameType(m2, m1) && (m1.speed == m2.speed || !thrustCase)){
 					   if(thrustCase){
-						   if(Movables[i][row].ID == ID ){
+						   if(m2.ID == ID ){
 							   count++;   
 						   }      
 					   } else
@@ -697,9 +698,10 @@ public class Playstate extends Gamestate{
 		int ID = m1.ID;
 		for(int j = 0; j < rows; j++){
 		   for(int i = j;  i< rows; i++){
-			   if( isSameType(Movables[col][i], m1)){
+			   Movable m2 = Movables[col][i];
+			   if(isSameType(m2, m1) && (m1.speed == m2.speed || !thrustCase)){
 				   if (thrustCase) {
-					   if(Movables[col][i].ID == ID ){
+					   if(m2.ID == ID ){
 						   count++;   
 					   }
 				   }
@@ -764,18 +766,10 @@ public class Playstate extends Gamestate{
 		m3.typeTwo = false;
 		m3.timeBlacked = System.currentTimeMillis();
 		for (int i = index; i < count+index; i++){
-			Movable m4 = Movables[col][i];
-			if(m4.isPowerDown){
-				for (int j = index; j < count+index; j++){
-					Movable m5 = Movables[col][j];
-					m5.typeOne = null;
-					m5.typeTwo = false;
-					m5.isPowerDown = false;
-					m5.timeBlacked = System.currentTimeMillis();
-				}
-				activatePowerDown(m4);
-				return;
-			}
+			Movable m5 = Movables[col][i];
+			m5.typeOne = null;
+			m5.typeTwo = false;
+			m5.timeBlacked = System.currentTimeMillis();
 		}
    
 	   //TODO: skoda
@@ -796,7 +790,6 @@ public class Playstate extends Gamestate{
 	   int[] shootCoordinates = findHorizontalMatches(m1, thrustCase);
 	   int index = shootCoordinates[1];
 	   int count = shootCoordinates[2];
-	   boolean powerDownFound = false;
 	   if(count > 2){
 		   for(int j = index; j < index+count; j++){ 
 			   Movable m3 = Movables[j][row];
@@ -809,14 +802,7 @@ public class Playstate extends Gamestate{
 				m3.spawnParticles = true;
 				m3.particleEmit = new ParticleEmitter((int)m3.x,(int)m3.y,Man.TextureM.dropParticle);
 		  		*/
-				if(m3.isPowerDown)
-				{
-					powerDownFound = true;
-					m3.isPowerDown = false;
-					activatePowerDown(m3);
-				}
 		   }
-	   	   if(powerDownFound) return;
 		   //TODO: skoda
 		   if(m1.ID != -1) shootByID(m1.ID, superSpeed);
 		   else shootRows(index, count, row, takeoffSpeed, false, thrustID);
@@ -824,50 +810,17 @@ public class Playstate extends Gamestate{
 		}
    }
    
-   private void activatePowerDown(Movable m1){
+   private void activatePowerDown(){
 	   isSelected = false;
 	   selectedM = null;
-	   Random ran = new Random();
-	   int x = ran.nextInt(3);
-	   //x = 2;
-	   if(x == 0){
-		   spawnWave((float)((1+(1-difficulty))*defaultSpeed));
-		   spawnWave((float)((1+(1-difficulty))*defaultSpeed));
-	   } 
-	   else if (x == 1) {
-		   for(int j = 0; j < columns; j++){
-			   Movable m2 = Movables[j][m1.row];
-			   
+	   for(int j = 0; j < rows; j++){
+		   for (int i = 0; i < columns; i++){
+			   Movable m2 = Movables[i][j];
 			   if(m2 != null) {
-				   if(m2.speed != 0) continue;
-				   if(Math.abs(m2.col-m1.col) > 1) continue;
-				   m2.delayBlacked = System.currentTimeMillis() + 100;
-			   }
-		   }
-		   
-		   for (int i = 0; i < rows; i++) {
-			   
-			   Movable m2 = Movables[m1.col][i];
-			   
-			   if(m2 != null) {
-				   if(m2.speed != 0) continue;
-				   if(Math.abs(m2.row-m1.row) > 2) continue;
-				   m2.typeOne = null;
-				   m2.typeTwo = false;
-				   m2.isPowerDown = false;
-				   m2.timeBlacked = System.currentTimeMillis();
-			   }
-		   }
-	   } else if(x == 2){
-		   for(int j = 0; j < rows; j++){
-			   for (int i = 0; i < columns; i++){
-				   Movable m2 = Movables[i][j];
-				   if(m2 != null) {
-					   int secs = 2;
-					   m2.timeShuffled1 = System.currentTimeMillis() + j*secs*columns+i*secs;
-					   m2.timeShuffled2 = System.currentTimeMillis() + j*2*secs*columns+i*secs*2;
-					   m2.timeShuffled3 = System.currentTimeMillis() + j*3*secs*columns+i*secs*3;
-				   }
+				   int secs = 2;
+				   m2.timeShuffled1 = System.currentTimeMillis() + j*secs*columns+i*secs;
+				   m2.timeShuffled2 = System.currentTimeMillis() + j*2*secs*columns+i*secs*2;
+				   m2.timeShuffled3 = System.currentTimeMillis() + j*3*secs*columns+i*secs*3;
 			   }
 		   }
 	   }
@@ -938,9 +891,9 @@ public class Playstate extends Gamestate{
    //IMPORTANT: If the second parameter is PowerDown we continue because the behaviour above
    //"fixes" m1 into the second parameter then iterates through the row or column inside the first parameter
    public boolean isSameType(Movable m1, Movable m2){
-	   if (m2.isPowerDown) return false;
 	   if(m1 == null || m2 == null || m1.typeOne == null || m2.typeOne == null){return false;}
-	   return (m1.typeOne == m2.typeOne && m1.typeTwo == m2.typeTwo) || m1.isPowerDown;
+	   if (m1.isPowerDown || m2.isPowerDown) return false;
+	   return (m1.typeOne == m2.typeOne && m1.typeTwo == m2.typeTwo);
    }
 	   
    /**
@@ -968,20 +921,22 @@ public class Playstate extends Gamestate{
    // After: Finds the block that player when pressing down and handles all swipe gestures
    //        by the user. 
    public void findMovable(float x, float y) {
+	   y = y+20; // offset for fat fingers
 	   if(selectedM == null) return;
 	   int col = selectedM.col;
 	   int row = selectedM.row;
 	   if (row < 0 || row > rows-1 || col < 0 || col > columns-1) return;	   
 	   if (selectedM.justSpawned) return;
-	   if (y > selectedY + size/2) {
-		   handleSwap(col, row, 1);
-		   return;
-	   }
-	   
-	   if (y < selectedY - size/2) {
-		   handleSwap(col, row, -1);
-		   return;
-	   }
+	   if (Math.abs((y-20) - touchedY) > 5)
+		   if (y > selectedY + size/2) {
+			   handleSwap(col, row, 1);
+			   return;
+		   }
+		   
+		   else if (y < selectedY - size/2) {
+			   handleSwap(col, row, -1);
+			   return;
+		   }
    }
    
    // Use: handleSwap(col, row, direction);
