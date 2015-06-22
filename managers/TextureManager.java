@@ -15,6 +15,7 @@ public class TextureManager {
 	private String location;
 	private String asset;
 	
+	public Texture logo;
 	public Texture square;
 	public Texture triangle;
 	public Texture circle;
@@ -24,26 +25,26 @@ public class TextureManager {
 	public Texture powerDown;
 	public Texture selected;
 	public Texture ui_bg;
-	public Texture ui_pauseOn;
-	public Texture ui_pauseOff;
 	public Texture ui_soundOn;
 	public Texture ui_soundOff;
-	public Texture pauseBlock;
 	public Texture loseLine;
 	public Texture newScore;
-	public Texture Power_Multi;
-	public Texture Power_50;
 	public Texture logo_Main;
 	public Texture logo_Score;
 	public Texture logo_Store;
 	public Texture logo_Over;
-	public Texture storeTabSelect;
-	public Texture scoreTabSelect;
+	public Texture tabSelect;
 	public Texture swapTheme;
+	public Texture swapAudio;
 	public Texture scoreBack;
 	public Texture lockedItem;
+	public Texture unlockedItem;
 	public Texture priceHolder;
 	public Texture dropParticle;
+	public Texture currentlyActive;
+	public Texture currencyBack;
+	
+	public Texture[] kill;
 	
 	public TextureManager(String aAsset, String aLoc)
 	{
@@ -60,23 +61,33 @@ public class TextureManager {
 		triangle = new Texture(Gdx.files.internal(asset+location+"triangle.png"));
 		circle = new Texture(Gdx.files.internal(asset+location+"circle.png"));
 		ex = new Texture(Gdx.files.internal(asset+location+"ex.png"));		
-		blinkBlack = new Texture(Gdx.files.internal(asset+location+"/blackBlikk.png"));
 		selected = new Texture(Gdx.files.internal(asset+location+"selectedNEW.png"));
-		loseLine = new Texture(Gdx.files.internal(asset+location+"redline.png"));	
-		//*-------MUTUAL ASSETS------*
+		loseLine = new Texture(Gdx.files.internal(asset+location+"redline.png"));
 		
+		//*-------MUTUAL ASSETS------*	
+		logo = new Texture(Gdx.files.internal("MutualAssets/logo_main.png"));
 		black = new Texture(Gdx.files.internal("MutualAssets/black.png"));
+		blinkBlack = new Texture(Gdx.files.internal("MutualAssets/blackBlikk.png"));
 		dropParticle = new Texture(Gdx.files.internal("MutualAssets/dropParticle.png"));
 		powerDown = new Texture(Gdx.files.internal("MutualAssets/powerDown.png"));
 		swapTheme = new Texture(Gdx.files.internal("MutualAssets/SwapTheme.png"));
 		scoreBack = new Texture(Gdx.files.internal("MutualAssets/scoreBack.png"));
 		lockedItem = new Texture(Gdx.files.internal("MutualAssets/locked.png"));
+		unlockedItem = new Texture(Gdx.files.internal("MutualAssets/unLocked.png"));
 		priceHolder = new Texture(Gdx.files.internal("MutualAssets/PriceHolder.png"));
 		ui_bg = new Texture(Gdx.files.internal("MutualAssets/ui_bg.png"));
 		ui_soundOn = new Texture(Gdx.files.internal("MutualAssets/soundOn.png"));
 		ui_soundOff = new Texture(Gdx.files.internal("MutualAssets/soundOff.png"));
-		storeTabSelect = new Texture(Gdx.files.internal("MutualAssets/storeBar.png"));
-		scoreTabSelect = new Texture(Gdx.files.internal("MutualAssets/scoreBar.png"));
+		tabSelect = new Texture(Gdx.files.internal("MutualAssets/bar.png"));
+		currentlyActive = new Texture(Gdx.files.internal("MutualAssets/currentlyActive.png"));
+		swapAudio = new Texture(Gdx.files.internal("MutualAssets/music.png"));
+		currencyBack = new Texture(Gdx.files.internal("MutualAssets/currencyBack.png"));
+		
+		kill = new Texture[8];
+		for(int i = 0; i < 8; i++)
+		{
+			kill[i] = new Texture(Gdx.files.internal("MutualAssets/kill_"+ Integer.toString(i) + ".png"));
+		}
 	}
 }
 

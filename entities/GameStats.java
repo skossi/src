@@ -10,16 +10,12 @@ public class GameStats {
 	public int swapsMade, matchesMade;
 	public float timePlayed, timePaused;
 	
+	//Returns a array of integers that are rounded sums of certain values.
 	public int[] loadToArray()
-	{
-		
+	{	
 		int timePlayedInt = Math.round(timePlayed);
 		int timePausedInt = Math.round(timePaused);
 		int[] aArray = {timePlayedInt, timePausedInt, swapsMade, matchesMade};
 		return aArray;
 	}
-	
-//	public GameStats()
-//	{
-//	}
 }

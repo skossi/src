@@ -1,11 +1,14 @@
 package states;
 
+import java.util.List;
 import java.util.Random;
 
 import managers.AudioManager;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -13,7 +16,6 @@ import com.blokk.game.Utils;
 
 import entities.GameStats;
 import entities.Movable;
-import entities.ParticleEmitter;
 import entities.RectTex;
 import entities.UI;
  
@@ -64,6 +66,8 @@ public class Playstate extends Gamestate{
 	   public static boolean isSelected;
 	   public static double difficulty;
 	   private int musicThreshold;
+	   
+	   private List deathList;
 	   
 	   //chosen background
 	   
@@ -202,32 +206,39 @@ public class Playstate extends Gamestate{
    // Use: killBlock(m1);
    // After: Called when a block is deleted by thrusting it up above the loseCondition line
    //       Deletes the movable, adds scores and plays sound
-   public void killBlock(Movable m1){
-	   if (m1.y > loseCondition && m1.speed > 0 && canPlay)
-	   {
-		   addScore(Movables[m1.col][m1.row].typeOne, Movables[m1.col][m1.row].typeTwo,1);
-
-		   Movables[m1.col][m1.row] = null;
-		   // ensure that there is no gap between blocks inside the array at any time
-		   int lowestEmptyIndex = -1;
-		   for (int i=0; i < rows; i++) {
-			   // find the first empty row in the same column as m1
-			   if (Movables[m1.col][i] == null && lowestEmptyIndex == -1) {
-				   lowestEmptyIndex = i;
-				   continue;
-			   }
-			   // this case only happens if there is a block with a higher index than 
-			   // the first empty one => there is a gap in the array
-			   else if (Movables[m1.col][i] != null && lowestEmptyIndex > -1) {
-				   Movable temp = new Movable(Movables[m1.col][i]);
-				   temp.row = lowestEmptyIndex;
-				   Movables[m1.col][lowestEmptyIndex] = temp;
-				   Movables[m1.col][i] = null;
-			   }
+   public void killBlock(Movable m1)
+   {		   
+	   addScore(Movables[m1.col][m1.row].typeOne, Movables[m1.col][m1.row].typeTwo,1);
+	   Movables[m1.col][m1.row] = null;
+	   // ensure that there is no gap between blocks inside the array at any time
+	   int lowestEmptyIndex = -1;
+	   for (int i=0; i < rows; i++) {
+		   // find the first empty row in the same column as m1
+		   if (Movables[m1.col][i] == null && lowestEmptyIndex == -1) {
+			   lowestEmptyIndex = i;
+			   continue;
 		   }
-		   Man.playSoundEffect(AudioManager.COLLECT);
-	   }	   
+		   // this case only happens if there is a block with a higher index than 
+		   // the first empty one => there is a gap in the array
+		   else if (Movables[m1.col][i] != null && lowestEmptyIndex > -1) {
+			   Movable temp = new Movable(Movables[m1.col][i]);
+			   temp.row = lowestEmptyIndex;
+			   Movables[m1.col][lowestEmptyIndex] = temp;
+			   Movables[m1.col][i] = null;
+		   }
+	   }
+	   Man.playSoundEffect(AudioManager.COLLECT);
    }
+   
+   private void activateKillBlock(Movable m)
+   {
+	   if (m.y > loseCondition && m.speed > 0 && canPlay)
+	   {
+		   m.isDead = true; 
+		   m.deathFrame = 0;
+	   }
+   }
+   
    /**
    * Gives a created cube its texture depend on his boolean tree structure    
    * 
@@ -256,7 +267,7 @@ public class Playstate extends Gamestate{
 			for (int i=0; i < columns; i++) {
 				    log += translateType(Movables[i][j]);
 			}
-				System.out.println(log);
+				//System.out.println(log);
 			}
 	    }
 				
@@ -296,7 +307,7 @@ public class Playstate extends Gamestate{
 //			printMovables();
 //			isTesting = true;
 			stats.timePaused += dt*3;
-			System.out.println("Entering delay");
+			//System.out.println("Entering delay");
 			delayMovableTimers(dt);
 			return;
 		}
@@ -323,7 +334,6 @@ public class Playstate extends Gamestate{
 					//TODO:This is just a placeholder. Will be fixed
 					if(musicThreshold == 4)
 					{
-						lvlDisp++;
 						musicThreshold = 0;
 						Man.AudioM.raiseThemeMusic();
 					}	
@@ -337,7 +347,7 @@ public class Playstate extends Gamestate{
 		
 	}
 
-	
+	// Animates the losing line and the top UI
 	private void playIntro(float dt, int dir)
 	{
 		introSpeed += dir;
@@ -392,6 +402,8 @@ public class Playstate extends Gamestate{
 		
 	}
 	
+	// Changes the offset of the lose condition to give the lose line a vibrating effect
+	// if blocks in each row have stacked high enough
 	private void checkLoseOffset(boolean aMethod)
 	{
 		if(aMethod)
@@ -401,7 +413,7 @@ public class Playstate extends Gamestate{
 		}
 		else
 		{
-			loseConditionOffset -= 8;
+			loseConditionOffset -= 7; //8
 			if(loseConditionOffset < 0) loseConditionOffset = 0;
 			else loseConditionOffset *= losePos;
 		}
@@ -421,6 +433,7 @@ public class Playstate extends Gamestate{
 //		    	  }
 //			}
 			
+			
 		    for(int i = 0; i < columns; i++) {
 			    for (int j = 0; j < rows; j++) {
 				    Movable m = Movables[i][j];
@@ -429,9 +442,15 @@ public class Playstate extends Gamestate{
 					    //TODO: this should also not be here!!!! just for demo atm
 					    if(m.row > loseConditionOffset && m.speed  == 0) loseConditionOffset = m.row;
 					    if(m.isPowerDown)
-			    		  {
-		    				  batch.draw(Man.TextureM.powerDown, m.x, m.y);
-			    		  }
+			    		{
+					    	batch.draw(Man.TextureM.powerDown, m.x, m.y);
+			    		}
+					    else if (m.isDead) 
+					    {
+					    	batch.draw(Man.TextureM.kill[m.deathFrame], m.x, m.y);
+					    	m.deathFrame++;
+							if(m.deathFrame > 7)killBlock(m);
+					    }
 					    else batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y);  
 				    }
 			    }
@@ -446,12 +465,10 @@ public class Playstate extends Gamestate{
 		}
 		else
 	    {
-			batch.setColor(Man.Color_Play);
-	    	batch.draw(Man.ButtonM.PauseResume.tex, Man.ButtonM.PauseResume.x, Man.ButtonM.PauseResume.y);
-	    	batch.setColor(Man.Color_Tutorial);
-	    	batch.draw(Man.ButtonM.PauseRestart.tex, Man.ButtonM.PauseRestart.x, Man.ButtonM.PauseRestart.y);
-	    	batch.setColor(Man.Color_Store);
-	    	batch.draw(Man.ButtonM.PauseQuit.tex, Man.ButtonM.PauseQuit.x, Man.ButtonM.PauseQuit.y);
+			batch.setColor(Color.BLACK);
+			Man.drawButton(batch, Man.ButtonM.PauseResume, 0, 0, true);
+	    	Man.drawButton(batch, Man.ButtonM.PauseRestart, 0, 0, true);
+	    	Man.drawButton(batch, Man.ButtonM.PauseQuit, 0, 0, true);
 	    	batch.setColor(1,1,1,1);
 	    }
 
@@ -479,6 +496,7 @@ public class Playstate extends Gamestate{
 			{
 				isPaused = false;
 				Man.AudioM.resetThemeMusic();
+				gsm.introEnd = false;
 				gsm.setState(GameStateManager.MENU);		
 			}
 		}
@@ -503,6 +521,7 @@ public class Playstate extends Gamestate{
 		actionTime = System.currentTimeMillis()-500;
 		Man.AudioM.resetThemeMusic();
 		Man.AudioM.raiseThemeMusic();
+		Man.playSoundEffect(AudioManager.START);
 	}
 	
 	//See abstrakt class Gamestate isTouched(x,y);
@@ -603,10 +622,12 @@ public class Playstate extends Gamestate{
  			  }
 
         	  m1.update(dy);
-        	  killBlock(m1);
+        	  if(!m1.isDead)activateKillBlock(m1);
     	  }
       }
 	}
+	
+	
 	
 	// Use: giveLegalType(m1);
 	// Before: m1 is a movable block
@@ -856,11 +877,6 @@ public class Playstate extends Gamestate{
 			       m1.timeThrusted = System.currentTimeMillis();   
 			       m1.isBeingThrusted = true; 
 			       m1.ID = ID;
-			       if(m1.typeOne == null)
-			       {
-				       m1.spawnParticles = true;
-					   m1.particleEmit = new ParticleEmitter((int)m1.x,(int)m1.y,Man.TextureM.dropParticle,m1.speed);
-			       }
 			   }
 		   }
 	   }
@@ -927,7 +943,7 @@ public class Playstate extends Gamestate{
 	   int row = selectedM.row;
 	   if (row < 0 || row > rows-1 || col < 0 || col > columns-1) return;	   
 	   if (selectedM.justSpawned) return;
-	   if (Math.abs((y-20) - touchedY) > 5)
+	   if (Math.abs((y-20) - touchedY) > 8)
 		   if (y > selectedY + size/2) {
 			   handleSwap(col, row, 1);
 			   return;
@@ -983,7 +999,8 @@ public class Playstate extends Gamestate{
 	   m2.typeTwo = tempTwo;
 	   m2.isPowerDown = tempDown;
 	   
-	   selectedM = m2;	   
+	   selectedM = m2;
+	   Man.playSoundEffect(AudioManager.SWAP);
    }  
 	 //See abstrakt class Gamestate dispose();
 	public void dispose()
@@ -998,10 +1015,16 @@ public class Playstate extends Gamestate{
 		return false;
 	}
 	
+	// Starts the endgame animation and disables players inpute
 	private void endGameAnimation()
 	{
 		canPlay = false;
 		UI.y += 1;
+		//Gdx.input.vibrate(1500);
+		//TODO: Find new loosing sound
+		Man.playSoundEffect(AudioManager.LOST);
+		
+		
 	}
 	
 	//Saves current score and sets the state to Lost. Called when game is lost

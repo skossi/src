@@ -1,5 +1,6 @@
 package com.blokk.game;
 
+import managers.AudioManager;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
@@ -13,6 +14,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import entities.Movable;
+import entities.RectTex;
 
 
 /**
@@ -36,7 +38,6 @@ public class BlokkGame implements ApplicationListener {
    private int columns;
    private int size;
    private int steps;
-   private Texture loadingScreen;
    //TODO : Implemtent warning if nominal update is too big?
   // private int _CONST_NOMINALUPDATE = 16;
    
@@ -51,16 +52,18 @@ public class BlokkGame implements ApplicationListener {
       batch = new SpriteBatch();
       
       R_Man = new RectangleManager();
+      
       gsm = new GameStateManager(R_Man);
       R_Man.gsm = gsm;
-      R_Man.assignAnimation();
-      
+      R_Man.assignAnimation(gsm);
+
       size = 68;
       steps = size; //pixel perfect updating
       columns = 7;
       rows = 13;
       Movables = new Movable[columns][rows];
-	  lastDropTime = TimeUtils.nanoTime();
+	  lastDropTime = 0;//TimeUtils.nanoTime();
+	  spawnMovable();
    }
    
    /**
@@ -83,19 +86,27 @@ public class BlokkGame implements ApplicationListener {
       batch.setProjectionMatrix(camera.combined);
       
       batch.begin();
-      if(!gsm.introEnd) spawnBackground();
+      if(!gsm.introEnd) spawnBackground();	  
+      
       gsm.draw(batch);
+      
+      if(R_Man.isMuted)R_Man.drawButton(batch, R_Man.ButtonM.SoundOff, 0, 0, false);
+      else R_Man.drawButton(batch, R_Man.ButtonM.SoundOn, 0, 0, false);
+      
       batch.end();
-      
-      
-     
-      
       if (Gdx.input.justTouched()) 
       {  
     	  Vector3 touchPosOld = new Vector3();
     	  touchPosOld.set(Gdx.input.getX(),Gdx.input.getY(),0);
     	  camera.unproject(touchPosOld);
     	  gsm.justTouched(touchPosOld.x, touchPosOld.y);
+    	  
+		if(buttonClick(R_Man.ButtonM.SoundOn,touchPosOld.x,touchPosOld.y) || buttonClick(R_Man.ButtonM.SoundOff,touchPosOld.x,touchPosOld.y))
+		{
+			R_Man.soundMute();
+			R_Man.playSoundEffect(AudioManager.MUTE);
+		}
+    	  
       }
       
       if(Gdx.input.isTouched()) 
@@ -111,9 +122,42 @@ public class BlokkGame implements ApplicationListener {
     * Creates an endless moving background for all states except Playstate
     *
     */
+   
+   private boolean buttonClick(RectTex rekt, float x, float y) {
+		if (x < (rekt.x + rekt.width) && x > rekt.x && y > rekt.y && y < (rekt.y + rekt.height))
+		{
+			rekt.pressedEffect();
+			return true;
+		}
+		return false;
+	}
+   
+   private void killBackground()
+   {
+	   for(int i = 0; i < columns; i++) 
+	   {
+			for (int j = 0; j < rows; j++) 
+			{
+				Movable m = Movables[i][j];
+				if (m != null && !m.isDead)
+				{
+					m.isDead = true;
+					m.deathFrame = 0;
+				}
+			}
+		}
+   }
+   
+   private void spawnWave() {
+	   for(int j = 0; j < columns; j++){
+		   spawnMovable();
+	   }
+   }
+   
    public void spawnBackground()
    {
-		if (TimeUtils.nanoTime() - lastDropTime > 900000000 && !gsm.introStart) spawnMovable();
+		if (TimeUtils.nanoTime() - lastDropTime > 900000000/1.1 && !gsm.introStart) spawnMovable();
+		if(gsm.introStart)killBackground();
 		for (int i = 0; i < steps; i++) computeSubStep(dy/steps);
 		for(int i = 0; i < columns; i++) 
 		{
@@ -122,8 +166,14 @@ public class BlokkGame implements ApplicationListener {
 				Movable m = Movables[i][j];
 				if (m != null)
 				{
-				if(m.y < 0-size)Movables[m.col][m.row] = null;
-				batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
+					if(m.y < 0-size)Movables[m.col][m.row] = null;
+					if (m.isDead) 
+				    {
+				    	batch.draw(R_Man.TextureM.kill[m.deathFrame], m.x, m.y);
+				    	m.deathFrame++;
+						if(m.deathFrame > 7)Movables[m.col][m.row] = null;
+				    }
+					else batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y); 
 				}
 			}
 		}
@@ -158,8 +208,9 @@ public class BlokkGame implements ApplicationListener {
 	    	  for (Movable m1 : rows) {
 	    		  if(m1 == null) continue;
 	    		  
-	    		  if(gsm.introStart)m1.speed = -R_Man.AnimationM.verticalSpeed;
-	    		  else m1.speed = -600;
+	    		 // if(gsm.introStart)m1.speed = -R_Man.AnimationM.verticalSpeed;
+	    		 // else 
+	    		  m1.speed = -600;
 	        	  m1.update(dt);
 	        	  if(m1.y <= -size) m1 = null;//m1.y = 850;
 	    	  }

@@ -1,8 +1,10 @@
 package states;
 
+import managers.AudioManager;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import entities.RectTex;
@@ -19,9 +21,6 @@ public class Loststate extends Gamestate{
 	private RectTex MainMenu;
 	private RectangleManager Man;
 	
-	private String[] funnyMessage;
-	private int funnyDisplay;
-	
 	private boolean Animation;
 	private boolean lowerAnimation;
 	private boolean gameEnd;
@@ -32,8 +31,6 @@ public class Loststate extends Gamestate{
 	private int scoreOffset;
 	private int screenDir;
 	private String currencyToDisplay;
-	// Debug countering
-	private float timer;
 	
 	
 	//Constructor
@@ -48,9 +45,6 @@ public class Loststate extends Gamestate{
 	{
 		Man = RectMan;
 		GameOver = Man.ButtonM.Over;
-		funnyMessage = new String[]{"You cant always win you know", "Is that the best you can do?", 
-				"How about trying for real ?","Push it to the limit, dandadan.."};
-		funnyDisplay = (int) (Math.random() * 4);
 		
 		currencyToDisplay = Integer.toString(Man.ScoreM.newestScore);
 		
@@ -63,7 +57,7 @@ public class Loststate extends Gamestate{
 		lowerAnimation = false;
 		yOffset = 800;
 		lowerOffset = -800;
-		lowerSpeed = 2400;
+		lowerSpeed = 2800;
 		lowerSpeedAdd = 70;
 		scoreOffset = 207;
 		screenDir = -1;
@@ -72,18 +66,16 @@ public class Loststate extends Gamestate{
 	
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
-	{
-		
+	{	
 		if(Animation)
 		{
 			if(gameEnd)
 			{
 				Man.AnimationM.verticalSpeed-= Man.AnimationM.speedAdd;
-				yOffset += Man.AnimationM.verticalSpeed*dt*screenDir;
+				if(!lowerAnimation)yOffset += Man.AnimationM.verticalSpeed*dt*screenDir;
 				if(scoreOffset > 0)scoreOffset += Man.AnimationM.verticalSpeed*dt*screenDir;
 				else scoreOffset = 0;
 				Man.AnimationM.speedAdd -= Man.AnimationM.accel;
-				if(yOffset <= 300) lowerAnimation = true;
 				if(yOffset <= 0) 
 				{
 					yOffset = 0;
@@ -124,29 +116,33 @@ public class Loststate extends Gamestate{
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		
 		batch.draw(GameOver.tex, GameOver.x, GameOver.y+yOffset);
-		if(Man.ScoreM.NewHighScore)Man.fontWhite.draw(batch,"Congratulations, new score!" , 60, 675+yOffset);
-		else Man.fontWhite.draw(batch,funnyMessage[funnyDisplay] , 60, 675+yOffset);
+		if(Man.ScoreM.NewHighScore)
+		{
+			gsm.introEnd = false;
+			Man.fontWhite.draw(batch,"Congratulations, new score!" , 40, 675+yOffset);
+		}
 		
-		Man.fontWhite.draw(batch,"Your score was :", 135, 630+yOffset);
+		Man.fontWhite.draw(batch,"Your score was", 135, 630+yOffset);
 		
 		Man.fontWhite.draw(batch,currencyToDisplay,240, 530+scoreOffset);
 		
 		if(gameEnd)
 		{
 			batch.draw(Man.TextureM.loseLine, 0, 670-800+yOffset);
-			batch.setColor(Man.Color_Play);
-			batch.draw(Replay.tex, Replay.x, Replay.y+lowerOffset);
-			batch.setColor(Man.Color_Tutorial);
-			batch.draw(MainMenu.tex, MainMenu.x, MainMenu.y+lowerOffset);
+			batch.setColor(Color.WHITE);
+			Man.drawButton(batch, Replay, 0, lowerOffset, false);
+			batch.setColor(Color.WHITE);
+			Man.drawButton(batch, MainMenu, 0, lowerOffset, false);
 		}
 		else 
 		{
-			batch.setColor(Man.Color_Play);
-			batch.draw(Replay.tex, Replay.x, Replay.y+yOffset);
-			batch.setColor(Man.Color_Tutorial);
-			batch.draw(MainMenu.tex, MainMenu.x, MainMenu.y+yOffset);
+			batch.setColor(Color.WHITE);
+			//batch.setColor(Man.Color_Play);
+			Man.drawButton(batch, Replay, 0, yOffset, false);
+			//batch.setColor(Man.Color_Tutorial);
+			batch.setColor(Color.WHITE);
+			Man.drawButton(batch, MainMenu, 0, yOffset, false);
 		}
 		batch.setColor(1,1,1,1);
 	}
@@ -158,11 +154,16 @@ public class Loststate extends Gamestate{
 		{
 			screenDir = -1;
 			Animation = true;
+			Replay.pressedEffect();
+			Man.playSoundEffect(AudioManager.START);
 		}
 		if(buttonClick(MainMenu,x,y))
 		{
 			screenDir = 1;
 			Animation = true;
+			MainMenu.pressedEffect();
+			gsm.introEnd = false;
+			Man.playSoundEffect(AudioManager.PUSH);
 		}
 	}
 	

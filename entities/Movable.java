@@ -35,8 +35,10 @@ public class Movable {
 	public int ID;
 	public double gravity = 0.1;
 	
+	public boolean isDead;
+	public int deathFrame;
+	
 	public boolean spawnParticles;
-	public ParticleEmitter particleEmit;
 	
 	/**	
 	*Constructs ablock, i.e. Movable
@@ -102,30 +104,7 @@ public class Movable {
 		if (speed != 0) speed -= gravity;
 		
 		y += speed*dy;
-		
-		if(spawnParticles)
-		{
-			particleEmit.x = (int)x;
-			particleEmit.y = (int)y;
-			particleEmit.update(dy,speed);
-		}
-		
-			
-		
 		return;  //Why is this here?
-	}
-	
-	public void upgradeEmitter()
-	{
-		particleEmit.upgrade();
-	}
-	
-	//Should happen when swap blocked lands again.
-	public void removeEmitter()
-	{
-		spawnParticles = false;
-		particleEmit = null;
-		
 	}
 	
 	//This function checks whether a movable was unmovable and whether its time

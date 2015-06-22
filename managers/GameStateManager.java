@@ -4,7 +4,6 @@ import states.Gamestate;
 import states.Loststate;
 import states.Menustate;
 import states.Playstate;
-import states.Scorestate;
 import states.Storestate;
 import states.Tutorialstate;
 
@@ -20,10 +19,10 @@ public class GameStateManager{
 	
 	public static final int MENU = 0;
 	public static final int PLAY = 1;
-	public static final int SCORE = 2;
-	public static final int TUTORIAL = 3;
-	public static final int LOST = 4;
-	public static final int STORE = 5;
+	public static final int STORE = 2;
+	public static final int LOST = 3;
+	public static final int TUTORIAL = 4;
+	
 	
 	public static int ACTIVESTATE; //Keep track of which state is running. Is not used but might be good for debugging.
 	
@@ -52,10 +51,10 @@ public class GameStateManager{
 		if(gameState != null) gameState.dispose();
 		if(state == MENU) gameState = new Menustate(this);
 		if(state == PLAY) gameState = new Playstate(this);
-		if(state == SCORE) gameState = new Scorestate(this);
+		if(state == STORE) gameState = new Storestate(this);
 		if(state == TUTORIAL) gameState = new Tutorialstate(this);
 		if(state == LOST) gameState = new Loststate(this);
-		if(state == STORE) gameState = new Storestate(this);
+		
 		ACTIVESTATE = state;
 		gameState.init(RectMana);
 	}

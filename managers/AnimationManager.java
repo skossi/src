@@ -10,18 +10,18 @@ public class AnimationManager {
 	
 	//Animation
 	public int MenuXOffset;
-	public int MenuYOffset;
+	public int MenuYOffset = -1200;
 	public int SideXOffset;
 	public int SideYOffset;
 	public static boolean SideAnimation;
 	public int backgroundSpeed = -600;
-	public int horizontalSpeed = 0;
-	public int verticalSpeed = 0;
+	public int verticalSpeed = 700;
+	//public int verticalSpeed = 0;
 	public float speedAdd = 1;
 	public int sideDir;
 	public boolean moveMenu;
 	public boolean moveFromSides;
-	public boolean isMenuDown;
+	public boolean isMenuDown = true;
 	public static double accel = 5.1;
 	
 	public AnimationManager(GameStateManager g)
@@ -31,37 +31,21 @@ public class AnimationManager {
 	}
 	
 	//Main animation theme for menu states. Takes care of all animations that menu the user can control in menu state.
-	public void MenuAnimateMethod( boolean horizontal, int maxValue, int direction, int underDest, int overDest,float dt)
+	public void MenuAnimateMethod(int maxValue, int direction, int underDest, int overDest,float dt)
 	{
 		int changeSpeed;
 		int value;
-		if(horizontal)
-		{
-			changeSpeed = horizontalSpeed;
-			value = MenuXOffset;
-		}
-		else
-		{
-			changeSpeed = verticalSpeed;
-			value = MenuYOffset;
-		}
+		changeSpeed = verticalSpeed;
+		value = MenuYOffset;
 		changeSpeed += speedAdd;
 		value += changeSpeed*dt*direction;
 		speedAdd += accel;
-		if(horizontal)
-		{
-			horizontalSpeed = changeSpeed;
-			MenuXOffset = value;
-			if(value <= -maxValue)gsm.setState(underDest);
-			if(value >= maxValue) gsm.setState(overDest);			
-		}
-		else
-		{
-			verticalSpeed = changeSpeed;
-			MenuYOffset = value;
-			if(value <= -maxValue)setPlayState(underDest);
-			if(value >= maxValue) setPlayState(overDest);
-		}	
+		verticalSpeed = changeSpeed;
+		MenuYOffset = value;
+		
+		//if(Math.abs(value) >= Math.abs(maxValue))isMenuDown = true;		
+		if(value <= -maxValue)setPlayState(underDest);
+		if(value >= maxValue) gsm.setState(overDest);
 	}
 	
 	//Animation that takes care of resetting the menu from the sides.
@@ -69,26 +53,29 @@ public class AnimationManager {
 	{
 		if(!starting)
 		{
-			horizontalSpeed += speedAdd;
-			SideXOffset += horizontalSpeed*dt*screenDir;
+			verticalSpeed -= speedAdd;
+			SideYOffset -= verticalSpeed*dt*screenDir;
 			speedAdd += accel;
-			if(SideXOffset < -480 || SideXOffset > 480)
+			if(SideYOffset < -800)
 			{
-				moveFromSides = true;
+				//moveFromSides = true;
+				isMenuDown = true;
 				sideDir = screenDir;
-				MenuXOffset = -480 * screenDir;
+				MenuYOffset = 800;
+				//verticalSpeed *=-1;
 				gsm.setState(GameStateManager.MENU);
 			}
 		}
 		else
 		{
-			horizontalSpeed -= speedAdd;
-			SideXOffset += horizontalSpeed*dt*screenDir;
+			verticalSpeed += speedAdd;
+			SideYOffset += verticalSpeed*dt*screenDir;
 			speedAdd -= accel;
-			if(SideXOffset*screenDir >= 0) 
+			if(SideYOffset*screenDir >= 0) 
 			{
-				SideXOffset = 0;
+				SideYOffset = 0;
 				speedAdd = 0;
+				verticalSpeed = 0;
 				SideAnimation = false;	
 			}
 		}	
@@ -98,24 +85,39 @@ public class AnimationManager {
 	public void MenuDown(float dt)
 	{
 		verticalSpeed -= speedAdd;
+//		verticalSpeed -= speedAdd;
 		MenuYOffset += verticalSpeed*dt;
 		speedAdd -= accel;
-		
-		if(MenuYOffset >= 0)
+		//System.out.println(verticalSpeed);
+		if(verticalSpeed > 0)
 		{
-			MenuYOffset = 0;
-			verticalSpeed = 0;
-			speedAdd = 0;
-			gsm.introEnd = false;
-			isMenuDown = false;
+			if(MenuYOffset >= 0)
+			{
+				MenuYOffset = 0;
+				verticalSpeed = 0;
+				speedAdd = 0;
+				//gsm.introEnd = false;
+				isMenuDown = false;
+			}
+		}
+		else
+		{
+			if(MenuYOffset <= 0)
+			{
+				MenuYOffset = 0;
+				verticalSpeed = 0;
+				speedAdd = 0;
+				//gsm.introEnd = false;
+				isMenuDown = false;
+			}
 		}
 	}
 	
 	//Moves the menu back to its original position when user switches to Menu state.
 	public void EaseMenuBack(float dt)
 	{
-		horizontalSpeed -= speedAdd;
-		MenuXOffset += horizontalSpeed*dt*sideDir; 
+		verticalSpeed -= speedAdd;
+		MenuXOffset += verticalSpeed*dt*sideDir; 
 		speedAdd -= accel;
 		if(MenuXOffset*sideDir*-1 <= 0)
 		{
