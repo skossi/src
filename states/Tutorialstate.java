@@ -5,6 +5,7 @@ import managers.GameStateManager;
 import managers.RectangleManager;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import entities.RectTex;
@@ -15,11 +16,13 @@ public class Tutorialstate extends Gamestate {
 
 	 
 	 private RectangleManager Man;
-	 private RectTex[] MenuArray;
+	 private RectTex[] TutorialArray;
 	 private Color[] MenuColors;
+	 private Texture[] TutorialStep;
 	 private boolean toPlay;
 	 private int stateDir;
 	 private boolean moveMenu;
+	 private int step;
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
 	public Tutorialstate(GameStateManager gsm)
@@ -30,13 +33,15 @@ public class Tutorialstate extends Gamestate {
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
-		MenuArray = new RectTex[2];
+		TutorialArray = new RectTex[2];
 		MenuColors = new Color[5];
+		TutorialStep = new Texture[4];
+		step = 0;
 		Man = RectMan;
 		
 		//MenuArray[0] = Man.ButtonM.Menu;
-		MenuArray[0] = Man.ButtonM.NegEnterPlay;
-		MenuArray[1] = Man.ButtonM.NegEnterStore;
+		TutorialArray[0] = Man.ButtonM.TutorialPlay;
+		TutorialArray[1] = Man.ButtonM.TutorialNext;
 		
 		MenuColors[0] = Man.Color_Logo;
 		MenuColors[1] = Man.Color_Play;
@@ -44,22 +49,22 @@ public class Tutorialstate extends Gamestate {
 		MenuColors[3] = Man.Color_Tutorial;
 		MenuColors[4] = Man.Color_Store;
 		
+		TutorialStep[0] = Man.TextureM.tutorialStepOne;
+		TutorialStep[1] = Man.TextureM.tutorialStepTwo;
+		TutorialStep[2] = Man.TextureM.tutorialStepThree;
+		TutorialStep[3] = Man.TextureM.tutorialStepFour;
+	
 		moveMenu = false;
-		
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		
-		if(moveMenu)
-		{
-			if(toPlay)
-			{
+		if (moveMenu) {
+			if(toPlay) {
 				Man.AnimationM.MenuAnimateMethod(800, stateDir, GameStateManager.PLAY, GameStateManager.STORE,dt);
 			}
 		}
-		if(Man.AnimationM.isMenuDown)
-		{
+		if (Man.AnimationM.isMenuDown) {
 			if(Man._r < Man._rOrg) Man._r += 4*dt;
 			if(Man._g < Man._gOrg) Man._g += 4*dt;
 			if(Man._b < Man._bOrg) Man._b += 4*dt;
@@ -70,16 +75,13 @@ public class Tutorialstate extends Gamestate {
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		for(int i = 0; i < 2; i++)
-		{
-			batch.setColor(Color.BLACK);
-			Man.drawButton(batch, MenuArray[i], 0, 0,true);
-		}
+		batch.setColor(Color.BLACK);
+		Man.drawButton(batch, TutorialArray[0], 0, 0,true);
+		Man.drawButton(batch, TutorialArray[1], 0, 0, true);
+		batch.setColor(Color.WHITE);
+		
+		batch.draw(TutorialStep[step], 200, 300);
 		batch.setColor(1,1,1,1);
-		batch.draw(Man.TextureM.logo, MenuArray[0].x+Man.AnimationM.MenuXOffset,-MenuArray[0].y-Man.AnimationM.MenuYOffset-50);
-
-		
-		
 	}
 	
 	//Sets the direction of the transition.
@@ -95,7 +97,7 @@ public class Tutorialstate extends Gamestate {
 		if(moveMenu) return; //|| !Man.isMenuDown
 		
 		//Play
-		if(buttonClick(MenuArray[0],x,y)) 
+		if(buttonClick(TutorialArray[0],x,y)) 
 		{
 			GameStateManager.hasFinishedTutorial = true;
 			TransitionToState(true,-1);
@@ -104,10 +106,16 @@ public class Tutorialstate extends Gamestate {
 			
 		}
 		//Tutorial
-		if(buttonClick(MenuArray[1],x,y))
+		if(buttonClick(TutorialArray[1],x,y))
 		{
-			TransitionToState(true,1);
-			Man.playSoundEffect(AudioManager.PUSH);
+			if (step < TutorialStep.length-2) step++;
+			else {
+				step++;
+				Man.ButtonM.TutorialNext.x += 1500;
+				Man.ButtonM.TutorialNext.disX += 1500;
+				Man.ButtonM.TutorialPlay.x -= 1500;
+				Man.ButtonM.TutorialPlay.disX -= 1500;
+			}
 		}
 	}
 	//Tells if user just pressed a corresponding rectangle

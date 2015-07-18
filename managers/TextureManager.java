@@ -43,6 +43,10 @@ public class TextureManager {
 	public Texture dropParticle;
 	public Texture currentlyActive;
 	public Texture currencyBack;
+	public Texture tutorialStepOne;
+	public Texture tutorialStepTwo;
+	public Texture tutorialStepThree;
+	public Texture tutorialStepFour;
 	
 	public Texture[] kill;
 	
@@ -82,6 +86,11 @@ public class TextureManager {
 		currentlyActive = new Texture(Gdx.files.internal("MutualAssets/currentlyActive.png"));
 		swapAudio = new Texture(Gdx.files.internal("MutualAssets/music.png"));
 		currencyBack = new Texture(Gdx.files.internal("MutualAssets/currencyBack.png"));
+		
+		tutorialStepOne = new Texture(Gdx.files.internal("MutualAssets/tutorialStepOne.png"));
+		tutorialStepTwo = new Texture(Gdx.files.internal("MutualAssets/tutorialStepTwo.png"));
+		tutorialStepThree = new Texture(Gdx.files.internal("MutualAssets/tutorialStepThree.png"));
+		tutorialStepFour = new Texture(Gdx.files.internal("MutualAssets/tutorialStepFour.png"));
 		
 		kill = new Texture[8];
 		for(int i = 0; i < 8; i++)
