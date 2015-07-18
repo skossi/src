@@ -25,6 +25,7 @@ public class GameStateManager{
 	
 	
 	public static int ACTIVESTATE; //Keep track of which state is running. Is not used but might be good for debugging.
+	public static boolean hasFinishedTutorial = false;
 	
 	public boolean introStart;
 	public boolean introEnd = false; 

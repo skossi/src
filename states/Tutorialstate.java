@@ -1,8 +1,10 @@
 package states;
 
+import managers.AudioManager;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import entities.RectTex;
@@ -11,46 +13,114 @@ import entities.RectTex;
 //Creates a new state when tutorial is viewed
 public class Tutorialstate extends Gamestate {
 
-	 private RectTex Back;
-	 private RectangleManager R_Man;
+	 
+	 private RectangleManager Man;
+	 private RectTex[] MenuArray;
+	 private Color[] MenuColors;
+	 private boolean toPlay;
+	 private int stateDir;
+	 private boolean moveMenu;
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
 	public Tutorialstate(GameStateManager gsm)
 	{	
 		super(gsm);
 	}
+	
 	//See abstrakt class Gamestate init();
 	public void init(RectangleManager RectMan)
 	{
-		R_Man = RectMan;
-		if(!R_Man.ScoreM.firstTime)R_Man.ScoreM.firstDone();
-		Back = R_Man.ButtonM.BackStore;
+		MenuArray = new RectTex[2];
+		MenuColors = new Color[5];
+		Man = RectMan;
+		
+		//MenuArray[0] = Man.ButtonM.Menu;
+		MenuArray[0] = Man.ButtonM.NegEnterPlay;
+		MenuArray[1] = Man.ButtonM.NegEnterStore;
+		
+		MenuColors[0] = Man.Color_Logo;
+		MenuColors[1] = Man.Color_Play;
+		MenuColors[2] = Man.Color_Score;
+		MenuColors[3] = Man.Color_Tutorial;
+		MenuColors[4] = Man.Color_Store;
+		
+		moveMenu = false;
+		
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
 		
+		if(moveMenu)
+		{
+			if(toPlay)
+			{
+				Man.AnimationM.MenuAnimateMethod(800, stateDir, GameStateManager.PLAY, GameStateManager.STORE,dt);
+			}
+		}
+		if(Man.AnimationM.isMenuDown)
+		{
+			if(Man._r < Man._rOrg) Man._r += 4*dt;
+			if(Man._g < Man._gOrg) Man._g += 4*dt;
+			if(Man._b < Man._bOrg) Man._b += 4*dt;
+			Man.AnimationM.MenuDown(dt);
+		}
 	}
+	
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		batch.draw(Back.tex,Back.x,Back.y);
+		for(int i = 0; i < 2; i++)
+		{
+			batch.setColor(Color.BLACK);
+			Man.drawButton(batch, MenuArray[i], 0, 0,true);
+		}
+		batch.setColor(1,1,1,1);
+		batch.draw(Man.TextureM.logo, MenuArray[0].x+Man.AnimationM.MenuXOffset,-MenuArray[0].y-Man.AnimationM.MenuYOffset-50);
+
+		
+		
+	}
+	
+	//Sets the direction of the transition.
+	private void TransitionToState(boolean aActionState, int aDirection)
+	{
+		moveMenu = true;
+		toPlay = aActionState;
+		stateDir = aDirection;
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
-		if(buttonClick(Back,x,y))
+		if(moveMenu) return; //|| !Man.isMenuDown
+		
+		//Play
+		if(buttonClick(MenuArray[0],x,y)) 
 		{
-			//R_Man.resetMenu();
-			gsm.setState(GameStateManager.MENU);
+			GameStateManager.hasFinishedTutorial = true;
+			TransitionToState(true,-1);
+			gsm.introStart = true; 
+			Man.playSoundEffect(AudioManager.START);
+			
+		}
+		//Tutorial
+		if(buttonClick(MenuArray[1],x,y))
+		{
+			TransitionToState(true,1);
+			Man.playSoundEffect(AudioManager.PUSH);
 		}
 	}
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position
 	public boolean buttonClick(RectTex rekt, float x, float y) {
-		if (x < (rekt.x + rekt.width) && x > rekt.x && y > rekt.y && y < (rekt.y + rekt.height)) return true;
+		if (x < (rekt.x + rekt.width) && x > rekt.x && y > rekt.y && y < (rekt.y + rekt.height))
+		{
+			rekt.pressedEffect();
+			return true;
+		}
 		return false;
 	}
+	
 	//See abstrakt class Gamestate isTouched(x,y);
 	public void isTouched(float x, float y)
 	{
