@@ -81,7 +81,7 @@ public class Menustate extends Gamestate {
 	{
 		for(int i = 0; i < MenuArray.length; i++)
 		{
-			batch.setColor(Color.BLACK);
+			batch.setColor(Color.MAROON);
 			Man.drawButton(batch, MenuArray[i], Man.AnimationM.MenuXOffset, Man.AnimationM.MenuYOffset,true);
 		}
 		batch.setColor(1,1,1,1);

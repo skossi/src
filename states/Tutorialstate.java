@@ -39,7 +39,6 @@ public class Tutorialstate extends Gamestate {
 		step = 0;
 		Man = RectMan;
 		
-		//MenuArray[0] = Man.ButtonM.Menu;
 		TutorialArray[0] = Man.ButtonM.TutorialPlay;
 		TutorialArray[1] = Man.ButtonM.TutorialNext;
 		
