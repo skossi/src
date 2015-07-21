@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import entities.RectTex;
-import entities.UI;
 
 //import com.badlogic.gdx.audio.Sound;
 //Class by Óttar Guðmundsson
@@ -61,6 +60,7 @@ public class Loststate extends Gamestate{
 		lowerSpeedAdd = 70;
 		scoreOffset = 207;
 		screenDir = -1;
+		if(Man.ScoreM.NewHighScore)gsm.introEnd = false;
 		
 	}
 	
@@ -115,17 +115,13 @@ public class Loststate extends Gamestate{
 	
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
-	{
-		batch.draw(GameOver.tex, GameOver.x, GameOver.y+yOffset);
+	{	
+		batch.draw(GameOver.tex, GameOver.x, GameOver.y+yOffset-68);
 		if(Man.ScoreM.NewHighScore)
 		{
-			gsm.introEnd = false;
-			Man.fontWhite.draw(batch,"Congratulations, new score!" , 40, 675+yOffset);
+			batch.draw(Man.TextureM.newScore,GameOver.x,GameOver.y+yOffset);
 		}
-		
-		Man.fontWhite.draw(batch,"Your score was", 135, 630+yOffset);
-		
-		Man.fontWhite.draw(batch,currencyToDisplay,240, 530+scoreOffset);
+		Man.fontWhite.draw(batch,currencyToDisplay, 225, 530+scoreOffset);
 		
 		if(gameEnd)
 		{
@@ -138,9 +134,7 @@ public class Loststate extends Gamestate{
 		else 
 		{
 			batch.setColor(Color.WHITE);
-			//batch.setColor(Man.Color_Play);
 			Man.drawButton(batch, Replay, 0, yOffset, false);
-			//batch.setColor(Man.Color_Tutorial);
 			batch.setColor(Color.WHITE);
 			Man.drawButton(batch, MainMenu, 0, yOffset, false);
 		}
@@ -156,6 +150,7 @@ public class Loststate extends Gamestate{
 			Animation = true;
 			Replay.pressedEffect();
 			Man.playSoundEffect(AudioManager.START);
+			if(!gsm.introEnd) gsm.introStart = true;
 		}
 		if(buttonClick(MainMenu,x,y))
 		{

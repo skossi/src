@@ -96,15 +96,7 @@ public class ButtonManager {
 		xHolder = 480 /2 - width / 2; 
 		yHolder = 675;//20;
 		BackStore = new RectTex(xHolder, yHolder, width, height, BackStoreTex,"");
-		
-		//STORELOGO
-		Texture StoreLogoTex = new Texture(Gdx.files.internal("MutualAssets/sideHeader.png"));
-		width = StoreLogoTex.getWidth();
-		height = StoreLogoTex.getHeight();
-		xHolder = 480 /2 - width / 2; 
-		yHolder = 75;//725;
-		Store = new RectTex(xHolder, yHolder, width, height, StoreLogoTex,"");
-		
+	
 		//STORETABS
 		Texture StoreTab = new Texture(Gdx.files.internal("MutualAssets/tab.png"));
 		width = StoreTab.getWidth();
@@ -156,7 +148,6 @@ public class ButtonManager {
 		StoreThemes[3] = new RectTex(xHolder, yHolder, width, height, ThemeFourTex,"");
 		
 		StoreSelect[0] = StoreThemes;
-		
 		
 		//Audios
 		StoreAudios = new RectTex[4];

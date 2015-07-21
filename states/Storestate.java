@@ -5,8 +5,6 @@ import managers.GameStateManager;
 import managers.RectangleManager;
 import managers.Wallet;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import entities.RectTex;
@@ -17,7 +15,6 @@ import entities.RectTex;
 public class Storestate extends Gamestate {
 
 	   private RectTex Back;
-	   private RectTex StoreMain;
 	   private RectangleManager Man;
 	
 	   private Wallet wallet;
@@ -72,7 +69,6 @@ public class Storestate extends Gamestate {
 	{
 		Man = RectMan;
 		wallet = Man.ScoreM.accesWallet();
-		//Man.AnimationM.isMenuDown = true;
 		
 		tabs = new RectTex[3];
 		tabText = new String[3];
@@ -107,7 +103,6 @@ public class Storestate extends Gamestate {
 		if(currency > 9999) drawCurrency = "+9999";
 		else drawCurrency = Integer.toString(currency);
 		
-		StoreMain = Man.ButtonM.Store;
 		Back = Man.ButtonM.BackStore;
 		
 		gameInfo = new String[6];
@@ -120,14 +115,12 @@ public class Storestate extends Gamestate {
 		
 		Man.AnimationM.SideAnimation = true;
 		Man.AnimationM.SideYOffset = -800;
-		screenDir = 1;
-	      
+		screenDir = 1;	      
 	}
 	
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
-	{
-		
+	{	
 		if(Man.AnimationM.SideAnimation)
 		{
 			if(screenDir < 0)Man.AnimationM.SideToMenu(dt,screenDir,false);
@@ -158,8 +151,7 @@ public class Storestate extends Gamestate {
 		{
 			currencyOffset -= dt;
 			currencyOffsetDir *= -1;
-		}
-		
+		}	
 	}
 	
 	//See abstrakt class Gamestate draw(SpriteBatch b);
@@ -169,7 +161,7 @@ public class Storestate extends Gamestate {
 		batch.setColor(Man.Color_Store);
 		//batch.draw(StoreMain.tex, StoreMain.x, StoreMain.y+yOffset);
 		batch.setColor(Man.Color_StoreBar);
-		batch.draw(Man.TextureM.tabSelect,160*selectTab,tabs[0].y+75+yOffset);
+		//batch.draw(Man.TextureM.tabSelect,160*selectTab,tabs[0].y+75+yOffset);
 		batch.draw(Man.TextureM.scoreBack,0,150+yOffset);
 		
 		//Draw the tabs
@@ -180,7 +172,6 @@ public class Storestate extends Gamestate {
 				batch.setColor(Man.Color_StoreBar);
 				batch.draw(tabs[i].tex,tabs[i].x,tabs[i].y+yOffset);
 				Man.fontWhite.draw(batch, tabText[i], 30+160*i, tabs[i].y+85+yOffset);
-				//batch.setColor(1,1,1,1);
 			}
 			else
 			{
@@ -188,15 +179,11 @@ public class Storestate extends Gamestate {
 				batch.draw(tabs[i].tex,tabs[i].x,tabs[i].y+yOffset);
 				Man.fontBlack.draw(batch, tabText[i], 30+160*i, tabs[i].y+85+yOffset);
 			}
-			//batch.draw(tabs[i].tex,tabs[i].x,tabs[i].y+yOffset);
-			//if(i == selectTab)Man.fontWhite.draw(batch, tabText[i], 30+160*i, tabs[i].y+85+yOffset);
-			//else Man.fontBlack.draw(batch, tabText[i], 30+160*i, tabs[i].y+85+yOffset);
 		}	
 		
 		// Currency Direction
 		int cd = currencyOffset * currencyOffsetDir; 
-		batch.draw(Man.TextureM.currencyBack,80,590+yOffset);
-		//Man.fontWhite.draw(batch, "Your currency: ", 120+cd, 635+yOffset);
+		batch.draw(Man.TextureM.currencyBack,0,590+yOffset);
 		Man.fontWhite.draw(batch,drawCurrency,220+cd, 635+yOffset);
 		
 		batch.setColor(1,1,1,1);
@@ -246,10 +233,9 @@ public class Storestate extends Gamestate {
 		
 		if(unlockAnimation) batch.draw(Man.TextureM.unlockedItem, unlockX,unlockY);
 		
-		batch.setColor(Color.BLACK);
-		//batch.setColor(Man.Color_Logo);
-		batch.draw(Back.tex, Back.x, Back.y+yOffset);
 		batch.setColor(1,1,1,1);
+		batch.draw(Back.tex, Back.x, Back.y+yOffset);
+		
 		
 		if(swapThemeAni)
 		{
@@ -264,11 +250,8 @@ public class Storestate extends Gamestate {
 				batch.draw(Man.TextureM.circle,x+2*68,y);
 				batch.draw(Man.TextureM.ex,x+3*68,y);
 			}
-			else batch.draw(Man.ButtonM.StoreAudios[Man.activeAudio].tex,x+1*68,y-64);
-			//batch.draw(Man.TextureM.swapAudio,x+1*68,y-64);
-				
-		}	
-		
+			else batch.draw(Man.ButtonM.StoreAudios[Man.activeAudio].tex,x+1*68,y-64);		
+		}			
 	}
 	
 	//See abstrakt class Gamestate justTouched(x,y);
@@ -278,17 +261,17 @@ public class Storestate extends Gamestate {
 		if(buttonClick(tabs[0],x,y) && selectTab != 0) 
 		{
 			selectTab = 0;
-			Man.playSoundEffect(AudioManager.SWITCH);
+			Man.playSoundEffect(AudioManager.PUSH);
 		}
 		if(buttonClick(tabs[1],x,y)&& selectTab != 1) 
 		{
 			selectTab = 1;
-			Man.playSoundEffect(AudioManager.SWITCH);
+			Man.playSoundEffect(AudioManager.PUSH);
 		}
 		if(buttonClick(tabs[2],x,y)&& selectTab != 2) 
 		{
 			selectTab = 2;
-			Man.playSoundEffect(AudioManager.SWITCH);
+			Man.playSoundEffect(AudioManager.PUSH);
 		}
 		
 		storeItemClick(selectTab,x,y);
@@ -301,6 +284,7 @@ public class Storestate extends Gamestate {
 			Man.playSoundEffect(AudioManager.PUSH);
 		}
 	}
+	
 	//Handles users input given in which store tab is active
 	//Glorified switch/case instead of ugly else ifses
 	//ToBe finished!
@@ -363,7 +347,6 @@ public class Storestate extends Gamestate {
 	{
 		currencyOffset = 20;
 		Man.playSoundEffect(AudioManager.ERROR);
-		//Gdx.input.vibrate(500);
 	}
 	
 	//Checks if chosen theme to change is not the same as the one active.
@@ -410,9 +393,6 @@ public class Storestate extends Gamestate {
 		tabs[0] = Man.ButtonM.TabThemes;
 		tabs[1] = Man.ButtonM.TabAudios;
 		tabs[2] = Man.ButtonM.TabStats;
-		//tabText[0] = "Themes";
-		//tabText[1] = "Audios";
-		StoreMain = Man.ButtonM.Store;
 		Back = Man.ButtonM.BackStore;	      
 	}
 	
@@ -466,8 +446,6 @@ public class Storestate extends Gamestate {
 			}
 		}
 	}
-	
-
 	
 	//Changes the xOffset of theme changing animation.
 	private void animateXChange(float dt)

@@ -1,6 +1,5 @@
 package managers;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
 import entities.GameStats;
@@ -106,11 +105,3 @@ public class ScoreManager {
 		getScores();
 	}
 }
-
-
-
-
-
-
-
-

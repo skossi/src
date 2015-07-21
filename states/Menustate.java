@@ -85,10 +85,7 @@ public class Menustate extends Gamestate {
 			Man.drawButton(batch, MenuArray[i], Man.AnimationM.MenuXOffset, Man.AnimationM.MenuYOffset,true);
 		}
 		batch.setColor(1,1,1,1);
-		batch.draw(Man.TextureM.logo, MenuArray[0].x+Man.AnimationM.MenuXOffset,MenuArray[0].y+Man.AnimationM.MenuYOffset+50);
-
-		
-		
+		batch.draw(Man.TextureM.logo, MenuArray[0].x+Man.AnimationM.MenuXOffset,MenuArray[0].y+Man.AnimationM.MenuYOffset+50);		
 	}
 	
 	//Sets the direction of the transition.

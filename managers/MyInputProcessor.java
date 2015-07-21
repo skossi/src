@@ -13,7 +13,6 @@ public class MyInputProcessor implements InputProcessor {
 	   public boolean keyDown(int keycode) {
 		   
 		   int state = GameStateManager.ACTIVESTATE;
-		   //if(keycode == Keys.HOME)
 	        if(keycode == Keys.BACK)
 	        {
 	        	if(state == GameStateManager.PLAY) 
@@ -22,9 +21,7 @@ public class MyInputProcessor implements InputProcessor {
 	        	}
 	        	if(state == GameStateManager.MENU)
 	        	{
-	        		Gdx.app.exit();  	
-	        		//keyDown(Keys.HOME);
-	        		//Application.
+	        		Gdx.app.exit();  
 	        	}
 	        	if(state == GameStateManager.STORE)
 	        	{

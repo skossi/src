@@ -26,13 +26,10 @@ public class AudioManager {
 	public static final int PAUSE = 4;
 	public static final int START = 5;
 	public static final int LOST = 6;
-	public static final int POWERDOWN1 = 7;
-	public static final int POWERDOWN2 = 8;
-	public static final int POWERDOWN3 = 9;
+	public static final int POWERDOWN3 = 7;
 	public static final int PUSH = 10;
 	public static final int UNLOCK = 11;
 	public static final int ERROR = 12;
-	public static final int SWITCH = 13;
 	
 	
 	public AudioManager(String aAsset, String aLoc)
@@ -61,15 +58,13 @@ public class AudioManager {
 		SoundEffects[PAUSE] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Pause.wav"));
 		SoundEffects[START] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/StartGame.wav"));
 		SoundEffects[LOST] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Lost.wav"));
-		SoundEffects[POWERDOWN1] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Powerdown1.wav"));
-		SoundEffects[POWERDOWN2] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Powerdown2.wav"));
 		SoundEffects[POWERDOWN3] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Powerdown3.wav"));
 		SoundEffects[PUSH] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Push.wav"));
 		SoundEffects[UNLOCK] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Unlock.wav"));
 		SoundEffects[ERROR] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Error.wav"));
-		SoundEffects[SWITCH] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Switch.wav"));
-
+		
 	    // start the playback of the background music immediately
+		
 		Volume = 1;
 		FXVolume = 0.7f;
 		resetThemeMusic();
@@ -83,8 +78,7 @@ public class AudioManager {
 	
 	//Raises the chosen themes intensity. 
 	public void raiseThemeMusic()
-	{
-		
+	{	
 		if(activeMusic > 2) return; // was 2, supposed to be 3?
 		
 		/*
@@ -96,6 +90,7 @@ public class AudioManager {
 		//MusicThemes[activeMusic].setPosition(soundPos);
 	    MusicThemes[activeMusic].setVolume(Volume);
 		*/
+		
 		MusicThemes[activeMusic].setLooping(false);
 		MusicThemes[activeMusic].setOnCompletionListener(new Music.OnCompletionListener()
 		{
@@ -124,8 +119,7 @@ public class AudioManager {
 		activeMusic = 0;
 		MusicThemes[activeMusic].setLooping(true);
 		MusicThemes[activeMusic].play();
-	    MusicThemes[activeMusic].setVolume(Volume);
-	    
+	    MusicThemes[activeMusic].setVolume(Volume);   
 	}
 	
 	public void setMainVolume(int aVolume)

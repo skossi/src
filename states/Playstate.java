@@ -474,7 +474,7 @@ public class Playstate extends Gamestate{
 
 		batch.draw(Man.TextureM.loseLine, 0, loseCondition+loseConditionOffset);
 		batch.draw(Man.TextureM.ui_bg, UI.x, UI.y, UI.width, UI.height);
-	    Man.fontWhite.draw(batch,Integer.toString(score), 240, scoreBoardPos);
+	    Man.fontWhite.draw(batch,Integer.toString(score), 225, scoreBoardPos);
 	}
 	
 	public static void touchUp(int x, int y) {
@@ -834,6 +834,7 @@ public class Playstate extends Gamestate{
    private void activatePowerDown(){
 	   isSelected = false;
 	   selectedM = null;
+	   Man.playSoundEffect(AudioManager.POWERDOWN3);
 	   for(int j = 0; j < rows; j++){
 		   for (int i = 0; i < columns; i++){
 			   Movable m2 = Movables[i][j];
@@ -851,7 +852,7 @@ public class Playstate extends Gamestate{
    // After: The score has been incremented by amount pts
 	private void addScore(Boolean typeOne, boolean typeTwo, int aScore) 
 	{
-		if(typeOne == null) return;
+		//if(typeOne == null) return;
 		score++;
 	}
 	
