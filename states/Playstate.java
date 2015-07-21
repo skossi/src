@@ -199,7 +199,6 @@ public class Playstate extends Gamestate{
 	       movable.isPowerDown = false;
 	       movable.ID = -1;
 		   Movables[i][0] = movable;
-		   
 	   }
    }
    
@@ -445,13 +444,13 @@ public class Playstate extends Gamestate{
 			    		{
 					    	batch.draw(Man.TextureM.powerDown, m.x, m.y);
 			    		}
-					    else if (m.isDead) 
+					    if (m.isDead) 
 					    {
 					    	batch.draw(Man.TextureM.kill[m.deathFrame], m.x, m.y);
 					    	m.deathFrame++;
 							if(m.deathFrame > 7)killBlock(m);
 					    }
-					    else batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y);  
+					    else if (!m.isPowerDown) batch.draw(createType(m.typeOne,m.typeTwo), m.x, m.y);  
 				    }
 			    }
 		    }

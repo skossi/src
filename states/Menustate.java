@@ -79,13 +79,13 @@ public class Menustate extends Gamestate {
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		for(int i = 0; i < 2; i++)
+		for(int i = 0; i < MenuArray.length; i++)
 		{
-			batch.setColor(Color.BLACK);
+			batch.setColor(Color.MAROON);
 			Man.drawButton(batch, MenuArray[i], Man.AnimationM.MenuXOffset, Man.AnimationM.MenuYOffset,true);
 		}
 		batch.setColor(1,1,1,1);
-		batch.draw(Man.TextureM.logo, MenuArray[0].x+Man.AnimationM.MenuXOffset,MenuArray[0].y+Man.AnimationM.MenuYOffset+50);		
+		batch.draw(Man.TextureM.logo, MenuArray[0].x+Man.AnimationM.MenuXOffset,MenuArray[0].y+Man.AnimationM.MenuYOffset+50);
 	}
 	
 	//Sets the direction of the transition.

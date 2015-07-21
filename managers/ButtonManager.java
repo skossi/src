@@ -15,6 +15,8 @@ public class ButtonManager {
 	public RectTex Menu;
 	public RectTex EnterPlay;
 	public RectTex EnterStore;
+	public RectTex TutorialPlay;
+	public RectTex TutorialNext;
 	
 	//Play
 	public RectTex PauseResume;
@@ -59,6 +61,7 @@ public class ButtonManager {
 		xHolder = 480 /2 - width / 2; 
 		yHolder = 400; 
 		EnterPlay = new RectTex(xHolder,yHolder, width, height, PlayButtonTex, "");
+		yHolder = 500;
 		
 		Texture ButtonTex = new Texture(Gdx.files.internal("MutualAssets/button.png"));
 		width = ButtonTex.getWidth();
@@ -68,6 +71,13 @@ public class ButtonManager {
 		yHolder = 200; 
 		EnterStore = new RectTex(xHolder,yHolder, width, height, ButtonTex, "EXTRAS");
 		
+		xHolder = 480 /2 - width / 2 + 120; 
+		yHolder = 50;
+		float nextButtonWidth = 160;
+		float nextButtonHeight = 160;
+		TutorialPlay = new RectTex(xHolder+1500,yHolder, nextButtonWidth, nextButtonHeight, ButtonTex, "PLAY");
+		TutorialNext = new RectTex(xHolder,yHolder, nextButtonWidth, nextButtonHeight, ButtonTex, "NEXT");
+
 		//Play - Pause State
 		xHolder = 480 /2 - width / 2; 
 		yHolder = 400; 
