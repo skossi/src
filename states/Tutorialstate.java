@@ -79,7 +79,7 @@ public class Tutorialstate extends Gamestate {
 		Man.drawButton(batch, TutorialArray[1], 0, 0, true);
 		batch.setColor(Color.WHITE);
 		
-		batch.draw(TutorialStep[step], 200, 300);
+		batch.draw(TutorialStep[step], 0, 220);
 		batch.setColor(1,1,1,1);
 	}
 	
