@@ -28,9 +28,10 @@ public class ScoreManager {
 		firstTime = prefs.getBoolean("First");
 		
 		wallet = new Wallet(prefs);
-		
+		int basicTheme = wallet.aquireAsset(0, 0);
+		int basicAudio = wallet.aquireAsset(1, 0);
 		//TODO:Just for debugging - should be taken out before release or build
-		firstDone();
+		//firstDone();
 	}
 	
 	//Gives other states access to the wallet to gain info on prices and if they are available.
@@ -45,8 +46,7 @@ public class ScoreManager {
 	{
 		firstTime = true;
 		prefs.putBoolean("First",true);
-		int basicTheme = wallet.aquireAsset(0, 0);
-		int basicAudio = wallet.aquireAsset(1, 0);
+		
 		// Start with 1000 score for debugging
 		//prefs.putInteger(infoString[0], 1000);
 		prefs.flush();

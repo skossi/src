@@ -93,7 +93,7 @@ public class ButtonManager {
 
 		xHolder = 480 * 0.75f - width/ 2; 
 		yHolder = 150;
-		Replay = new RectTex(xHolder, yHolder, width, height, ButtonTex,"AGAIN");
+		Replay = new RectTex(xHolder, yHolder, width, height, ButtonTex,"RESTART");
 
 		xHolder = 480 * 0.25f - width/ 2; 
 		yHolder = 150;

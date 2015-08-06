@@ -117,6 +117,7 @@ public class Playstate extends Gamestate{
 		isTesting = false;
 		
 		Man.AudioM.raiseThemeMusic();
+		Man.AudioM.makeLoop();
 		musicThreshold = 0;
 		Man._r = Man._rOrg;
 		Man._g = Man._gOrg;

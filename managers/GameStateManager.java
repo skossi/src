@@ -25,7 +25,7 @@ public class GameStateManager{
 	
 	
 	public static int ACTIVESTATE; //Keep track of which state is running. Is not used but might be good for debugging.
-	public static boolean hasFinishedTutorial = false;
+	public static boolean hasFinishedTutorial;
 	
 	public boolean introStart;
 	public boolean introEnd = false; 
@@ -34,15 +34,16 @@ public class GameStateManager{
 	//initation of the gamestate manager. Called when a new manager is created and sets to starting state
 	public GameStateManager(RectangleManager rsm)
 	{
-		
+		hasFinishedTutorial = rsm.ScoreM.firstTime;
 		RectMana = rsm;
 
 		Gdx.input.setCatchBackKey(true);
 		MyInputProcessor inputProcessor = new MyInputProcessor();
 		Gdx.input.setInputProcessor(inputProcessor);
-		
-		if(rsm.ScoreM.firstTime)setState(MENU);
-		else setState(TUTORIAL);
+		setState(MENU);
+		//THIS GOES WHERE PLAY IS INITIATED
+		//if(rsm.ScoreM.firstTime)setState(MENU);
+		//else setState(TUTORIAL);
 		
 		
 	}

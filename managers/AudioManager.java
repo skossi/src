@@ -76,6 +76,11 @@ public class AudioManager {
 		SoundEffects[i].play(FXVolume);
 	}
 	
+	public void makeLoop()
+	{
+		if(!MusicThemes[activeMusic].isLooping())MusicThemes[activeMusic].setLooping(true);
+	}
+	
 	//Raises the chosen themes intensity. 
 	public void raiseThemeMusic()
 	{	

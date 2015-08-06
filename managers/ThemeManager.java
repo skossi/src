@@ -9,8 +9,8 @@ public class ThemeManager {
 	private static final float rate = 255f;
 
 	private Color[] Logo = 		new Color[]{
-								new Color(0,0,0,1), new Color(1,1,1,1),
-								new Color(0,0,0,1),new Color(1,1,1,1)};
+								new Color(1,127/rate,39/rate,1), new Color(0,247/rate,218/rate,1),
+								new Color(1,216/rate,0,1),new Color(0,206/rate,95/rate,1)};
 	
 	private Color[] Play = 		new Color[]{
 								new Color(160f/rate,211/rate,110/rate,1), new Color(138/rate,155/rate,15/rate,1),

@@ -68,7 +68,7 @@ public class RectangleManager
 	public RectangleManager()
 	{
 		prefs = Gdx.app.getPreferences("My Preferences");
-		//prefs.clear();
+		prefs.clear();
 		activeTheme = prefs.getInteger("ActiveTheme");
 		activeAudio = prefs.getInteger("ActiveAudio");
 		ThemeM = new ThemeManager();
@@ -97,10 +97,6 @@ public class RectangleManager
 	    
 	    fontWhite = new BitmapFont(Gdx.files.internal("Fonts/Segui_White_40.fnt"));
 	    fontWhite.setColor(Color.WHITE); //var Color.BLACK
-	    
-	    newHighString = "Congratulations, new score!";
-	    newIndivString = "You made a new record run!";
-	    worseString = "Sorry, no high score was made.";
 	    
 	}
 	

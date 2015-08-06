@@ -99,6 +99,7 @@ public class Tutorialstate extends Gamestate {
 		if(buttonClick(TutorialArray[0],x,y)) 
 		{
 			GameStateManager.hasFinishedTutorial = true;
+			Man.ScoreM.firstDone();
 			TransitionToState(true,-1);
 			gsm.introStart = true; 
 			Man.playSoundEffect(AudioManager.START);
