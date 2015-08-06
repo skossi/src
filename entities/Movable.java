@@ -33,7 +33,7 @@ public class Movable {
 	public boolean isBeingSwapped;
 	public boolean justSpawned;
 	public int ID;
-	public double gravity = 0.1;
+	public double gravity = 0.3;
 	
 	public boolean isDead;
 	public int deathFrame;

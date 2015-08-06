@@ -92,7 +92,7 @@ public class Playstate extends Gamestate{
 		steps = size/2; //pixel perfect updating
 		columns = 7;
 		rows = 13;
-		takeoffSpeed = 600;
+		takeoffSpeed = 950;
 		startingRows = 3;
 		IDs = 1;
 		Movables = new Movable[columns][rows];
@@ -107,7 +107,7 @@ public class Playstate extends Gamestate{
 		startAnimation = true;
 		introSpeed = 300;
 		loseSpeed = 20;
-		superSpeed = 2000;
+		superSpeed = 3000;
 		score = 0;
 		prepareMatrix();
 		lvlDisp = 1;
@@ -326,10 +326,9 @@ public class Playstate extends Gamestate{
 			{
 				lastWave = System.currentTimeMillis();
 				spawnWave((float)((1+(1-difficulty))*defaultSpeed));
-				if(difficulty > 0.45)
+				if(difficulty > 0.15)
 				{
-					
-					difficulty -= 0.03;
+					difficulty -= 0.02;
 					musicThreshold++;
 					//TODO:This is just a placeholder. Will be fixed
 					if(musicThreshold == 4)
@@ -339,7 +338,7 @@ public class Playstate extends Gamestate{
 					}	
 				}
 			} 
-			else if (actions == startingRows && System.currentTimeMillis() - lastDropTime > 900*difficulty) spawnMovable(MathUtils.random(0, 6), (float)((1+(1-difficulty))*defaultSpeed));
+			else if (actions == startingRows && System.currentTimeMillis() - lastDropTime > 1100*difficulty) spawnMovable(MathUtils.random(0, 6), (float)((1+(1-difficulty))*defaultSpeed));
 		}
 		else if (startAnimation) playIntro(dt,-1);
 		else blackMovableAnimation(dt);
