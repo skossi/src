@@ -203,7 +203,7 @@ public class Storestate extends Gamestate {
 				if(!wallet.owned[selectTab][i])
 				{
 					if(i == lastPressed)batch.draw(Man.TextureM.lockedItem,itemX+cd,itemY);
-					else batch.draw(Man.TextureM.lockedItem,itemX,itemY);
+					else batch.draw(Man.TextureM.lockedItem,itemX,itemY-10);
 					batch.draw(Man.TextureM.priceHolder,itemX,itemY-64);
 					if(Integer.toString(wallet.price[selectTab][i]).length()== 3)
 					Man.fontBlack.draw(batch,Integer.toString(wallet.price[selectTab][i]),itemX+40,itemY-20);
