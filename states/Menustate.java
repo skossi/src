@@ -54,12 +54,12 @@ public class Menustate extends Gamestate {
 		MenuColors[4] = Man.Color_Store;
 		
 		moveMenu = false;
+		Man.AudioM.makeLoop();
 		
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		
 		if(moveMenu)
 		{
 			if(toPlay)
@@ -106,6 +106,7 @@ public class Menustate extends Gamestate {
 			TransitionToState(true,-1);
 			gsm.introStart = true; 
 			Man.playSoundEffect(AudioManager.START);
+			Man.AudioM.upgradeGame();
 		}
 		//Tutorial
 		if(buttonClick(MenuArray[1],x,y))

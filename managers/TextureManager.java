@@ -39,6 +39,8 @@ public class TextureManager {
 	public Texture tutorialStepTwo;
 	public Texture tutorialStepThree;
 	public Texture tutorialStepFour;
+	public Texture tutorialStepFive;
+	public Texture tutorialBorder;
 	
 	public Texture[] kill;
 	
@@ -82,6 +84,8 @@ public class TextureManager {
 		tutorialStepTwo = new Texture(Gdx.files.internal("MutualAssets/tutorialStepTwo.png"));
 		tutorialStepThree = new Texture(Gdx.files.internal("MutualAssets/tutorialStepThree.png"));
 		tutorialStepFour = new Texture(Gdx.files.internal("MutualAssets/tutorialStepFour.png"));
+		tutorialStepFive = new Texture(Gdx.files.internal("MutualAssets/tutorialStepFive.png"));
+		tutorialBorder = new Texture(Gdx.files.internal("MutualAssets/tutorialBorder.png"));
 		
 		kill = new Texture[8];
 		for(int i = 0; i < 8; i++)

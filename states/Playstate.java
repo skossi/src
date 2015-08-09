@@ -116,7 +116,7 @@ public class Playstate extends Gamestate{
 		
 		isTesting = false;
 		
-		Man.AudioM.raiseThemeMusic();
+		//Man.AudioM.raiseThemeMusic();
 		Man.AudioM.makeLoop();
 		musicThreshold = 0;
 		Man._r = Man._rOrg;
@@ -258,18 +258,6 @@ public class Playstate extends Gamestate{
 			return (typeOne ? (typeTwo ? Man.TextureM.square : Man.TextureM.circle) 
 					: (typeTwo ? Man.TextureM.triangle : Man.TextureM.ex));
 	}
-	
-	// Use: printMovables();
-	// After: All blocks have been translated to integers from 1-4 and written to the console
-	private void printMovables() {
-		for (int j=rows-1; j > 0; j--) {
-			String log = "";
-			for (int i=0; i < columns; i++) {
-				    log += translateType(Movables[i][j]);
-			}
-				//System.out.println(log);
-			}
-	    }
 				
 	// Use: int type = translateType(m1);
 	// After: Returns value 1 if m1 has types True/True, 
@@ -304,10 +292,7 @@ public class Playstate extends Gamestate{
 		
 		if(isTesting) return;
 		if (isPaused) {
-//			printMovables();
-//			isTesting = true;
 			stats.timePaused += dt*3;
-			//System.out.println("Entering delay");
 			delayMovableTimers(dt);
 			return;
 		}
@@ -331,9 +316,12 @@ public class Playstate extends Gamestate{
 					difficulty -= 0.02;
 					musicThreshold++;
 					//TODO:This is just a placeholder. Will be fixed
-					if(musicThreshold == 4)
+					if(musicThreshold == 4 && Man.AudioM.activeMusic < 3)
 					{
+						difficulty -= 0.04;
 						musicThreshold = 0;
+						//Man.AudioM.upgradeGame();
+						//Man.playSoundEffect(AudioManager.PAUSE);
 						Man.AudioM.raiseThemeMusic();
 					}	
 				}
@@ -442,7 +430,7 @@ public class Playstate extends Gamestate{
 					    if(m.row > loseConditionOffset && m.speed  == 0) loseConditionOffset = m.row;
 					    if(m.isPowerDown)
 			    		{
-					    	batch.draw(Man.TextureM.powerDown, m.x, m.y);
+					    	if(!m.isDead)batch.draw(Man.TextureM.powerDown, m.x, m.y);
 			    		}
 					    if (m.isDead) 
 					    {
@@ -473,7 +461,8 @@ public class Playstate extends Gamestate{
 
 		batch.draw(Man.TextureM.loseLine, 0, loseCondition+loseConditionOffset);
 		batch.draw(Man.TextureM.ui_bg, UI.x, UI.y, UI.width, UI.height);
-	    Man.fontWhite.draw(batch,Integer.toString(score), 225, scoreBoardPos);
+		int addX = Integer.toString(score).length();
+	    Man.fontWhite.draw(batch,Integer.toString(score), 230-addX*4, scoreBoardPos);
 	}
 	
 	public static void touchUp(int x, int y) {
@@ -543,8 +532,6 @@ public class Playstate extends Gamestate{
 	
 	public void delayMovableTimers(float dt)
 	{
-		//System.out.println(dt);
-		//System.out.println("Inside delay");
 		for(Movable[] row : Movables)
 			for(Movable m1 : row)
 			{
@@ -552,12 +539,10 @@ public class Playstate extends Gamestate{
 				if(m1.timeBlacked!=Long.MAX_VALUE)
 				{
 					m1.timeBlacked=m1.timeBlacked+(long) (3000*dt);
-					//System.out.println("Delaying black");
 				}
 				if(m1.isBeingThrusted)
 				{
 					m1.timeThrusted=m1.timeThrusted+(long)(3000*dt);
-					//System.out.println("Delaying thrust");
 				}
 			}
 	}
@@ -895,6 +880,7 @@ public class Playstate extends Gamestate{
 			   }
 		   }
 	   }
+	   Man.playSoundEffect(AudioManager.MATCH2);
    }
 	   
   /**
@@ -1022,9 +1008,8 @@ public class Playstate extends Gamestate{
 		UI.y += 1;
 		//Gdx.input.vibrate(1500);
 		//TODO: Find new loosing sound
-		Man.playSoundEffect(AudioManager.LOST);
-		
-		
+		Man.playSoundEffect(AudioManager.LOST);	
+		Man.AudioM.resetThemeMusic();
 	}
 	
 	//Saves current score and sets the state to Lost. Called when game is lost

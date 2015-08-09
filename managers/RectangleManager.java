@@ -68,7 +68,7 @@ public class RectangleManager
 	public RectangleManager()
 	{
 		prefs = Gdx.app.getPreferences("My Preferences");
-		prefs.clear();
+		//prefs.clear();
 		activeTheme = prefs.getInteger("ActiveTheme");
 		activeAudio = prefs.getInteger("ActiveAudio");
 		ThemeM = new ThemeManager();
@@ -107,7 +107,10 @@ public class RectangleManager
 		prefs.flush();
 		activeAudio = newAudio;
 		AudioM = new AudioManager(newSound,_Sounds);
-		isMuted = prefs.getBoolean("Mute");
+		isMuted = prefs.getBoolean("Mute"); 
+		//boolean meh;
+		//if(isMuted) meh = AudioM.mute(isMuted);
+		
 		isMuted = AudioM.mute(isMuted);
 	}
 	

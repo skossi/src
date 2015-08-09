@@ -23,6 +23,8 @@ public class Tutorialstate extends Gamestate {
 	 private int stateDir;
 	 private boolean moveMenu;
 	 private int step;
+	 
+	 private boolean isFirstTheme;
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
 	public Tutorialstate(GameStateManager gsm)
@@ -35,7 +37,7 @@ public class Tutorialstate extends Gamestate {
 	{
 		TutorialArray = new RectTex[2];
 		MenuColors = new Color[5];
-		TutorialStep = new Texture[4];
+		TutorialStep = new Texture[5];
 		step = 0;
 		Man = RectMan;
 		
@@ -52,7 +54,10 @@ public class Tutorialstate extends Gamestate {
 		TutorialStep[1] = Man.TextureM.tutorialStepTwo;
 		TutorialStep[2] = Man.TextureM.tutorialStepThree;
 		TutorialStep[3] = Man.TextureM.tutorialStepFour;
-	
+		TutorialStep[4] = Man.TextureM.tutorialStepFive;
+		
+		if(Man.activeTheme == 0) isFirstTheme = true;
+		
 		moveMenu = false;
 	}
 	//See abstrakt class Gamestate update(float dt);
@@ -74,6 +79,7 @@ public class Tutorialstate extends Gamestate {
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
+		if(!isFirstTheme) batch.draw(Man.TextureM.tutorialBorder,0,220);
 		batch.setColor(Color.BLACK);
 		Man.drawButton(batch, TutorialArray[0], 0, 0,true);
 		Man.drawButton(batch, TutorialArray[1], 0, 0, true);
@@ -102,7 +108,7 @@ public class Tutorialstate extends Gamestate {
 			Man.ScoreM.firstDone();
 			TransitionToState(true,-1);
 			gsm.introStart = true; 
-			Man.playSoundEffect(AudioManager.START);
+			//Man.playSoundEffect(AudioManager.START);
 			
 		}
 		//Tutorial

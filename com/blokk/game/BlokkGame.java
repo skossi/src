@@ -94,6 +94,7 @@ public class BlokkGame implements ApplicationListener {
       else R_Man.drawButton(batch, R_Man.ButtonM.SoundOn, 0, 0, false);
       
       batch.end();
+      
       if (Gdx.input.justTouched()) 
       {  
     	  Vector3 touchPosOld = new Vector3();
@@ -105,8 +106,7 @@ public class BlokkGame implements ApplicationListener {
 		{
 			R_Man.soundMute();
 			R_Man.playSoundEffect(AudioManager.MUTE);
-		}
-    	  
+		}  	  
       }
       
       if(Gdx.input.isTouched()) 
@@ -146,12 +146,6 @@ public class BlokkGame implements ApplicationListener {
 				}
 			}
 		}
-   }
-   
-   private void spawnWave() {
-	   for(int j = 0; j < columns; j++){
-		   spawnMovable();
-	   }
    }
    
    public void spawnBackground()
@@ -222,8 +216,8 @@ public class BlokkGame implements ApplicationListener {
 	*
 	* @return            a new cube of some sort is created and placed in the grid
 	*/
-	private void spawnMovable() {
-		  
+	private void spawnMovable() 
+	{	  
 		  Movable movable;
 		  movable = new Movable(true);
 		  movable.col = MathUtils.random(0, 6);
@@ -238,7 +232,7 @@ public class BlokkGame implements ApplicationListener {
 	      }
 	      Movables[movable.col][available_row] = movable;
 	      movable.row = available_row;
-	      movable.x = (float) (Math.random()*480-size);//(size+1)*movable.col; 
+	      movable.x = (float) (size+1)*movable.col; 
 	      movable.y = 800;
 	      movable.speed = -600;
 	      movable.width = size;

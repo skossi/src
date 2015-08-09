@@ -13,9 +13,9 @@ public class AudioManager {
 	private String asset;
 	
 	//Main themesound and audio effects
-	private float Volume;
+	public float Volume;
 	private float FXVolume;
-	private int activeMusic;
+	public int activeMusic;
 	private Music[] MusicThemes;
 	private Sound[] SoundEffects;
 	
@@ -30,6 +30,7 @@ public class AudioManager {
 	public static final int PUSH = 10;
 	public static final int UNLOCK = 11;
 	public static final int ERROR = 12;
+	public static final int MATCH2 = 13;
 	
 	
 	public AudioManager(String aAsset, String aLoc)
@@ -62,6 +63,7 @@ public class AudioManager {
 		SoundEffects[PUSH] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Push.wav"));
 		SoundEffects[UNLOCK] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Unlock.wav"));
 		SoundEffects[ERROR] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Error.wav"));
+		SoundEffects[MATCH2] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Match2.wav"));
 		
 	    // start the playback of the background music immediately
 		
@@ -78,36 +80,43 @@ public class AudioManager {
 	
 	public void makeLoop()
 	{
+		if(!MusicThemes[activeMusic].isPlaying())
+		{
+			MusicThemes[activeMusic].play();
+		}
 		if(!MusicThemes[activeMusic].isLooping())MusicThemes[activeMusic].setLooping(true);
 	}
 	
 	//Raises the chosen themes intensity. 
 	public void raiseThemeMusic()
 	{	
-		if(activeMusic > 2) return; // was 2, supposed to be 3?
-		
-		/*
-		MusicThemes[activeMusic].setLooping(false);
-		MusicThemes[activeMusic].stop();
-    	activeMusic++;
-    	MusicThemes[activeMusic].setLooping(true);
-		MusicThemes[activeMusic].play();
-		//MusicThemes[activeMusic].setPosition(soundPos);
-	    MusicThemes[activeMusic].setVolume(Volume);
-		*/
+		if(activeMusic > 2) return; 
 		
 		MusicThemes[activeMusic].setLooping(false);
 		MusicThemes[activeMusic].setOnCompletionListener(new Music.OnCompletionListener()
 		{
 	        public void onCompletion(Music aMusic)
 	        {  
-	        	MusicThemes[activeMusic].stop();
+	        	upgradeGame();
+	        	/*MusicThemes[activeMusic].stop();
 	        	activeMusic++;
 	        	MusicThemes[activeMusic].setLooping(true);
 	    		MusicThemes[activeMusic].play();
 	    	    MusicThemes[activeMusic].setVolume(Volume);
+	    	    */
 	        }
 	    });
+	}
+	
+	public void upgradeGame()
+	{
+		//if(activeMusic > 2) return; 
+		
+		MusicThemes[activeMusic].stop();
+    	activeMusic++;
+    	MusicThemes[activeMusic].setLooping(true);
+		MusicThemes[activeMusic].play();
+	    MusicThemes[activeMusic].setVolume(Volume);
 	}
 	
 	public void stopMusic()

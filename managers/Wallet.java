@@ -13,8 +13,8 @@ public class Wallet {
 	private String[] itemsAvailable = new String[]{"item_1","item_2","item_3","item_4"};
 	
 	//THESE MUST BE HARDCODED AND DECIDED
-	private int[] themePrice = new int[]{0, 250, 4, 8};
-	private int[] audioPrice = new int[]{0, 100, 600, 900};
+	private int[] themePrice = new int[]{1337, 2000, 4000, 8000};
+	private int[] audioPrice = new int[]{1337, 1000, 2000, 3000};
 	public int[][] price = new int[][]{themePrice,audioPrice};
 	
 	public boolean[][] owned = new boolean[storeTabs.length][itemsAvailable.length];

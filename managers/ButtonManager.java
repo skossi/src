@@ -21,6 +21,7 @@ public class ButtonManager {
 	//Play
 	public RectTex PauseResume;
 	public RectTex PauseRestart;
+	public RectTex PauseTutorial;
 	public RectTex PauseQuit;
 	
 	//Store
@@ -86,6 +87,10 @@ public class ButtonManager {
 		xHolder = 480 /2 - width / 2; 
 		yHolder = 250; 
 		PauseRestart = new RectTex(xHolder,yHolder, width, height, ButtonTex, "RESTART");
+		
+		xHolder = 480 /2 - width / 2; 
+		yHolder = 250; 
+		PauseTutorial = new RectTex(xHolder,yHolder, width, height, ButtonTex, "HOW TO");
 		
 		xHolder = 480 /2 - width / 2; 
 		yHolder = 100; 

@@ -49,7 +49,7 @@ public class Loststate extends Gamestate{
 		
 		Replay = Man.ButtonM.Replay;
 		MainMenu = Man.ButtonM.MainMenu;
-		Man.AudioM.resetThemeMusic();
+		//Man.AudioM.resetThemeMusic();
 		
 		Animation = true;
 		gameEnd = true;
@@ -121,7 +121,8 @@ public class Loststate extends Gamestate{
 		{
 			batch.draw(Man.TextureM.newScore,GameOver.x,GameOver.y+yOffset);
 		}
-		Man.fontWhite.draw(batch,currencyToDisplay, 225, 530+scoreOffset);
+		int scoreXOffset = currencyToDisplay.length();
+		Man.fontWhite.draw(batch,currencyToDisplay, 230-4*scoreXOffset, 530+scoreOffset);
 		
 		if(gameEnd)
 		{
@@ -150,6 +151,7 @@ public class Loststate extends Gamestate{
 			Animation = true;
 			Replay.pressedEffect();
 			Man.playSoundEffect(AudioManager.START);
+			Man.AudioM.upgradeGame();
 			if(!gsm.introEnd) gsm.introStart = true;
 		}
 		if(buttonClick(MainMenu,x,y))

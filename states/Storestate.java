@@ -184,7 +184,8 @@ public class Storestate extends Gamestate {
 		// Currency Direction
 		int cd = currencyOffset * currencyOffsetDir; 
 		batch.draw(Man.TextureM.currencyBack,0,590+yOffset);
-		Man.fontWhite.draw(batch,drawCurrency,220+cd, 635+yOffset);
+		int addX = drawCurrency.length();
+		Man.fontWhite.draw(batch,drawCurrency,230-addX*4+cd, 635+yOffset);
 		
 		batch.setColor(1,1,1,1);
 		
@@ -204,7 +205,10 @@ public class Storestate extends Gamestate {
 					if(i == lastPressed)batch.draw(Man.TextureM.lockedItem,itemX+cd,itemY);
 					else batch.draw(Man.TextureM.lockedItem,itemX,itemY);
 					batch.draw(Man.TextureM.priceHolder,itemX,itemY-64);
-					Man.fontBlack.draw(batch,Integer.toString(wallet.price[selectTab][i]),itemX+40,itemY-30);
+					if(Integer.toString(wallet.price[selectTab][i]).length()== 3)
+					Man.fontBlack.draw(batch,Integer.toString(wallet.price[selectTab][i]),itemX+40,itemY-20);
+					else
+					Man.fontBlack.draw(batch,Integer.toString(wallet.price[selectTab][i]),itemX+34,itemY-20);	
 				}
 				else if(i == Man.activeTheme && selectTab == 0) 
 				{
@@ -297,7 +301,11 @@ public class Storestate extends Gamestate {
 				{
 					if(buttonClick(Man.ButtonM.StoreSelect[selectTab][i],x,y))
 					{
-						if(wallet.owned[selectTab][i])canChangeTheme(i);
+						if(wallet.owned[selectTab][i])
+						{
+							canChangeTheme(i);
+							Man.ButtonM.StoreSelect[selectTab][i].pressedEffect();
+						}
 						else checkCapital(selectTab,i);	
 					}
 				}
@@ -309,7 +317,11 @@ public class Storestate extends Gamestate {
 				{
 					if(buttonClick(Man.ButtonM.StoreSelect[selectTab][i],x,y))
 					{
-						if(wallet.owned[selectTab][i])canChangeAudio(i);
+						if(wallet.owned[selectTab][i])
+						{
+							canChangeAudio(i);
+							Man.ButtonM.StoreSelect[selectTab][i].pressedEffect();
+						}
 						else checkCapital(selectTab,i);	
 					}
 				}
@@ -354,6 +366,7 @@ public class Storestate extends Gamestate {
 	private void canChangeTheme(int toTheme)
 	{
 		if(toTheme == Man.activeTheme)return;
+		Man.playSoundEffect(AudioManager.PUSH);
 		themeToSet = toTheme;
 		xDir = 1;
 		yDir = 1;
@@ -365,6 +378,7 @@ public class Storestate extends Gamestate {
 	private void canChangeAudio(int toAudio)
 	{
 		if(toAudio == Man.activeAudio)return;
+		Man.playSoundEffect(AudioManager.PUSH);
 		isSwappingTheme = false;
 		// Do audio animation here
 		audioToSet = toAudio;
@@ -489,7 +503,7 @@ public class Storestate extends Gamestate {
 		if(maxAudio <= 1)
 		{
 			maxAudio += dt*6;
-			Man.AudioM.setMainVolume(maxAudio);
+			//Man.AudioM.setMainVolume(maxAudio);
 		}
 	}
 	
@@ -499,7 +513,7 @@ public class Storestate extends Gamestate {
 		if(maxAudio >= 0)
 		{
 			maxAudio -= dt*6;
-			Man.AudioM.setMainVolume(maxAudio);
+			//Man.AudioM.setMainVolume(maxAudio);
 		}	
 	}
 	
