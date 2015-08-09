@@ -963,6 +963,8 @@ public class Playstate extends Gamestate{
 	   }
 	   handleMatches(Movables[col][row], IDs);
 	   selectedY += direction*size;
+	   handleMatches(Movables[col][row+direction], IDs);
+	   handleMatches(Movables[col][row], IDs);
    }
 	   
    /**
