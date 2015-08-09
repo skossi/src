@@ -811,7 +811,7 @@ public class Playstate extends Gamestate{
 		   }
 		   //TODO: skoda
 		   if(m1.ID != -1) shootByID(m1.ID, superSpeed);
-		   else shootRows(index, count, row, takeoffSpeed, false, thrustID);
+		   else shootRows(index, count, row, takeoffSpeed + (count - 3) * 125, false, thrustID);
 		   Man.playSoundEffect(AudioManager.MATCH);
 		}
    }
