@@ -508,7 +508,8 @@ public class Playstate extends Gamestate{
 		actions = 0;
 		actionTime = System.currentTimeMillis()-500;
 		Man.AudioM.resetThemeMusic();
-		Man.AudioM.raiseThemeMusic();
+		Man.AudioM.upgradeGame();
+		//Man.AudioM.raiseThemeMusic();
 		Man.playSoundEffect(AudioManager.START);
 	}
 	
