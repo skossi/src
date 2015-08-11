@@ -11,12 +11,12 @@ import com.badlogic.gdx.graphics.Texture;
 public class RectTex {
 
 	private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-	
+
 	public float x,y, width, height;
 	public Texture tex;
 	public String display;
 	public int disX,disY;
-	
+
 	//Creates a new Rectangle that holds its own position and size. Also contains it own Texture
 	public RectTex(float xCons, float yCons, float widthCons, float heightCons, Texture texCons, String displayCons)
 	{
@@ -29,13 +29,13 @@ public class RectTex {
 		disX = Math.round(xCons)+100 - calculateXPos(displayCons);//83 + Math.round(xCons) - calculateXPos(displayCons);
 		disY = 72+Math.round(yCons);
 	}
-	
+
 	private int calculateXPos(String aText)
 	{
-		int xPos = aText.length() * 10;		
+		int xPos = aText.length() * 10;
 		return xPos;
 	}
-	
+
 	public void pressedEffect()
 	{
 		int adjustment = 5;
@@ -44,7 +44,7 @@ public class RectTex {
 		ResetThread resetter=new ResetThread(adjustment,this);
 		scheduler.schedule(resetter, 35, TimeUnit.MILLISECONDS);
 	}
-	
+
 	private class ResetThread extends Thread
 	{
 		int adjustment;
@@ -55,12 +55,13 @@ public class RectTex {
 			this.adjustment=ad;
 			this.rekt=r;
 		}
-		
+
+		@Override
 		public void run()
 		{
 			rekt.x=rekt.x-adjustment;
 			rekt.y=rekt.y-adjustment;
 		}
 	}
-	
+
 }

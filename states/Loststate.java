@@ -19,7 +19,7 @@ public class Loststate extends Gamestate{
 	private RectTex Replay;
 	private RectTex MainMenu;
 	private RectangleManager Man;
-	
+
 	private boolean Animation;
 	private boolean lowerAnimation;
 	private boolean gameEnd;
@@ -30,27 +30,28 @@ public class Loststate extends Gamestate{
 	private int scoreOffset;
 	private int screenDir;
 	private String currencyToDisplay;
-	
-	
+
+
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
 	public Loststate(GameStateManager gsm)
-	{	
+	{
 		super(gsm);
 	}
-	
+
 	//See abstrakt class Gamestate init();
+	@Override
 	public void init(RectangleManager RectMan)
 	{
 		Man = RectMan;
 		GameOver = Man.ButtonM.Over;
-		
+
 		currencyToDisplay = Integer.toString(Man.ScoreM.newestScore);
-		
+
 		Replay = Man.ButtonM.Replay;
 		MainMenu = Man.ButtonM.MainMenu;
 		//Man.AudioM.resetThemeMusic();
-		
+
 		Animation = true;
 		gameEnd = true;
 		lowerAnimation = false;
@@ -61,12 +62,13 @@ public class Loststate extends Gamestate{
 		scoreOffset = 207;
 		screenDir = -1;
 		if(Man.ScoreM.NewHighScore)gsm.introEnd = false;
-		
+
 	}
-	
+
 	//See abstrakt class Gamestate update(float dt);
+	@Override
 	public void update(float dt)
-	{	
+	{
 		if(Animation)
 		{
 			if(gameEnd)
@@ -76,7 +78,7 @@ public class Loststate extends Gamestate{
 				if(scoreOffset > 0)scoreOffset += Man.AnimationM.verticalSpeed*dt*screenDir;
 				else scoreOffset = 0;
 				Man.AnimationM.speedAdd -= Man.AnimationM.accel;
-				if(yOffset <= 0) 
+				if(yOffset <= 0)
 				{
 					yOffset = 0;
 					scoreOffset = 0;
@@ -102,7 +104,7 @@ public class Loststate extends Gamestate{
 				if(Man._r < Man._rOrg) Man._r += 4*dt;
 				if(Man._g < Man._gOrg) Man._g += 4*dt;
 				if(Man._b < Man._bOrg) Man._b += 4*dt;
-				
+
 				Man.AnimationM.verticalSpeed += Man.AnimationM.speedAdd;
 				yOffset += Man.AnimationM.verticalSpeed*dt*screenDir;
 				scoreOffset += Man.AnimationM.verticalSpeed*dt*screenDir;
@@ -112,10 +114,11 @@ public class Loststate extends Gamestate{
 			}
 		}
 	}
-	
+
 	//See abstrakt class Gamestate draw(SpriteBatch b);
+	@Override
 	public void draw(SpriteBatch batch)
-	{	
+	{
 		batch.draw(GameOver.tex, GameOver.x, GameOver.y+yOffset-68);
 		if(Man.ScoreM.NewHighScore)
 		{
@@ -123,7 +126,7 @@ public class Loststate extends Gamestate{
 		}
 		int scoreXOffset = currencyToDisplay.length();
 		Man.fontWhite.draw(batch,currencyToDisplay, 230-4*scoreXOffset, 530+scoreOffset);
-		
+
 		if(gameEnd)
 		{
 			batch.draw(Man.TextureM.loseLine, 0, 670-800+yOffset);
@@ -132,7 +135,7 @@ public class Loststate extends Gamestate{
 			batch.setColor(Color.WHITE);
 			Man.drawButton(batch, MainMenu, 0, lowerOffset, false);
 		}
-		else 
+		else
 		{
 			batch.setColor(Color.WHITE);
 			Man.drawButton(batch, Replay, 0, yOffset, false);
@@ -141,8 +144,9 @@ public class Loststate extends Gamestate{
 		}
 		batch.setColor(1,1,1,1);
 	}
-	
+
 	//See abstrakt class Gamestate justTouched(x,y);
+	@Override
 	public void justTouched(float x, float y)
 	{
 		if(buttonClick(Replay,x,y))
@@ -163,7 +167,7 @@ public class Loststate extends Gamestate{
 			Man.playSoundEffect(AudioManager.PUSH);
 		}
 	}
-	
+
 	//Tells if user just pressed a corresponding rectangle
 	//Takes in Rectangle Rekt that and x and y coordinates of world position
 	public boolean buttonClick(RectTex rekt, float x, float y) {
@@ -171,13 +175,15 @@ public class Loststate extends Gamestate{
 		return false;
 	}
 	//See abstrakt class Gamestate isTouched(x,y);
+	@Override
 	public void isTouched(float x, float y)
 	{
-		
+
 	}
 	//See abstrakt class Gamestate dispose();
+	@Override
 	public void dispose()
 	{
-	
+
 	}
 }

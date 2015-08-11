@@ -1,6 +1,5 @@
 package states;
 
-import managers.AudioManager;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
@@ -14,6 +13,7 @@ import entities.RectTex;
 //Creates a new state when tutorial is viewed
 public class Tutorialstate extends Gamestate {
 
+<<<<<<< HEAD
 	 
 	 private RectangleManager Man;
 	 private RectTex[] TutorialArray;
@@ -30,36 +30,66 @@ public class Tutorialstate extends Gamestate {
 	 private int yOffset = 0;
 	 
 	 private boolean isFirstTheme;
+=======
+
+	private RectangleManager Man;
+	private RectTex[] TutorialArray;
+	private Color[] MenuColors;
+	private Texture[] TutorialStep;
+	private boolean toPlay;
+	private int stateDir;
+	private boolean moveMenu;
+	private int step;
+
+	private boolean isFirstTheme;
+>>>>>>> 39654e81076dd11b6fe572f35663adf6d3c4b03c
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
 	public Tutorialstate(GameStateManager gsm)
-	{	
+	{
 		super(gsm);
 	}
-	
+
 	//See abstrakt class Gamestate init();
+	@Override
 	public void init(RectangleManager RectMan)
 	{
 		TutorialArray = new RectTex[2];
 		TutorialStep = new Texture[5];
 		step = 0;
 		Man = RectMan;
-		
+
 		TutorialArray[0] = Man.ButtonM.TutorialPlay;
 		TutorialArray[1] = Man.ButtonM.TutorialNext;
+<<<<<<< HEAD
 		
+=======
+
+		MenuColors[0] = Man.Color_Logo;
+		MenuColors[1] = Man.Color_Play;
+		MenuColors[2] = Man.Color_Score;
+		MenuColors[3] = Man.Color_Tutorial;
+		MenuColors[4] = Man.Color_Store;
+
+>>>>>>> 39654e81076dd11b6fe572f35663adf6d3c4b03c
 		TutorialStep[0] = Man.TextureM.tutorialStepOne;
 		TutorialStep[1] = Man.TextureM.tutorialStepTwo;
 		TutorialStep[2] = Man.TextureM.tutorialStepThree;
 		TutorialStep[3] = Man.TextureM.tutorialStepFour;
 		TutorialStep[4] = Man.TextureM.tutorialStepFive;
-		
+
 		if(Man.activeTheme == 0) isFirstTheme = true;
+<<<<<<< HEAD
 		
 		animation = true;
 		toPlay = false;
+=======
+
+		moveMenu = false;
+>>>>>>> 39654e81076dd11b6fe572f35663adf6d3c4b03c
 	}
 	//See abstrakt class Gamestate update(float dt);
+	@Override
 	public void update(float dt)
 	{
 		if (animation) {
@@ -103,8 +133,9 @@ public class Tutorialstate extends Gamestate {
 			}
 		}
 	}
-	
+
 	//See abstrakt class Gamestate draw(SpriteBatch b);
+	@Override
 	public void draw(SpriteBatch batch)
 	{
 		//if(!isFirstTheme) batch.draw(Man.TextureM.tutorialBorder,0,220);
@@ -114,11 +145,16 @@ public class Tutorialstate extends Gamestate {
 		
 		Man.drawButton(batch, TutorialArray[1], 0, 0, true);
 		batch.setColor(Color.WHITE);
+<<<<<<< HEAD
 		
 		batch.draw(TutorialStep[step], xOffset, 220 + yOffset);
+=======
+
+		batch.draw(TutorialStep[step], 0, 220);
+>>>>>>> 39654e81076dd11b6fe572f35663adf6d3c4b03c
 		batch.setColor(1,1,1,1);
 	}
-	
+
 	//Sets the direction of the transition.
 	private void TransitionToState(boolean aActionState, int aDirection)
 	{
@@ -127,12 +163,18 @@ public class Tutorialstate extends Gamestate {
 		stateDir = aDirection;
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
+	@Override
 	public void justTouched(float x, float y)
 	{
+<<<<<<< HEAD
 		if(animation) return; //|| !Man.isMenuDown
 		
+=======
+		if(moveMenu) return; //|| !Man.isMenuDown
+
+>>>>>>> 39654e81076dd11b6fe572f35663adf6d3c4b03c
 		//Play
-		if(buttonClick(TutorialArray[0],x,y)) 
+		if(buttonClick(TutorialArray[0],x,y))
 		{
 			Man.playSoundEffect(AudioManager.PUSH);
 			TutorialArray[0].pressedEffect();
@@ -140,7 +182,13 @@ public class Tutorialstate extends Gamestate {
 			GameStateManager.hasFinishedTutorial = true;
 			Man.ScoreM.firstDone();
 			TransitionToState(true,-1);
+<<<<<<< HEAD
 			gsm.introStart = true; 
+=======
+			gsm.introStart = true;
+			//Man.playSoundEffect(AudioManager.START);
+
+>>>>>>> 39654e81076dd11b6fe572f35663adf6d3c4b03c
 		}
 		//Tutorial
 		if(buttonClick(TutorialArray[1],x,y))
@@ -172,15 +220,17 @@ public class Tutorialstate extends Gamestate {
 		}
 		return false;
 	}
-	
+
 	//See abstrakt class Gamestate isTouched(x,y);
+	@Override
 	public void isTouched(float x, float y)
 	{
-		
+
 	}
 	//See abstrakt class Gamestate dispose();
+	@Override
 	public void dispose()
 	{
-	
+
 	}
 }

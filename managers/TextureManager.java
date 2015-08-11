@@ -10,7 +10,7 @@ public class TextureManager {
 
 	private String location;
 	private String asset;
-	
+
 	public Texture logo;
 	public Texture square;
 	public Texture triangle;
@@ -41,9 +41,9 @@ public class TextureManager {
 	public Texture tutorialStepFour;
 	public Texture tutorialStepFive;
 	public Texture tutorialBorder;
-	
+
 	public Texture[] kill;
-	
+
 	public TextureManager(String aAsset, String aLoc)
 	{
 		asset = aAsset;
@@ -58,11 +58,11 @@ public class TextureManager {
 		square = new Texture(Gdx.files.internal(asset+location+"square.png"));
 		triangle = new Texture(Gdx.files.internal(asset+location+"triangle.png"));
 		circle = new Texture(Gdx.files.internal(asset+location+"circle.png"));
-		ex = new Texture(Gdx.files.internal(asset+location+"ex.png"));		
+		ex = new Texture(Gdx.files.internal(asset+location+"ex.png"));
 		selected = new Texture(Gdx.files.internal(asset+location+"selectedNEW.png"));
 		loseLine = new Texture(Gdx.files.internal(asset+location+"redline.png"));
-		
-		//*-------MUTUAL ASSETS------*	
+
+		//*-------MUTUAL ASSETS------*
 		logo = new Texture(Gdx.files.internal("MutualAssets/logo_main.png"));
 		black = new Texture(Gdx.files.internal("MutualAssets/black.png"));
 		blinkBlack = new Texture(Gdx.files.internal("MutualAssets/blackBlikk.png"));
@@ -79,14 +79,14 @@ public class TextureManager {
 		swapAudio = new Texture(Gdx.files.internal("MutualAssets/music.png"));
 		currencyBack = new Texture(Gdx.files.internal("MutualAssets/currencyBack.png"));
 		newScore = new Texture(Gdx.files.internal("MutualAssets/logo_new.png"));
-		
+
 		tutorialStepOne = new Texture(Gdx.files.internal("MutualAssets/tutorialStepOne.png"));
 		tutorialStepTwo = new Texture(Gdx.files.internal("MutualAssets/tutorialStepTwo.png"));
 		tutorialStepThree = new Texture(Gdx.files.internal("MutualAssets/tutorialStepThree.png"));
 		tutorialStepFour = new Texture(Gdx.files.internal("MutualAssets/tutorialStepFour.png"));
 		tutorialStepFive = new Texture(Gdx.files.internal("MutualAssets/tutorialStepFive.png"));
 		tutorialBorder = new Texture(Gdx.files.internal("MutualAssets/tutorialBorder.png"));
-		
+
 		kill = new Texture[8];
 		for(int i = 0; i < 8; i++)
 		{

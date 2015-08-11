@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 //Written 7.4.2015
 //Holds info about all colors themes in the game.
 public class ThemeManager {
-	
+ 	 
 	private static final float rate = 255f;
 
 	private Color[] Logo = 		new Color[]{

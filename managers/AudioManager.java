@@ -11,14 +11,14 @@ public class AudioManager {
 
 	private String location;
 	private String asset;
-	
+
 	//Main themesound and audio effects
 	public float Volume;
 	private float FXVolume;
 	public int activeMusic;
 	private Music[] MusicThemes;
 	private Sound[] SoundEffects;
-	
+
 	public static final int COLLECT = 0;
 	public static final int SWAP = 1;
 	public static final int MATCH = 2;
@@ -31,27 +31,27 @@ public class AudioManager {
 	public static final int UNLOCK = 11;
 	public static final int ERROR = 12;
 	public static final int MATCH2 = 13;
-	
-	
+
+
 	public AudioManager(String aAsset, String aLoc)
 	{
 		asset = aAsset;
 		location = aLoc;
 		createSounds();
 	}
-	
+
 	//Loads in proper sound effects and themeSongs
 	private void createSounds()
 	{
 		//Sounds initiated
 		MusicThemes = new Music[4];
 		SoundEffects = new Sound[14];
-		
+
 		MusicThemes[0] = Gdx.audio.newMusic(Gdx.files.internal(asset+location+"ThemeLevel_1.wav"));
 		MusicThemes[1] = Gdx.audio.newMusic(Gdx.files.internal(asset+location+"ThemeLevel_2.wav"));
 		MusicThemes[2] = Gdx.audio.newMusic(Gdx.files.internal(asset+location+"ThemeLevel_3.wav"));
 		MusicThemes[3] = Gdx.audio.newMusic(Gdx.files.internal(asset+location+"ThemeLevel_4.wav"));
-		
+
 		SoundEffects[COLLECT] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Collect.wav"));
 		SoundEffects[SWAP] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/SwapTile.wav"));
 		SoundEffects[MATCH] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Match.wav"));
@@ -64,20 +64,20 @@ public class AudioManager {
 		SoundEffects[UNLOCK] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Unlock.wav"));
 		SoundEffects[ERROR] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Error.wav"));
 		SoundEffects[MATCH2] = Gdx.audio.newSound(Gdx.files.internal("MutualSounds/Match2.wav"));
-		
-	    // start the playback of the background music immediately
-		
+
+		// start the playback of the background music immediately
+
 		Volume = 1;
 		FXVolume = 0.7f;
 		resetThemeMusic();
 	}
-	
+
 	//Plays requested sound effect
 	public void soundEffect(int i)
 	{
 		SoundEffects[i].play(FXVolume);
 	}
-	
+
 	public void makeLoop()
 	{
 		if(!MusicThemes[activeMusic].isPlaying())
@@ -86,45 +86,46 @@ public class AudioManager {
 		}
 		if(!MusicThemes[activeMusic].isLooping())MusicThemes[activeMusic].setLooping(true);
 	}
-	
-	//Raises the chosen themes intensity. 
+
+	//Raises the chosen themes intensity.
 	public void raiseThemeMusic()
-	{	
-		if(activeMusic > 2) return; 
-		
+	{
+		if(activeMusic > 2) return;
+
 		MusicThemes[activeMusic].setLooping(false);
 		MusicThemes[activeMusic].setOnCompletionListener(new Music.OnCompletionListener()
 		{
-	        public void onCompletion(Music aMusic)
-	        {  
-	        	upgradeGame();
-	        	/*MusicThemes[activeMusic].stop();
+			@Override
+			public void onCompletion(Music aMusic)
+			{
+				upgradeGame();
+				/*MusicThemes[activeMusic].stop();
 	        	activeMusic++;
 	        	MusicThemes[activeMusic].setLooping(true);
 	    		MusicThemes[activeMusic].play();
 	    	    MusicThemes[activeMusic].setVolume(Volume);
-	    	    */
-	        }
-	    });
+				 */
+			}
+		});
 	}
-	
+
 	public void upgradeGame()
 	{
-		//if(activeMusic > 2) return; 
-		
+		//if(activeMusic > 2) return;
+
 		MusicThemes[activeMusic].stop();
-    	activeMusic++;
-    	MusicThemes[activeMusic].setLooping(true);
+		activeMusic++;
+		MusicThemes[activeMusic].setLooping(true);
 		MusicThemes[activeMusic].play();
-	    MusicThemes[activeMusic].setVolume(Volume);
+		MusicThemes[activeMusic].setVolume(Volume);
 	}
-	
+
 	public void stopMusic()
 	{
 		MusicThemes[activeMusic].setLooping(false);
 		MusicThemes[activeMusic].stop();
 	}
-	
+
 	//Sets the theme music back to the basic beat of the game.
 	public void resetThemeMusic()
 	{
@@ -133,19 +134,19 @@ public class AudioManager {
 		activeMusic = 0;
 		MusicThemes[activeMusic].setLooping(true);
 		MusicThemes[activeMusic].play();
-	    MusicThemes[activeMusic].setVolume(Volume);   
+		MusicThemes[activeMusic].setVolume(Volume);
 	}
-	
+
 	public void setMainVolume(int aVolume)
 	{
 		Volume = aVolume;
 	}
-	
+
 	//Mutes all active theme music/sound effects.
 	public boolean mute(boolean aMute)
 	{
 		if(!aMute)
-		{	
+		{
 			Volume = 0;
 			FXVolume = 0f;
 			MusicThemes[activeMusic].setVolume(Volume);
