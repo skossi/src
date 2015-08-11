@@ -68,7 +68,7 @@ public class RectangleManager
 	public RectangleManager()
 	{
 		prefs = Gdx.app.getPreferences("My Preferences");
-		//prefs.clear();
+		prefs.clear();
 		activeTheme = prefs.getInteger("ActiveTheme");
 		activeAudio = prefs.getInteger("ActiveAudio");
 		ThemeM = new ThemeManager();
@@ -107,11 +107,12 @@ public class RectangleManager
 		prefs.flush();
 		activeAudio = newAudio;
 		AudioM = new AudioManager(newSound,_Sounds);
-		isMuted = prefs.getBoolean("Mute"); 
-		//boolean meh;
-		//if(isMuted) meh = AudioM.mute(isMuted);
 		
-		isMuted = AudioM.mute(isMuted);
+		isMuted = prefs.getBoolean("Mute"); 
+		
+		boolean firstTimeBug = prefs.getBoolean("First");
+		if(firstTimeBug)isMuted = AudioM.mute(isMuted);
+		else isMuted = AudioM.mute(!isMuted);
 	}
 	
 	// Changes the current asset string that points to folder of given assets.

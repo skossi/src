@@ -17,12 +17,17 @@ public class Tutorialstate extends Gamestate {
 	 
 	 private RectangleManager Man;
 	 private RectTex[] TutorialArray;
-	 private Color[] MenuColors;
 	 private Texture[] TutorialStep;
 	 private boolean toPlay;
 	 private int stateDir;
-	 private boolean moveMenu;
+	 private boolean animation;
 	 private int step;
+	 
+	 private int xOffset = -480;
+	 private int offsetSpeed = 3800;
+	 private int offsetAdd = 10;
+	 private int dir = 1;
+	 private int yOffset = 0;
 	 
 	 private boolean isFirstTheme;
 	//Constructor
@@ -36,19 +41,12 @@ public class Tutorialstate extends Gamestate {
 	public void init(RectangleManager RectMan)
 	{
 		TutorialArray = new RectTex[2];
-		MenuColors = new Color[5];
 		TutorialStep = new Texture[5];
 		step = 0;
 		Man = RectMan;
 		
 		TutorialArray[0] = Man.ButtonM.TutorialPlay;
 		TutorialArray[1] = Man.ButtonM.TutorialNext;
-		
-		MenuColors[0] = Man.Color_Logo;
-		MenuColors[1] = Man.Color_Play;
-		MenuColors[2] = Man.Color_Score;
-		MenuColors[3] = Man.Color_Tutorial;
-		MenuColors[4] = Man.Color_Store;
 		
 		TutorialStep[0] = Man.TextureM.tutorialStepOne;
 		TutorialStep[1] = Man.TextureM.tutorialStepTwo;
@@ -58,62 +56,101 @@ public class Tutorialstate extends Gamestate {
 		
 		if(Man.activeTheme == 0) isFirstTheme = true;
 		
-		moveMenu = false;
+		animation = true;
+		toPlay = false;
 	}
 	//See abstrakt class Gamestate update(float dt);
 	public void update(float dt)
 	{
-		if (moveMenu) {
-			if(toPlay) {
-				Man.AnimationM.MenuAnimateMethod(800, stateDir, GameStateManager.PLAY, GameStateManager.STORE,dt);
+		if (animation) {
+			if(toPlay) 
+			{
+				offsetSpeed -= offsetAdd*dir;
+				yOffset += offsetSpeed*dt*dir;
+				offsetAdd += Man.AnimationM.accel*dir;
+				if(yOffset < -1020)Man.AnimationM.MenuAnimateMethod(800, stateDir, GameStateManager.PLAY, GameStateManager.STORE,dt);
 			}
-		}
-		if (Man.AnimationM.isMenuDown) {
-			if(Man._r < Man._rOrg) Man._r += 4*dt;
-			if(Man._g < Man._gOrg) Man._g += 4*dt;
-			if(Man._b < Man._bOrg) Man._b += 4*dt;
-			Man.AnimationM.MenuDown(dt);
+			else
+			{
+				// Animate images
+				offsetSpeed -= offsetAdd*dir;
+				xOffset += offsetSpeed*dt*dir;
+				offsetAdd += Man.AnimationM.accel*dir;
+				
+				if(xOffset*dir > 0 && dir > 0) 
+				{
+					animation = false;
+					xOffset = 0;
+					offsetSpeed = 0;
+					offsetAdd = 0;
+				}
+				if(xOffset*dir < -480 && dir < 0)
+				{
+					dir *= -1;
+					xOffset = -480;
+					offsetSpeed = 3800;
+					offsetAdd = 10;
+					if (step < TutorialStep.length-2) step++;
+					else 
+					{
+						step++;
+						Man.ButtonM.TutorialNext.x += 1500;
+						Man.ButtonM.TutorialNext.disX += 1500;
+						Man.ButtonM.TutorialPlay.x -= 1500;
+						Man.ButtonM.TutorialPlay.disX -= 1500;
+					}
+				}
+			}
 		}
 	}
 	
 	//See abstrakt class Gamestate draw(SpriteBatch b);
 	public void draw(SpriteBatch batch)
 	{
-		if(!isFirstTheme) batch.draw(Man.TextureM.tutorialBorder,0,220);
+		//if(!isFirstTheme) batch.draw(Man.TextureM.tutorialBorder,0,220);
 		batch.setColor(Color.BLACK);
-		Man.drawButton(batch, TutorialArray[0], 0, 0,true);
+		Man.drawButton(batch, TutorialArray[0], 0, yOffset,true);
+		
+		
 		Man.drawButton(batch, TutorialArray[1], 0, 0, true);
 		batch.setColor(Color.WHITE);
 		
-		batch.draw(TutorialStep[step], 0, 220);
+		batch.draw(TutorialStep[step], xOffset, 220 + yOffset);
 		batch.setColor(1,1,1,1);
 	}
 	
 	//Sets the direction of the transition.
 	private void TransitionToState(boolean aActionState, int aDirection)
 	{
-		moveMenu = true;
+		animation = true;
 		toPlay = aActionState;
 		stateDir = aDirection;
 	}
 	//See abstrakt class Gamestate justTouched(x,y);
 	public void justTouched(float x, float y)
 	{
-		if(moveMenu) return; //|| !Man.isMenuDown
+		if(animation) return; //|| !Man.isMenuDown
 		
 		//Play
 		if(buttonClick(TutorialArray[0],x,y)) 
 		{
+			Man.playSoundEffect(AudioManager.PUSH);
+			TutorialArray[0].pressedEffect();
+			
 			GameStateManager.hasFinishedTutorial = true;
 			Man.ScoreM.firstDone();
 			TransitionToState(true,-1);
 			gsm.introStart = true; 
-			//Man.playSoundEffect(AudioManager.START);
-			
 		}
 		//Tutorial
 		if(buttonClick(TutorialArray[1],x,y))
 		{
+			Man.playSoundEffect(AudioManager.PUSH);
+			TutorialArray[1].pressedEffect();
+			animation=true;
+			dir *= -1;
+			xOffset += 1;
+			/*
 			if (step < TutorialStep.length-2) step++;
 			else {
 				step++;
@@ -122,6 +159,7 @@ public class Tutorialstate extends Gamestate {
 				Man.ButtonM.TutorialPlay.x -= 1500;
 				Man.ButtonM.TutorialPlay.disX -= 1500;
 			}
+			*/
 		}
 	}
 	//Tells if user just pressed a corresponding rectangle
