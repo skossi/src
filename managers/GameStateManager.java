@@ -14,23 +14,23 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //Manages the states that are available in the app. Is responsible for passing deltas and batches to active states
 public class GameStateManager{
 	private Gamestate gameState;
-	
+
 	public static GameStateManager main;
-	
+
 	public static final int MENU = 0;
 	public static final int PLAY = 1;
 	public static final int STORE = 2;
 	public static final int LOST = 3;
 	public static final int TUTORIAL = 4;
-	
-	
+
+
 	public static int ACTIVESTATE; //Keep track of which state is running. Is not used but might be good for debugging.
 	public static boolean hasFinishedTutorial;
-	
+
 	public boolean introStart;
-	public boolean introEnd = false; 
+	public boolean introEnd = false;
 	private RectangleManager RectMana;
-	
+
 	//initation of the gamestate manager. Called when a new manager is created and sets to starting state
 	public GameStateManager(RectangleManager rsm)
 	{
@@ -44,10 +44,10 @@ public class GameStateManager{
 		//THIS GOES WHERE PLAY IS INITIATED
 		//if(rsm.ScoreM.firstTime)setState(MENU);
 		//else setState(TUTORIAL);
-		
-		
+
+
 	}
-	//Takes in parameter static final int state which stands for each 
+	//Takes in parameter static final int state which stands for each
 	public void setState(int state)
 	{
 		if(gameState != null) gameState.dispose();
@@ -56,7 +56,7 @@ public class GameStateManager{
 		if(state == STORE) gameState = new Storestate(this);
 		if(state == TUTORIAL) gameState = new Tutorialstate(this);
 		if(state == LOST) gameState = new Loststate(this);
-		
+
 		ACTIVESTATE = state;
 		gameState.init(RectMana);
 	}

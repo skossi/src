@@ -7,15 +7,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //Written 30.10.2014
 //Abstrakt class for new state when new state is created
 public abstract class Gamestate {
-	
+
 	protected GameStateManager gsm;
-	
+
 	//Constructor
 	//Takes in the main game state machine gsm and calls  the initiation of each state when it is set.
 	protected Gamestate(GameStateManager gsm)
 	{
 		this.gsm = gsm;
-		
+
 	}
 	//The initation of each state machine. Each state holds it owns initiation parameters to create needed entites
 	public abstract void init(RectangleManager RectMana);
@@ -29,5 +29,5 @@ public abstract class Gamestate {
 	public abstract void isTouched(float x, float y);
 	//called each time a state is exited and a new state is called. Disposes batches and parameters which arent used.
 	public abstract void dispose();
-	
+
 }

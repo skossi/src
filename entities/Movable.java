@@ -2,13 +2,12 @@ package entities;
 
 import states.Playstate;
 
-
 import com.badlogic.gdx.graphics.Texture;
 
 /**
  * @author     Ottar og �orsteinn. Edit by Hlynur
  * @version     1.0a                 Alpha
- * @since       2014-10-10        
+ * @since       2014-10-10
  */
 public class Movable {
 	public Boolean typeOne;
@@ -34,16 +33,16 @@ public class Movable {
 	public boolean justSpawned;
 	public int ID;
 	public double gravity = 0.3;
-	
+
 	public boolean isDead;
 	public int deathFrame;
-	
+
 	public boolean spawnParticles;
-	
-	/**	
-	*Constructs ablock, i.e. Movable
-	* @param isMovable A boolean which decides if the block is movable by the user
-	*/
+
+	/**
+	 *Constructs ablock, i.e. Movable
+	 * @param isMovable A boolean which decides if the block is movable by the user
+	 */
 	public Movable(boolean isMovable) {
 		timeBlacked = Long.MAX_VALUE;
 		if (isMovable) {
@@ -55,11 +54,11 @@ public class Movable {
 			typeTwo = false;
 		}
 	}
-	
+
 	/**
-	*Constructs a block, i.e. Movable 
-	* @param Movable m A Movable block which is cloned 
-	*/
+	 *Constructs a block, i.e. Movable
+	 * @param Movable m A Movable block which is cloned
+	 */
 	public Movable(Movable m) {
 		typeOne = m.typeOne;
 		typeTwo = m.typeTwo;
@@ -83,30 +82,30 @@ public class Movable {
 		timeBlacked = Long.MAX_VALUE;
 		isPowerDown = m.isPowerDown;
 	}
-	
+
 	/**
- 	*Takes the delta time so we can update the entity to correspond to the input of the gameloop
- 	* @param dy is the delta time of each frame rendered
- 	*/
-	public void update(float dy) {	
-		
+	 *Takes the delta time so we can update the entity to correspond to the input of the gameloop
+	 * @param dy is the delta time of each frame rendered
+	 */
+	public void update(float dy) {
+
 		// UNCOMMENT THIS TO REMOVE GRAVITY
-//		if(System.currentTimeMillis() - timeThrusted > 3500 && isBeingThrusted){
-//			isBeingThrusted = false;
-//			speed = -600;
-//		}
-		
+		//		if(System.currentTimeMillis() - timeThrusted > 3500 && isBeingThrusted){
+		//			isBeingThrusted = false;
+		//			speed = -600;
+		//		}
+
 		// no need to update the invisible bottom row or static blocks
 		if (row == 0) return;
-		
-		
+
+
 		if (speed < 0 && isBeingThrusted) isBeingThrusted = false;
 		if (speed != 0) speed -= gravity;
-		
+
 		y += speed*dy;
 		return;  //Why is this here?
 	}
-	
+
 	//This function checks whether a movable was unmovable and whether its time
 	//for it to become movable
 	public boolean movableCheck() {
@@ -125,14 +124,14 @@ public class Movable {
 		}
 		return false;
 	}
-	
+
 	public void setType (Boolean type1, boolean type2) {
 		typeOne = type1;
 		typeTwo = type2;
-		
+
 		return;
 	}
-	
+
 	public void setInvertType(Boolean type1, boolean type2) {
 		if (type1 == null) {
 			typeOne = randomizeType();
@@ -147,24 +146,24 @@ public class Movable {
 			typeOne = randomizeType();
 		}
 	}
-	
+
 	/**
- 	*  Returns true if a block is intersecting with another Movable block or the ground
- 	* @param Movable m is the Movable block being checked for collision
- 	*/
+	 *  Returns true if a block is intersecting with another Movable block or the ground
+	 * @param Movable m is the Movable block being checked for collision
+	 */
 	public boolean intersects(Movable m) {
 		if (x < (m.x + m.width) && (x + width) > m.x && (y + height) > m.y && y < (m.y + m.height)) return true;
 		return false;
 	}
-	
+
 	/**
- 	*  A function for randoming the types of the Movable blocks, each being a combination of two booleans
- 	*/
+	 *  A function for randoming the types of the Movable blocks, each being a combination of two booleans
+	 */
 	public boolean randomizeType() {
 		boolean type = false;
-		
+
 		if (Math.random() < 0.5) type = true;
-		
+
 		return type;
 	}
 }
