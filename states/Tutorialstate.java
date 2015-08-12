@@ -1,5 +1,6 @@
 package states;
 
+import managers.AudioManager;
 import managers.GameStateManager;
 import managers.RectangleManager;
 
@@ -13,36 +14,21 @@ import entities.RectTex;
 //Creates a new state when tutorial is viewed
 public class Tutorialstate extends Gamestate {
 
-<<<<<<< HEAD
-	 
-	 private RectangleManager Man;
-	 private RectTex[] TutorialArray;
-	 private Texture[] TutorialStep;
-	 private boolean toPlay;
-	 private int stateDir;
-	 private boolean animation;
-	 private int step;
-	 
-	 private int xOffset = -480;
-	 private int offsetSpeed = 3800;
-	 private int offsetAdd = 10;
-	 private int dir = 1;
-	 private int yOffset = 0;
-	 
-	 private boolean isFirstTheme;
-=======
-
 	private RectangleManager Man;
 	private RectTex[] TutorialArray;
-	private Color[] MenuColors;
 	private Texture[] TutorialStep;
 	private boolean toPlay;
 	private int stateDir;
-	private boolean moveMenu;
+	private boolean animation;
 	private int step;
 
+	private int xOffset = -480;
+	private int offsetSpeed = 3800;
+	private int offsetAdd = 10;
+	private int dir = 1;
+	private int yOffset = 0;
+
 	private boolean isFirstTheme;
->>>>>>> 39654e81076dd11b6fe572f35663adf6d3c4b03c
 	//Constructor
 	//See abskrakt class Gamestate(GameStateManager gsm);
 	public Tutorialstate(GameStateManager gsm)
@@ -61,17 +47,7 @@ public class Tutorialstate extends Gamestate {
 
 		TutorialArray[0] = Man.ButtonM.TutorialPlay;
 		TutorialArray[1] = Man.ButtonM.TutorialNext;
-<<<<<<< HEAD
-		
-=======
 
-		MenuColors[0] = Man.Color_Logo;
-		MenuColors[1] = Man.Color_Play;
-		MenuColors[2] = Man.Color_Score;
-		MenuColors[3] = Man.Color_Tutorial;
-		MenuColors[4] = Man.Color_Store;
-
->>>>>>> 39654e81076dd11b6fe572f35663adf6d3c4b03c
 		TutorialStep[0] = Man.TextureM.tutorialStepOne;
 		TutorialStep[1] = Man.TextureM.tutorialStepTwo;
 		TutorialStep[2] = Man.TextureM.tutorialStepThree;
@@ -79,21 +55,16 @@ public class Tutorialstate extends Gamestate {
 		TutorialStep[4] = Man.TextureM.tutorialStepFive;
 
 		if(Man.activeTheme == 0) isFirstTheme = true;
-<<<<<<< HEAD
-		
+
 		animation = true;
 		toPlay = false;
-=======
-
-		moveMenu = false;
->>>>>>> 39654e81076dd11b6fe572f35663adf6d3c4b03c
 	}
 	//See abstrakt class Gamestate update(float dt);
 	@Override
 	public void update(float dt)
 	{
 		if (animation) {
-			if(toPlay) 
+			if(toPlay)
 			{
 				offsetSpeed -= offsetAdd*dir;
 				yOffset += offsetSpeed*dt*dir;
@@ -106,8 +77,8 @@ public class Tutorialstate extends Gamestate {
 				offsetSpeed -= offsetAdd*dir;
 				xOffset += offsetSpeed*dt*dir;
 				offsetAdd += Man.AnimationM.accel*dir;
-				
-				if(xOffset*dir > 0 && dir > 0) 
+
+				if(xOffset*dir > 0 && dir > 0)
 				{
 					animation = false;
 					xOffset = 0;
@@ -121,7 +92,7 @@ public class Tutorialstate extends Gamestate {
 					offsetSpeed = 3800;
 					offsetAdd = 10;
 					if (step < TutorialStep.length-2) step++;
-					else 
+					else
 					{
 						step++;
 						Man.ButtonM.TutorialNext.x += 1500;
@@ -141,17 +112,12 @@ public class Tutorialstate extends Gamestate {
 		//if(!isFirstTheme) batch.draw(Man.TextureM.tutorialBorder,0,220);
 		batch.setColor(Color.BLACK);
 		Man.drawButton(batch, TutorialArray[0], 0, yOffset,true);
-		
-		
+
+
 		Man.drawButton(batch, TutorialArray[1], 0, 0, true);
 		batch.setColor(Color.WHITE);
-<<<<<<< HEAD
-		
-		batch.draw(TutorialStep[step], xOffset, 220 + yOffset);
-=======
 
-		batch.draw(TutorialStep[step], 0, 220);
->>>>>>> 39654e81076dd11b6fe572f35663adf6d3c4b03c
+		batch.draw(TutorialStep[step], xOffset, 220 + yOffset);
 		batch.setColor(1,1,1,1);
 	}
 
@@ -166,29 +132,17 @@ public class Tutorialstate extends Gamestate {
 	@Override
 	public void justTouched(float x, float y)
 	{
-<<<<<<< HEAD
 		if(animation) return; //|| !Man.isMenuDown
-		
-=======
-		if(moveMenu) return; //|| !Man.isMenuDown
-
->>>>>>> 39654e81076dd11b6fe572f35663adf6d3c4b03c
 		//Play
 		if(buttonClick(TutorialArray[0],x,y))
 		{
 			Man.playSoundEffect(AudioManager.PUSH);
 			TutorialArray[0].pressedEffect();
-			
+
 			GameStateManager.hasFinishedTutorial = true;
 			Man.ScoreM.firstDone();
 			TransitionToState(true,-1);
-<<<<<<< HEAD
-			gsm.introStart = true; 
-=======
 			gsm.introStart = true;
-			//Man.playSoundEffect(AudioManager.START);
-
->>>>>>> 39654e81076dd11b6fe572f35663adf6d3c4b03c
 		}
 		//Tutorial
 		if(buttonClick(TutorialArray[1],x,y))
@@ -207,7 +161,7 @@ public class Tutorialstate extends Gamestate {
 				Man.ButtonM.TutorialPlay.x -= 1500;
 				Man.ButtonM.TutorialPlay.disX -= 1500;
 			}
-			*/
+			 */
 		}
 	}
 	//Tells if user just pressed a corresponding rectangle
