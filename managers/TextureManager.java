@@ -35,12 +35,15 @@ public class TextureManager {
 	public Texture currentlyActive;
 	public Texture currencyBack;
 	public Texture newScore;
+	public Texture tutorialStepZero;
 	public Texture tutorialStepOne;
 	public Texture tutorialStepTwo;
 	public Texture tutorialStepThree;
 	public Texture tutorialStepFour;
 	public Texture tutorialStepFive;
+	public Texture tutorialStepSix;
 	public Texture tutorialBorder;
+	
 
 	public Texture[] kill;
 
@@ -79,12 +82,13 @@ public class TextureManager {
 		swapAudio = new Texture(Gdx.files.internal("MutualAssets/music.png"));
 		currencyBack = new Texture(Gdx.files.internal("MutualAssets/currencyBack.png"));
 		newScore = new Texture(Gdx.files.internal("MutualAssets/logo_new.png"));
-
+		tutorialStepZero = new Texture(Gdx.files.internal("MutualAssets/tutorialStepZero.png"));
 		tutorialStepOne = new Texture(Gdx.files.internal("MutualAssets/tutorialStepOne.png"));
 		tutorialStepTwo = new Texture(Gdx.files.internal("MutualAssets/tutorialStepTwo.png"));
 		tutorialStepThree = new Texture(Gdx.files.internal("MutualAssets/tutorialStepThree.png"));
 		tutorialStepFour = new Texture(Gdx.files.internal("MutualAssets/tutorialStepFour.png"));
 		tutorialStepFive = new Texture(Gdx.files.internal("MutualAssets/tutorialStepFive.png"));
+		tutorialStepSix = new Texture(Gdx.files.internal("MutualAssets/tutorialStepSix.png"));
 		tutorialBorder = new Texture(Gdx.files.internal("MutualAssets/tutorialBorder.png"));
 
 		kill = new Texture[8];

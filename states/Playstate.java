@@ -57,7 +57,6 @@ public class Playstate extends Gamestate{
 	private int scoreBoardPos;
 	private int score;
 	private int introSpeed;
-	private int lvlDisp;
 	private GameStats stats;
 
 	// public for global access
@@ -66,9 +65,9 @@ public class Playstate extends Gamestate{
 	public static double difficulty;
 	private int musicThreshold;
 
-	private List deathList;
-
 	//chosen background
+	
+	private boolean UIFIX;
 
 	private boolean isTesting;
 
@@ -87,7 +86,7 @@ public class Playstate extends Gamestate{
 		actionTime = System.currentTimeMillis()-500;
 		Man = RectMan;
 		isPaused = false;
-		Man.AnimationM.isMenuDown = true;
+		//Man.AnimationM.isMenuDown = true;
 		size = 68;
 		steps = size/2; //pixel perfect updating
 		columns = 7;
@@ -110,7 +109,6 @@ public class Playstate extends Gamestate{
 		superSpeed = 3000;
 		score = 0;
 		prepareMatrix();
-		lvlDisp = 1;
 
 		stats = new GameStats();
 
@@ -122,6 +120,8 @@ public class Playstate extends Gamestate{
 		Man._r = Man._rOrg;
 		Man._g = Man._gOrg;
 		Man._b = Man._bOrg;
+		
+		UIFIX = Man.ScoreM.firstTime;
 	}
 	/**
 	 * Creates a new cube on a timed interval. It���s type is randomed. This method is a temporary solution for spawning cubes in debugging mode
@@ -290,7 +290,6 @@ public class Playstate extends Gamestate{
 	@Override
 	public void update(float dt)
 	{
-
 		if(isTesting) return;
 		if (isPaused) {
 			stats.timePaused += dt*3;
@@ -411,18 +410,9 @@ public class Playstate extends Gamestate{
 	@Override
 	public void draw(SpriteBatch batch)
 	{
-		//TODO: this should not be here!!!! just for demo atm
 		checkLoseOffset(true);
 		if(!isPaused)
 		{
-			//			for(int i = 0; i < columns; i++) {
-			//		    	  for (int j = 0; j < rows; j++) {
-			//		    		  Movable m = Movables[i][j];
-			//		    		  if(m != null)if(m.spawnParticles)m.particleEmit.drawParticle(batch);
-			//		    	  }
-			//			}
-
-
 			for(int i = 0; i < columns; i++) {
 				for (int j = 0; j < rows; j++) {
 					Movable m = Movables[i][j];
@@ -462,9 +452,12 @@ public class Playstate extends Gamestate{
 		}
 
 		batch.draw(Man.TextureM.loseLine, 0, loseCondition+loseConditionOffset);
-		batch.draw(Man.TextureM.ui_bg, UI.x, UI.y, UI.width, UI.height);
-		int addX = Integer.toString(score).length();
-		Man.fontWhite.draw(batch,Integer.toString(score), 230-addX*4, scoreBoardPos);
+		if(UIFIX)
+		{
+			batch.draw(Man.TextureM.ui_bg, UI.x, UI.y, UI.width, UI.height);
+			int addX = Integer.toString(score).length();
+			Man.fontWhite.draw(batch,Integer.toString(score), 230-addX*4, scoreBoardPos);
+		}
 	}
 
 	public static void touchUp(int x, int y) {
@@ -788,8 +781,6 @@ public class Playstate extends Gamestate{
 			if(m1.ID != -1) shootByID(m1.ID, superSpeed);
 			else shootRows(m1.col, 1, index, takeoffSpeed, false, thrustID);
 			Man.playSoundEffect(AudioManager.MATCH);
-
-
 		}
 	}
 
@@ -1025,7 +1016,13 @@ public class Playstate extends Gamestate{
 	//Saves current score and sets the state to Lost. Called when game is lost
 	private void gameOver()
 	{
-		Man.ScoreM.checkScore(score,stats);
-		gsm.setState(GameStateManager.LOST);
+		Man.AnimationM.isMenuDown = true;
+		
+		if(gsm.hasFinishedTutorial)
+			{
+				Man.ScoreM.checkScore(score,stats);	
+				gsm.setState(GameStateManager.LOST);		
+			}
+		else gsm.setState(GameStateManager.TUTORIAL);
 	}
 }
