@@ -68,7 +68,7 @@ public class RectangleManager
 	public RectangleManager()
 	{
 		prefs = Gdx.app.getPreferences("My Preferences");
-		prefs.clear();
+		//prefs.clear();
 		activeTheme = prefs.getInteger("ActiveTheme");
 		activeAudio = prefs.getInteger("ActiveAudio");
 		ThemeM = new ThemeManager();
