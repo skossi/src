@@ -130,6 +130,7 @@ public class Playstate extends Gamestate{
 		Man._b = Man._bOrg;
 		
 		UIFIX = Man.ScoreM.firstTime;
+		if(!UIFIX) difficulty = 0.6;
 	}
 	/**
 	 * Creates a new cube on a timed interval. It���s type is randomed. This method is a temporary solution for spawning cubes in debugging mode
