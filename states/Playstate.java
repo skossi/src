@@ -43,6 +43,7 @@ public class Playstate extends Gamestate{
 	private RectangleManager Man;
 	private UI UI;
 	private long lastWave;
+	private long lastWaveDrop;
 	private int loseCondition;
 	private int loseConditionOffset;
 	private int losePos;
@@ -61,6 +62,7 @@ public class Playstate extends Gamestate{
 	private int lvlDisp;
 	private double noob;
 	private long shootEmUp;
+	private int harass;
 	private GameStats stats;
 
 	// public for global access
@@ -118,6 +120,8 @@ public class Playstate extends Gamestate{
 		shootEmUp = Long.MAX_VALUE;
 		noob = 1.7;
 		lastDropTime = 0;
+		harass = 0;
+		lastWaveDrop = System.currentTimeMillis();
 
 		stats = new GameStats();
 
@@ -315,6 +319,11 @@ public class Playstate extends Gamestate{
 				}
 				lastWave = score;
 			}
+			if (System.currentTimeMillis() - lastWaveDrop > 15000*(1+(1-difficulty))*1.2) {
+				spawnWave((float)((1+(1-difficulty))*defaultSpeed));
+				lastWaveDrop = System.currentTimeMillis();
+			}
+
 			if(System.currentTimeMillis() - shootEmUp > 1500 ){
 				spawnWave((float)((1+(1-difficulty))*defaultSpeed));
 				shootEmUp = Long.MAX_VALUE;
@@ -322,13 +331,8 @@ public class Playstate extends Gamestate{
 			if(score - lastWave > 15)
 			{
 				if (noob == 2) noob = 1;
-				if (isWave) {
-					isWave = false;
-					shootEmUp = System.currentTimeMillis();
-				} else {
-					isWave = true;
-					difficulty -= 0.01;
-				}
+				shootEmUp = System.currentTimeMillis();
+
 				lastWave = score;
 				if(difficulty > 0.15)
 				{
@@ -535,6 +539,8 @@ public class Playstate extends Gamestate{
 		noob = 1.7;
 		isWave = true;
 		lastDropTime = 0;
+		harass = 0;
+		lastWaveDrop = System.currentTimeMillis();
 		//Man.AudioM.raiseThemeMusic();
 		Man.playSoundEffect(AudioManager.START);
 	}
