@@ -89,7 +89,7 @@ public class AnimationManager {
 		//		verticalSpeed -= speedAdd;
 		MenuYOffset += verticalSpeed*dt;
 		speedAdd -= accel;
-		//System.out.println(verticalSpeed);
+		//System.out.println(verticalSpeed)
 		if(verticalSpeed > 0)
 		{
 			if(MenuYOffset >= 0)

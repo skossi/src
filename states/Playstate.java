@@ -504,6 +504,7 @@ public class Playstate extends Gamestate{
 			if(buttonClick(Man.ButtonM.PauseQuit,x,y))
 			{
 				isPaused = false;
+				Man.AnimationM.isMenuDown = true;
 				Man.AudioM.resetThemeMusic();
 				gsm.introEnd = false;
 				gsm.setState(GameStateManager.MENU);
