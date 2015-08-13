@@ -54,9 +54,13 @@ public class Playstate extends Gamestate{
 	private int IDs;
 	private double pseudo;
 	private boolean startAnimation;
+	private boolean isWave;
 	private int scoreBoardPos;
 	private int score;
 	private int introSpeed;
+	private int lvlDisp;
+	private double noob;
+	private long shootEmUp;
 	private GameStats stats;
 
 	// public for global access
@@ -109,6 +113,10 @@ public class Playstate extends Gamestate{
 		superSpeed = 3000;
 		score = 0;
 		prepareMatrix();
+		isWave = true;
+		shootEmUp = Long.MAX_VALUE;
+		noob = 1.7;
+		lastDropTime = 0;
 
 		stats = new GameStats();
 
@@ -170,7 +178,6 @@ public class Playstate extends Gamestate{
 		giveLegalType(m1);
 
 		lastDropTime = System.currentTimeMillis();
-
 	}
 
 	// Use: spawnWave(speed);
@@ -304,15 +311,28 @@ public class Playstate extends Gamestate{
 					beginAction();
 					actionTime = System.currentTimeMillis();
 					actions++;
+					if (actions == 3) spawnMovable(MathUtils.random(0, 6), (float)((1+(1-difficulty))*defaultSpeed));
 				}
-				lastWave = System.currentTimeMillis();
+				lastWave = score;
 			}
-			if(System.currentTimeMillis() - lastWave > 15000*difficulty)
-			{
-				lastWave = System.currentTimeMillis();
+			if(System.currentTimeMillis() - shootEmUp > 1500 ){
 				spawnWave((float)((1+(1-difficulty))*defaultSpeed));
+				shootEmUp = Long.MAX_VALUE;
+			}
+			if(score - lastWave > 15)
+			{
+				if (noob == 2) noob = 1;
+				if (isWave) {
+					isWave = false;
+					shootEmUp = System.currentTimeMillis();
+				} else {
+					isWave = true;
+					difficulty -= 0.01;
+				}
+				lastWave = score;
 				if(difficulty > 0.15)
 				{
+					// spawna wave og hækka difficulty til skiptis, setja difficulty -= 0.03
 					difficulty -= 0.02;
 					musicThreshold++;
 					//TODO:This is just a placeholder. Will be fixed
@@ -326,7 +346,7 @@ public class Playstate extends Gamestate{
 					}
 				}
 			}
-			else if (actions == startingRows && System.currentTimeMillis() - lastDropTime > 1100*difficulty) spawnMovable(MathUtils.random(0, 6), (float)((1+(1-difficulty))*defaultSpeed));
+			else if (actions == startingRows && System.currentTimeMillis() - lastDropTime > 1100*difficulty*noob) spawnMovable(MathUtils.random(0, 6), (float)((1+(1-difficulty))*defaultSpeed));
 		}
 		else if (startAnimation) playIntro(dt,-1);
 		else blackMovableAnimation(dt);
@@ -503,8 +523,13 @@ public class Playstate extends Gamestate{
 		prepareMatrix();
 		actions = 0;
 		actionTime = System.currentTimeMillis()-500;
+		Man.AnimationM.isMenuDown = true;
 		Man.AudioM.resetThemeMusic();
 		Man.AudioM.upgradeGame();
+		shootEmUp = Long.MAX_VALUE;
+		noob = 1.7;
+		isWave = true;
+		lastDropTime = 0;
 		//Man.AudioM.raiseThemeMusic();
 		Man.playSoundEffect(AudioManager.START);
 	}

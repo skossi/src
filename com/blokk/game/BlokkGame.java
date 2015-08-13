@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.TimeUtils;
 
 import entities.Movable;
 import entities.RectTex;
@@ -39,6 +38,7 @@ public class BlokkGame implements ApplicationListener {
 	private int columns;
 	private int size;
 	private int steps;
+
 	//TODO : Implemtent warning if nominal update is too big?
 	// private int _CONST_NOMINALUPDATE = 16;
 
@@ -63,14 +63,14 @@ public class BlokkGame implements ApplicationListener {
 		columns = 7;
 		rows = 13;
 		Movables = new Movable[columns][rows];
-		lastDropTime = 0;//TimeUtils.nanoTime();
-		spawnMovable();
+		lastDropTime = System.currentTimeMillis();//TimeUtils.nanoTime();
 	}
 
 	/**
 	 * Clears the window and draws all entities. Sends coordinates to methods to find out where player *is touching
 	 *
 	 */
+
 	@Override
 	public void render() {
 		Gdx.gl.glClearColor(R_Man._r, R_Man._g, R_Man._b, 1);
@@ -87,7 +87,9 @@ public class BlokkGame implements ApplicationListener {
 		batch.setProjectionMatrix(camera.combined);
 
 		batch.begin();
-		if(!gsm.introEnd) spawnBackground();
+		if(!gsm.introEnd) {
+			spawnBackground();
+		}
 
 		gsm.draw(batch);
 
@@ -151,7 +153,10 @@ public class BlokkGame implements ApplicationListener {
 
 	public void spawnBackground()
 	{
-		if (TimeUtils.nanoTime() - lastDropTime > 900000000/1.1 && !gsm.introStart) spawnMovable();
+		if (System.currentTimeMillis() - lastDropTime > 1000 && !gsm.introStart) {
+			spawnMovable();
+			lastDropTime = System.currentTimeMillis();
+		}
 		if(gsm.introStart)killBackground();
 		for (int i = 0; i < steps; i++) computeSubStep(dy/steps);
 		for(int i = 0; i < columns; i++)
@@ -217,28 +222,33 @@ public class BlokkGame implements ApplicationListener {
 	 *
 	 * @return            a new cube of some sort is created and placed in the grid
 	 */
-	private void spawnMovable()
-	{
-		Movable movable;
-		movable = new Movable(true);
-		movable.col = MathUtils.random(0, 6);
-		movable.type = createType(movable.typeOne, movable.typeTwo);
+	private void spawnMovable() {
+		Movable m1;
 
-		int available_row = 0;
-		for (int i = 0; i < rows; i++) {
-			if (Movables[movable.col][i] == null) {
+		m1 = new Movable(true);
+		m1.col = MathUtils.random(0, 6);
+		m1.type = createType(m1.typeOne, m1.typeTwo);
+
+		if (Movables[m1.col][rows-1] != null) return;
+
+		int available_row = 1;
+		for (int i = 1; i < rows; i++) {
+			if (Movables[m1.col][i] == null) {
 				available_row = i;
 				break;
 			}
 		}
-		Movables[movable.col][available_row] = movable;
-		movable.row = available_row;
-		movable.x = (float) (size+1)*movable.col;
-		movable.y = 800;
-		movable.speed = -600;
-		movable.width = size;
-		movable.height = size;
-		lastDropTime = TimeUtils.nanoTime();
+		m1.row = available_row;
+		m1.x = (size+1)*m1.col;
+		m1.y = 800;
+		m1.speed = -600;
+		m1.width = size;
+		m1.height = size;
+		m1.isBeingThrusted = false;
+		m1.justSpawned = true;
+		m1.isPowerDown = false;
+
+		Movables[m1.col][available_row] = m1;
 	}
 
 	@Override

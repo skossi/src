@@ -86,9 +86,6 @@ public class Tutorialstate extends Gamestate {
 					offsetSpeed -= offsetAdd*dir;
 					xOffset += offsetSpeed*dt*dir;
 					offsetAdd += Man.AnimationM.accel*dir;
-					
-					
-					
 					if(xOffset*dir > 0 && dir > 0) 
 					{
 						animation = false;
@@ -137,11 +134,10 @@ public class Tutorialstate extends Gamestate {
 		//if(!isFirstTheme) batch.draw(Man.TextureM.tutorialBorder,0,220);
 		batch.setColor(Color.BLACK);
 		Man.drawButton(batch, TutorialArray[0], 0, yOffset,true);
-		
-		
+
+
 		Man.drawButton(batch, TutorialArray[1], 0, 0, true);
 		batch.setColor(Color.WHITE);
-		
 		batch.draw(TutorialStep[step], xOffset, 220 + yOffset);
 		batch.setColor(1,1,1,1);
 	}
@@ -158,17 +154,16 @@ public class Tutorialstate extends Gamestate {
 	public void justTouched(float x, float y)
 	{
 		if(animation) return; 
-
 		//Play
 		if(buttonClick(TutorialArray[0],x,y))
 		{
 			Man.playSoundEffect(AudioManager.PUSH);
 			TutorialArray[0].pressedEffect();
-			
+
 			GameStateManager.hasFinishedTutorial = true;
 			Man.ScoreM.firstDone();
 			TransitionToState(true,-1);
-			gsm.introStart = true; 
+			gsm.introStart = true;
 		}
 		//Tutorial
 		if(buttonClick(TutorialArray[1],x,y))

@@ -29,5 +29,13 @@ public class Utils {
 		return i == 1;
 	}
 
+	public void log (String string) {
+		System.out.println(string);
+	}
+
+	public void log (float input) {
+		System.out.println(input);
+	}
+
 
 }
