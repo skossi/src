@@ -40,10 +40,13 @@ public class GameStateManager{
 		Gdx.input.setCatchBackKey(true);
 		MyInputProcessor inputProcessor = new MyInputProcessor();
 		Gdx.input.setInputProcessor(inputProcessor);
-		setState(MENU);
-		//THIS GOES WHERE PLAY IS INITIATED
-		//if(rsm.ScoreM.firstTime)setState(MENU);
-		//else setState(TUTORIAL);
+		
+		if(hasFinishedTutorial)setState(MENU);
+		else
+		{
+			introEnd = true;
+			setState(PLAY);
+		}
 
 
 	}

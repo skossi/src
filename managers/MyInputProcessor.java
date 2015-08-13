@@ -17,7 +17,9 @@ public class MyInputProcessor implements InputProcessor {
 		{
 			if(state == GameStateManager.PLAY)
 			{
-				Playstate.isPaused = !Playstate.isPaused;
+				if(GameStateManager.hasFinishedTutorial)
+					Playstate.isPaused = !Playstate.isPaused;
+				
 			}
 			if(state == GameStateManager.MENU)
 			{

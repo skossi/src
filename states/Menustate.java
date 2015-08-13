@@ -105,12 +105,14 @@ public class Menustate extends Gamestate {
 			gsm.introStart = true;
 			Man.playSoundEffect(AudioManager.START);
 			Man.AudioM.upgradeGame();
+			MenuArray[0].pressedEffect();
 		}
 		//Tutorial
 		if(buttonClick(MenuArray[1],x,y))
 		{
 			TransitionToState(true,1);
 			Man.playSoundEffect(AudioManager.PUSH);
+			MenuArray[1].pressedEffect();
 		}
 	}
 	//Tells if user just pressed a corresponding rectangle
