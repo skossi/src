@@ -27,7 +27,6 @@ public class TextureManager {
 	public Texture logo_Main;
 	public Texture logo_Over;
 	public Texture swapTheme;
-	public Texture swapAudio;
 	public Texture scoreBack;
 	public Texture lockedItem;
 	public Texture unlockedItem;
@@ -79,9 +78,9 @@ public class TextureManager {
 		ui_soundOn = new Texture(Gdx.files.internal("MutualAssets/soundOn.png"));
 		ui_soundOff = new Texture(Gdx.files.internal("MutualAssets/soundOff.png"));
 		currentlyActive = new Texture(Gdx.files.internal("MutualAssets/currentlyActive.png"));
-		swapAudio = new Texture(Gdx.files.internal("MutualAssets/music.png"));
 		currencyBack = new Texture(Gdx.files.internal("MutualAssets/currencyBack.png"));
 		newScore = new Texture(Gdx.files.internal("MutualAssets/logo_new.png"));
+		
 		tutorialStepZero = new Texture(Gdx.files.internal("MutualAssets/tutorialStepZero.png"));
 		tutorialStepOne = new Texture(Gdx.files.internal("MutualAssets/tutorialStepOne.png"));
 		tutorialStepTwo = new Texture(Gdx.files.internal("MutualAssets/tutorialStepTwo.png"));

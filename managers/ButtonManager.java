@@ -41,6 +41,8 @@ public class ButtonManager {
 	public RectTex MainMenu;
 	public RectTex SoundOn;
 	public RectTex SoundOff;
+	
+	public RectTex Pause;
 
 	public ButtonManager(String aAsset, String aLoc)
 	{
@@ -67,7 +69,6 @@ public class ButtonManager {
 		Texture ButtonTex = new Texture(Gdx.files.internal("MutualAssets/button.png"));
 		width = ButtonTex.getWidth();
 		height = ButtonTex.getHeight();
-
 		xHolder = 480 /2 - width / 2;
 		yHolder = 200;
 		EnterStore = new RectTex(xHolder,yHolder, width, height, ButtonTex, "EXTRAS");
@@ -78,7 +79,7 @@ public class ButtonManager {
 		float nextButtonHeight = 160;
 		TutorialPlay = new RectTex(xHolder+1500,yHolder, nextButtonWidth, nextButtonHeight, ButtonTex, "PLAY");
 		TutorialNext = new RectTex(xHolder,yHolder, nextButtonWidth, nextButtonHeight, ButtonTex, "NEXT");
-
+	
 		//Play - Pause State
 		xHolder = 480 /2 - width / 2;
 		yHolder = 400;
@@ -104,13 +105,9 @@ public class ButtonManager {
 		yHolder = 150;
 		MainMenu = new RectTex(xHolder, yHolder, width, height, ButtonTex, "MENU");
 
-		//BackButton
-		Texture BackStoreTex = new Texture(Gdx.files.internal("MutualAssets/backStore.png"));
-		width = BackStoreTex.getWidth();
-		height = BackStoreTex.getHeight();
 		xHolder = 480 /2 - width / 2;
-		yHolder = 675;//20;
-		BackStore = new RectTex(xHolder, yHolder, width, height, BackStoreTex,"");
+		yHolder = 665;//20;
+		BackStore = new RectTex(xHolder, yHolder, width, height, ButtonTex,"BACK");//BackStoreTex
 
 		//STORETABS
 		Texture StoreTab = new Texture(Gdx.files.internal("MutualAssets/tab.png"));
@@ -214,6 +211,13 @@ public class ButtonManager {
 
 		Texture SoundOffTex = new Texture(Gdx.files.internal("MutualAssets/soundOff.png"));
 		SoundOff = new RectTex(xHolder, yHolder, width, height, SoundOffTex,"");
+		
+		Texture PauseTex = new Texture(Gdx.files.internal("MutualAssets/pause.png"));
+		width = PauseTex.getWidth();
+		height = PauseTex.getHeight();
+		xHolder = 0;
+		yHolder = 800-height;
+		Pause =  new RectTex(xHolder,yHolder, width, height, PauseTex, "");
 
 	}
 

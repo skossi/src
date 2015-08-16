@@ -41,12 +41,14 @@ public class GameStateManager{
 		MyInputProcessor inputProcessor = new MyInputProcessor();
 		Gdx.input.setInputProcessor(inputProcessor);
 		
-		if(hasFinishedTutorial)setState(MENU);
-		else
+		//if(hasFinishedTutorial)
+		setState(MENU);
+		/*else
 		{
 			introEnd = true;
 			setState(PLAY);
 		}
+		*/
 
 
 	}

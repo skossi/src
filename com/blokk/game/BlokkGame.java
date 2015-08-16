@@ -93,8 +93,8 @@ public class BlokkGame implements ApplicationListener {
 
 		gsm.draw(batch);
 
-		if(R_Man.isMuted)R_Man.drawButton(batch, R_Man.ButtonM.SoundOff, 0, 0, false);
-		else R_Man.drawButton(batch, R_Man.ButtonM.SoundOn, 0, 0, false);
+		if(R_Man.isMuted)R_Man.drawButton(batch, R_Man.ButtonM.SoundOff, 0, -10, false);
+		else R_Man.drawButton(batch, R_Man.ButtonM.SoundOn, 0, -10, false);
 
 		batch.end();
 

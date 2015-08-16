@@ -44,8 +44,8 @@ public class AnimationManager {
 		MenuYOffset = value;
 
 		//if(Math.abs(value) >= Math.abs(maxValue))isMenuDown = true;
-		if(value <= -maxValue && !GameStateManager.hasFinishedTutorial)gsm.setState(GameStateManager.TUTORIAL);
-		if(value <= -maxValue && GameStateManager.hasFinishedTutorial)setPlayState(underDest);
+		//if(value <= -maxValue && !GameStateManager.hasFinishedTutorial)gsm.setState(GameStateManager.TUTORIAL);
+		if(value <= -maxValue)setPlayState(underDest); // && GameStateManager.hasFinishedTutorial)
 		if(value >= maxValue) gsm.setState(overDest);
 	}
 

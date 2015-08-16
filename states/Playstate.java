@@ -92,7 +92,7 @@ public class Playstate extends Gamestate{
 		actionTime = System.currentTimeMillis()-500;
 		Man = RectMan;
 		isPaused = false;
-		//Man.AnimationM.isMenuDown = true;
+		Man.AnimationM.isMenuDown = true;
 		size = 68;
 		steps = size/2; //pixel perfect updating
 		columns = 7;
@@ -134,7 +134,7 @@ public class Playstate extends Gamestate{
 		Man._b = Man._bOrg;
 		
 		UIFIX = Man.ScoreM.firstTime;
-		if(!UIFIX) difficulty = 0.6;
+		if(!UIFIX) difficulty = 0.4;
 	}
 	/**
 	 * Creates a new cube on a timed interval. It���s type is randomed. This method is a temporary solution for spawning cubes in debugging mode
@@ -352,6 +352,7 @@ public class Playstate extends Gamestate{
 				}
 			}
 			else if (actions == startingRows && System.currentTimeMillis() - lastDropTime > 1100*difficulty*noob) spawnMovable(MathUtils.random(0, 6), (float)((1+(1-difficulty))*defaultSpeed));
+			
 		}
 		else if (startAnimation) playIntro(dt,-1);
 		else blackMovableAnimation(dt);
@@ -477,12 +478,13 @@ public class Playstate extends Gamestate{
 		}
 
 		batch.draw(Man.TextureM.loseLine, 0, loseCondition+loseConditionOffset);
-		if(UIFIX)
-		{
+		//if(UIFIX)
+		//{
 			batch.draw(Man.TextureM.ui_bg, UI.x, UI.y, UI.width, UI.height);
 			int addX = Integer.toString(score).length();
 			Man.fontWhite.draw(batch,Integer.toString(score), 230-addX*4, scoreBoardPos);
-		}
+			Man.drawButton(batch, Man.ButtonM.Pause, 0, scoreBoardPos-790, false);
+		//}
 	}
 
 	public static void touchUp(int x, int y) {
@@ -497,10 +499,12 @@ public class Playstate extends Gamestate{
 		isSelected = true;
 		selectedM = locateMovable(x, y);
 		touchedY = y;
+		if(buttonClick(Man.ButtonM.Pause,x,y)) isPaused = !isPaused;
 		if(isPaused)
 		{
 			if(buttonClick(Man.ButtonM.PauseResume,x,y)) isPaused = false;
 			if(buttonClick(Man.ButtonM.PauseRestart,x,y)) RestartGame();
+			
 			if(buttonClick(Man.ButtonM.PauseQuit,x,y))
 			{
 				isPaused = false;

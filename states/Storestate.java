@@ -163,7 +163,7 @@ public class Storestate extends Gamestate {
 		int yOffset = Man.AnimationM.SideYOffset;
 		batch.setColor(Man.Color_Store);
 		//batch.draw(StoreMain.tex, StoreMain.x, StoreMain.y+yOffset);
-		batch.setColor(Man.Color_StoreBar);
+		batch.setColor(Man.Color_Store);
 		//batch.draw(Man.TextureM.tabSelect,160*selectTab,tabs[0].y+75+yOffset);
 		batch.draw(Man.TextureM.scoreBack,0,150+yOffset);
 
@@ -172,13 +172,13 @@ public class Storestate extends Gamestate {
 		{
 			if(i == selectTab)
 			{
-				batch.setColor(Man.Color_StoreBar);
+				batch.setColor(Man.Color_Store);
 				batch.draw(tabs[i].tex,tabs[i].x,tabs[i].y+yOffset);
 				Man.fontWhite.draw(batch, tabText[i], 30+160*i, tabs[i].y+85+yOffset);
 			}
 			else
 			{
-				batch.setColor(Man.Color_Store);
+				batch.setColor(Man.Color_StoreBar);
 				batch.draw(tabs[i].tex,tabs[i].x,tabs[i].y+yOffset);
 				Man.fontBlack.draw(batch, tabText[i], 30+160*i, tabs[i].y+85+yOffset);
 			}
@@ -239,10 +239,10 @@ public class Storestate extends Gamestate {
 		}
 
 		if(unlockAnimation) batch.draw(Man.TextureM.unlockedItem, unlockX,unlockY);
-
+		batch.setColor(0,0,0,1);
+		Man.drawButton(batch, Back, 0, yOffset,true);
+		//batch.draw(Back.tex, Back.x, Back.y+yOffset);
 		batch.setColor(1,1,1,1);
-		batch.draw(Back.tex, Back.x, Back.y+yOffset);
-
 
 		if(swapThemeAni)
 		{
