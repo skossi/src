@@ -61,8 +61,11 @@ public class Loststate extends Gamestate{
 		lowerSpeedAdd = 70;
 		scoreOffset = 207;
 		screenDir = -1;
-		if(Man.ScoreM.NewHighScore)gsm.introEnd = false;
-
+		if(Man.ScoreM.NewHighScore)
+		{
+			gsm.introStart = false;
+			gsm.introEnd = false;
+		}
 	}
 
 	//See abstrakt class Gamestate update(float dt);

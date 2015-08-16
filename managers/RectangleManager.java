@@ -149,9 +149,9 @@ public class RectangleManager
 		}
 		else if (theme == 1)
 		{
-			_rOrg = 73f/255;
-			_gOrg = 10f/255;
-			_bOrg = 61f/255;
+			_rOrg = 117f/255;
+			_gOrg = 16f/255;
+			_bOrg = 97f/255;
 		}
 		else if (theme == 2)
 		{
