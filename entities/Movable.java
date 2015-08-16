@@ -98,9 +98,11 @@ public class Movable {
 		// no need to update the invisible bottom row or static blocks
 		if (row == 0) return;
 
-
 		if (speed < 0 && isBeingThrusted) isBeingThrusted = false;
-		if (speed != 0) speed -= gravity;
+		if (speed != 0) {
+			if (speed > 0 || justSpawned) speed -= gravity;
+			else speed -= gravity * 0.5;
+		}
 
 		y += speed*dy;
 		return;  //Why is this here?
@@ -111,14 +113,14 @@ public class Movable {
 	public boolean movableCheck() {
 		//the upper if statements magic number is meant to be 3000 lower
 		//than the one in the lower if statement
-		if(System.currentTimeMillis() - timeBlacked > 12000*Playstate.difficulty)
+		if(System.currentTimeMillis() - timeBlacked > Math.max(Playstate.difficulty*12000, 4500))
 		{
 			if(System.currentTimeMillis()%1000<500)
 				this.typeTwo=true;
 			else
 				this.typeTwo=false;
 		}
-		if(System.currentTimeMillis() - timeBlacked > 15000*Playstate.difficulty){
+		if(System.currentTimeMillis() - timeBlacked > Math.max(Playstate.difficulty*15000, 7500)){
 			timeBlacked = Long.MAX_VALUE;
 			return true;
 		}

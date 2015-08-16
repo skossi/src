@@ -1,6 +1,5 @@
 package states;
 
-import java.util.List;
 import java.util.Random;
 
 import managers.AudioManager;
@@ -64,7 +63,7 @@ public class Playstate extends Gamestate{
 	private long shootEmUp;
 	private int harass;
 	private GameStats stats;
-
+	private int scoreThreshold;
 	// public for global access
 	public static Movable selectedM;
 	public static boolean isSelected;
@@ -72,7 +71,7 @@ public class Playstate extends Gamestate{
 	private int musicThreshold;
 
 	//chosen background
-	
+
 	private boolean UIFIX;
 
 	private boolean isTesting;
@@ -114,6 +113,7 @@ public class Playstate extends Gamestate{
 		loseSpeed = 20;
 		superSpeed = 3000;
 		score = 0;
+		scoreThreshold = 15;
 		prepareMatrix();
 		isWave = true;
 		shootEmUp = Long.MAX_VALUE;
@@ -132,7 +132,7 @@ public class Playstate extends Gamestate{
 		Man._r = Man._rOrg;
 		Man._g = Man._gOrg;
 		Man._b = Man._bOrg;
-		
+
 		UIFIX = Man.ScoreM.firstTime;
 		if(!UIFIX) difficulty = 0.6;
 	}
@@ -329,11 +329,13 @@ public class Playstate extends Gamestate{
 				spawnWave((float)((1+(1-difficulty))*defaultSpeed));
 				shootEmUp = Long.MAX_VALUE;
 			}
-			if(score - lastWave > 15)
+			if(score - lastWave > scoreThreshold)
 			{
 				if (noob == 2) noob = 1;
 				shootEmUp = System.currentTimeMillis();
-
+				if(score > 500 && scoreThreshold == 15){
+					scoreThreshold = 30;
+				}
 				lastWave = score;
 				if(difficulty > 0.15)
 				{
@@ -1050,12 +1052,12 @@ public class Playstate extends Gamestate{
 	private void gameOver()
 	{
 		Man.AnimationM.isMenuDown = true;
-		
+
 		if(gsm.hasFinishedTutorial)
-			{
-				Man.ScoreM.checkScore(score,stats);	
-				gsm.setState(GameStateManager.LOST);		
-			}
+		{
+			Man.ScoreM.checkScore(score,stats);
+			gsm.setState(GameStateManager.LOST);
+		}
 		else gsm.setState(GameStateManager.TUTORIAL);
 	}
 }
